@@ -1,0 +1,39 @@
+{
+  "name": "math-numbers",
+  "description": "A systematic implementation of different kinds of numbers with a consistent interface",
+  "version": "0.1.0",
+  "homepage": "https://github.com/jostylr/math-numbers",
+  "author": {
+    "name": "James Taylor",
+    "email": "jostylr@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jostylr/math-numbers.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jostylr/math-numbers/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jostylr/math-numbers/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">0.6"
+  },
+  "devDependencies" : {
+    "literate-programming" : "~0.7.2"
+  },
+  "dependencies":{
+  },
+  "scripts" : { 
+    "prepublish" : "node ./node_modules/literate-programming/bin/literate-programming.js numbers.md",
+    "compile" : "node ./node_modules/literate-programming/bin/literate-programming.js numbers.md",
+    "test" : "node ./test/testrunner.js"
+  },
+  "keywords": ["bigint", "bignum", "arithmetic", "arbitrary", "precision", "numbers"],
+  "preferGlobal": "false"
+}
