@@ -2474,7 +2474,8 @@ The requisite npm package file. Use `npm run-script compile` to compile the lite
         "node": ">0.6"
       },
       "devDependencies" : {
-        "literate-programming" : "~0.7.2"
+        "literate-programming" : "~0.7.2",
+        "event-when" : "=0.5.0"
       },
       "dependencies":{
       },
