@@ -395,14 +395,16 @@ Each value is represented by an array of js integers with the first entry being 
     var dcom = _"directed comparison";
     var int = Num.int = Num.type("int");
     var div = Num.int.divalgo = _"int division algorithm";
-    
+    var ident = function () {return int(this.val);};
 
     Num.define("int", {
         parse : _"int parse",
         neg : _"int negate",
         abs : _"int abs",
         str : _"int str",
-        pow : _"int pow",
+        ceil : ident,
+        floor: ident,
+        round: ident,
         sign: _"sign",
         shift : _"int shift",
         make: int
@@ -411,6 +413,7 @@ Each value is represented by an array of js integers with the first entry being 
         add : _"int add",
         sub : _"int sub",
         mul : _"int mul",
+        pow : _"int pow",
         div : _"int div",
         quo : _"int quo",
         rem : _"int rem",
@@ -516,7 +519,7 @@ The string parsing should reverse the .str method. So first it checks for a minu
 ### Int sign
 
     function () {
-        return this.val.neg;
+        return this.val.neg || false;
     }
 
 ### Int shift
@@ -900,8 +903,15 @@ Returns the remainder part.
 
 We need to filter this into separate cases. If the power is a positive integer, then we use exponentiating via squaring and produce an integer. If it is is a negative integer, then we end up producing a rational number, namely the numerator is 1 and the denominator is the integer raised to the positive version of the integer. If the power is a fraction or a scientific number, then we produce a scientific number; we need a default precision that can be overwritten with a passed in argument. We will probably use Newton's Method. 
 
+Right now, just a quick hack to get integer power; need to fix. Not valid for long ones. 
+
     function (power) {
         var x = this;
+        if (power instanceof Num) {
+            if (power.type === "int") {
+                power = parseInt(power.str(), 10);
+            }
+        }
         var prod, xsq;
         if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
             prod = int(1);

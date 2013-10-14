@@ -364,6 +364,7 @@
             return ret;
         
         };
+    var ident = function () {return int(this.val);};
     
     Num.define("int", {
         parse : function self () {
@@ -438,43 +439,9 @@
                 var minus = this.val.neg ? "-" : "";
                 return minus + strarr.reverse().join("");
             },
-        pow : function (power) {
-                var x = this;
-                var prod, xsq;
-                if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
-                    prod = int(1);
-                    xsq = int(x);
-                    while (1) {
-                        if (power % 2) {
-                            prod = prod.mul(xsq);
-                        }
-                        power = Math.floor(power/2);
-                        if (power >0) {
-                            xsq = xsq.mul(xsq);
-                        } else {
-                            break;
-                        }
-                    }
-                    return prod;
-                } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
-                    prod = int(1);
-                    xsq = int(x);
-                    power = -power;
-                    while (1) {
-                        if (power % 2) {
-                            prod = prod.mul(xsq);
-                        }
-                        power = Math.floor(power/2);
-                        if (power >0) {
-                            xsq = xsq.mul(xsq);
-                        } else {
-                            break;
-                        }
-                    }
-                    return Num.rat({neg: prod.sign(), w:zero, n: unit, d: prod});
-                }
-            
-            },
+        ceil : ident,
+        floor: ident,
+        round: ident,
         sign: function () {
                 return (this.val.neg ? "-" : "");
             },
@@ -559,6 +526,48 @@
                     reduce(ret);
                 }
                 return int(ret); 
+            },
+        pow : function (power) {
+                var x = this;
+                if (power instanceof Num) {
+                    if (power.type === "int") {
+                        power = parseInt(power.str(), 10);
+                    }
+                }
+                var prod, xsq;
+                if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
+                    prod = int(1);
+                    xsq = int(x);
+                    while (1) {
+                        if (power % 2) {
+                            prod = prod.mul(xsq);
+                        }
+                        power = Math.floor(power/2);
+                        if (power >0) {
+                            xsq = xsq.mul(xsq);
+                        } else {
+                            break;
+                        }
+                    }
+                    return prod;
+                } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
+                    prod = int(1);
+                    xsq = int(x);
+                    power = -power;
+                    while (1) {
+                        if (power % 2) {
+                            prod = prod.mul(xsq);
+                        }
+                        power = Math.floor(power/2);
+                        if (power >0) {
+                            xsq = xsq.mul(xsq);
+                        } else {
+                            break;
+                        }
+                    }
+                    return Num.rat({neg: prod.sign(), w:zero, n: unit, d: prod});
+                }
+            
             },
         div : function (b) {
                 return Num.rat(div(this, b));
