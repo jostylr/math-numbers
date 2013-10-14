@@ -14,24 +14,62 @@ This will test the basic math functions for our float system. This is a number s
 
 [expected]()
 
-    1
-    2.3
-    3.3
-    2.3
-    -1.2999999999999998
-    0.4347826086956522
+    zero: 0, one: 1
+    a: 2.3, b: -3
+    add: -0.7000000000000002
+    sub: 5.3
+    mul: -6.8999999999999995
+    div: -0.7666666666666666
+    pow: 0.08218952905399854
+    max: 2.3
+    mmax: -3
+    min: -3
+    mmin: 2.3
+    mgt: false
+    mgte: false
+    mlt: true
+    mlte: true
+    meq: false
+    gt: true
+    gte: true
+    lt: false
+    lte: false
+    eq: false
+    neg: -2.3; 3
+    round: 2; -3
+    floor: 2; -3
+    abs: 2.3; 3
+    ceil: 3; -3
 
 [code]()
 
-    var a = new Num(1, "float");
-    var b = Num.float(2.3);
-    actual.push("1", "2.3");
-    actual.push(a.add(b).str());
-    actual.push(a.mul(b).str());
-    actual.push(a.sub(b).str());
-    actual.push(a.div(b).str());
+    
+    var instance = new Num(4, "float");
+    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var samples = [ 
+        [new Num(2.3, "float"), Num.float(-3)]
+    ];
+    var ops = ['add', 'sub', 'mul', 'div', 'pow',  'max', 'mmax', 'min', 'mmin'];
+    var comps = ['mgt', 'mgte', 'mlt', 'mlte', 'meq', 'gt', 'gte', 'lt', 'lte', 'eq'];
+    var unitary = ['neg', 'round', 'floor', 'abs', 'ceil'];
+    samples.forEach(function (bin) {
+        var a = bin[0], 
+            b = bin[1];
 
+        actual.push("a: " + a.str() + ", b: " + b.str());
+        ops.forEach(function(op) {
+            actual.push(op+": " + a[op](b).str());
+        });
 
+        comps.forEach(function(comp) {
+            actual.push(comp+": " + a[comp](b));
+        });
+
+        unitary.forEach( function(un) {
+            actual.push(un+": " + a[un]().str() + "; " + b[un]().str());
+        });
+
+    });
 
 ## Async emitting
 
@@ -44,7 +82,7 @@ This is a snippet that should be placed at the end of each async function.
         if (result === true ) {
            tester.emit("passed", key);
         } else {
-            tester.emit("failed", {key:key, result:result});
+            tester.emit("failed", {key:key, result:result, actual: actual, expected: expected});
         }    
     })
 
@@ -158,6 +196,8 @@ This is a simple test runner.
     function (data) {
         console.log("FAILED: " + data.key);
         console.log(data.result);
+        console.log("expected:", data.expected);
+        console.log("actual:\n"+ data.actual.join("\n"));
     }    
 
 [run sync tests](# "js")
