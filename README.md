@@ -1,4 +1,4 @@
-## Math-Numbers  [![Build Status](https://travis-ci.org/jostylr/DOCNAME.png)](https://travis-ci.org/jostylr/DOCNAME)
+## Math-Numbers  [![Build Status](https://travis-ci.org/jostylr/math-numbers.png)](https://travis-ci.org/jostylr/math-numbers)
 
 This is a JavaScript library that implements exact integer arithmetic, arbitrary precision decimals, and other stuff. It is intended for educational purposes and is probably not performant. Yeah, the multiplication algorithm is the simple one. 
 

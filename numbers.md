@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.1.0| jostylr")
+# [math-numbers](# "version: 0.0.1| jostylr")
 
 This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
 
@@ -214,9 +214,9 @@ Just a simple function to implement iterating over an array of Nums and getting 
 
 ### Make a constant
 
-Constants are handled by giving them a name and having that name be a function that returns the constant appropriate for the type. 
+Constants are handled by giving them a name and having that name be a function that returns the constant appropriate for the type. It is always just the same constant. 
 
-This is at the point where subclassing would probably be useful...
+This is at the point where subclassing would be useful. Essentially, this is a hack that uses a common method on all Num instances that can access the specfic kind of constant. To fix this, each type should define a constructor. 
 
     function (name, value) {
         var fun; 
@@ -250,10 +250,60 @@ Given the inequality methods, we define a simple helper method to give the max, 
         }
     }
 
+## iPow
+
+This is a general algorithm that uses the basic arithmetic operators to implement integral powers. This is the only kind of power that iPow does. It can take in a regular integer or a Num.int integer though large integers are sure to have issues in terms of doing anything. It is more of a convenience to take in Num.int. 
+
+We need to filter this into separate cases. If the power is a positive integer, then we use exponentiating via squaring and produce an integer. If it is is a negative integer, then we end up producing a rational number, namely the numerator is 1 and the denominator is the integer raised to the positive version of the integer. 
+
+    function (power) {
+        var x = this;
+        if (power instanceof Num) {
+            if (power.type === "int") {
+                power = parseInt(power.str(), 10);
+            } else {
+                power = 1;
+            }
+        }
+        var prod = x.unit(), xsq = x;
+        if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
+            _"exponentiating via squaring"
+            return prod;
+        } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
+            power = -power;
+            _"exponentiating via squaring"
+            return prod.inv();  
+        }
+
+    }
+
+
+
+
+### Exponentiating via squaring
+
+Multiplies out the power. We will use the squaring approach to get the power method down to ~ 2log_2(n) number of powers.  
+
+Our approach is to convert the integer power n into binary and then start squaring the base. After each squaring, if the corresponding binary entry is 1, we multiply it into our product 
+
+    
+    while (1) {
+        if (power % 2) {
+            prod = prod.mul(xsq);
+        }
+        power = Math.floor(power/2);
+        if (power >0) {
+            xsq = xsq.mul(xsq);
+        } else {
+            break;
+        }
+    }
+
+
 
 ## Float
 
-Here we implement the above, using the built-in operators. 
+Here we implement the basic interface using the built-in operators. 
 
     var float = Num.float = Num.type("float");
     Num.define("float", {
@@ -264,6 +314,8 @@ Here we implement the above, using the built-in operators.
         ceil : _"float to int | substitute(FUN, ceil)",
         abs : _"float unary | substitute(FUN, abs)",
         str : _"float str",
+        ipow : _"ipow",
+        inv : _"float reciprocal",
         make : float
     });
     Num.define("float,float", {
@@ -326,6 +378,13 @@ We need to parse a normal Num into a Num of type float.
     function () {
         return new Num (-1*this.val, "float");
     }
+
+### Float reciprocal
+
+    function () {
+        return new Num (1/this.val, "float");
+    }
+
 
 ### Float to int
 
@@ -404,8 +463,10 @@ Each value is represented by an array of js integers with the first entry being 
         str : _"int str",
         ceil : ident,
         floor: ident,
+        ipow : _"ipow",
         round: ident,
         sign: _"sign",
+        inv : _"int reciprocal",
         shift : _"int shift",
         make: int
     });
@@ -413,7 +474,6 @@ Each value is represented by an array of js integers with the first entry being 
         add : _"int add",
         sub : _"int sub",
         mul : _"int mul",
-        pow : _"int pow",
         div : _"int div",
         quo : _"int quo",
         rem : _"int rem",
@@ -507,6 +567,13 @@ The string parsing should reverse the .str method. So first it checks for a minu
         return clone; 
     }
 
+
+### Int reciprocal
+
+    function () {
+        var x = this;
+        return Num.rat({neg: x.sign(), w:zero, n: unit, d: x});
+    }
 
 ### Int Abs
 
@@ -899,55 +966,6 @@ Returns the remainder part.
     }
 
 
-### Int Pow
-
-We need to filter this into separate cases. If the power is a positive integer, then we use exponentiating via squaring and produce an integer. If it is is a negative integer, then we end up producing a rational number, namely the numerator is 1 and the denominator is the integer raised to the positive version of the integer. If the power is a fraction or a scientific number, then we produce a scientific number; we need a default precision that can be overwritten with a passed in argument. We will probably use Newton's Method. 
-
-Right now, just a quick hack to get integer power; need to fix. Not valid for long ones. 
-
-    function (power) {
-        var x = this;
-        if (power instanceof Num) {
-            if (power.type === "int") {
-                power = parseInt(power.str(), 10);
-            }
-        }
-        var prod, xsq;
-        if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
-            prod = int(1);
-            xsq = int(x);
-            _"exponentiating via squaring"
-            return prod;
-        } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
-            prod = int(1);
-            xsq = int(x);
-            power = -power;
-            _"exponentiating via squaring"
-            return Num.rat({neg: prod.sign(), w:zero, n: unit, d: prod});
-        }
-
-    }
-
-### Exponentiating via squaring
-
-Multiplies out the power. We will use the squaring approach to get the power method down to ~ 2log_2(n) number of powers.  
-
-Our approach is to convert the integer power n into binary and then start squaring the base. After each squaring, if the corresponding binary entry is 1, we multiply it into our product 
-
-    
-    while (1) {
-        if (power % 2) {
-            prod = prod.mul(xsq);
-        }
-        power = Math.floor(power/2);
-        if (power >0) {
-            xsq = xsq.mul(xsq);
-        } else {
-            break;
-        }
-    }
-
-
 ## Rational
 
 This models rational numbers as a triple pair of integers: whole, numerator, denominator and a sign so that all three parts are taken to be positive. 
@@ -967,7 +985,7 @@ This models rational numbers as a triple pair of integers: whole, numerator, den
         inv : _"rat reciprocal",
         abs : _"rat abs",
         str : _"rat str",
-        pow : _"rat pow",
+        ipow : _"ipow",
         w : _"rat whole",
         n : _"rat numerator",
         d : _"rat denominator",
@@ -1137,26 +1155,7 @@ Need to put together a string.
     }
 
 
-### rat Pow
 
-Same algorithm as in integer...
-
-    function (power) {
-        var x = this;
-        var prod, xsq;
-        if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
-            prod = unit;
-            xsq = x.make(x.val);
-            _"exponentiating via squaring"
-            return prod;
-        } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
-            prod = unit;
-            xsq = x.make(x.val);
-            power = -power;
-            _"exponentiating via squaring"
-            return prod.inv();
-        }
-    }
 
 ### rat Whole
 
@@ -1455,7 +1454,7 @@ Exact numbers can have a precision of Infinity
         inv : _"sci reciprocal",
         abs : _"sci abs",
         str : _"sci str",
-        pow : _"sci pow",
+        ipow : _"ipow",
         coef : _"sci coef",
         lead : _"sci leading digit",
         slice : _"sci slice the digits",
@@ -2108,7 +2107,7 @@ This should complexify the already existing types.
         abs : _"com abs",
         abssq : _"com abssq",
         str : _"com str",
-        pow : _"rat pow",
+        ipow : _"ipow",
         re : _"com real",
         im : _"com imaginary",
         apply : _"com apply to parts",
@@ -2438,7 +2437,7 @@ Float is contagious. Its existence is as a means to speed computations up and a 
 ## README
 
 
- ## Math-Numbers  [![Build Status](https://travis-ci.org/jostylr/DOCNAME.png)](https://travis-ci.org/jostylr/DOCNAME)
+ ## Math-Numbers  [![Build Status](https://travis-ci.org/jostylr/math-numbers.png)](https://travis-ci.org/jostylr/math-numbers)
 
 This is a JavaScript library that implements exact integer arithmetic, arbitrary precision decimals, and other stuff. It is intended for educational purposes and is probably not performant. Yeah, the multiplication algorithm is the simple one. 
 
@@ -2450,6 +2449,10 @@ It should work equally well in node or browser though mostly it is for the brows
 ## TODO
 
 Documentation and tests. 
+
+Need a strategy for errors, particularly bad inputs. 
+
+Implement subclassing for types so that constant is not a function! Need to do this soon!
 
 ## NPM package
 

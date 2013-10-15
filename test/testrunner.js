@@ -20,7 +20,6 @@ var records = {
                     "sub: 5.3",
                     "mul: -6.8999999999999995",
                     "div: -0.7666666666666666",
-                    "pow: 0.08218952905399854",
                     "max: 2.3",
                     "mmax: -3",
                     "min: -3",
@@ -39,7 +38,12 @@ var records = {
                     "round: 2; -3",
                     "floor: 2; -3",
                     "abs: 2.3; 3",
-                    "ceil: 3; -3"
+                    "ceil: 3; -3",
+                    "inv: 0.4347826086956522; -0.3333333333333333",
+                    "a ipow 5: 64.36342999999998",
+                    "b ipow 5: -243",
+                    "a ipow -4: 0.03573457784956459",
+                    "b ipow -4: 0.012345679012345678"
                     ],
                     actual = [];
                 
@@ -60,10 +64,10 @@ var records = {
                     [new Num(2.3, "float"), Num.float(-3)]
                 ];
                 
-                var ops = ['add', 'sub', 'mul', 'div', 'pow',  'max', 'mmax', 'min', 'mmin'];
+                var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];
                 var comps = ['mgt', 'mgte', 'mlt', 'mlte', 'meq', 'gt', 'gte', 'lt', 'lte', 'eq'];
-                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil'];
-                var others = [];
+                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
+                var others = [['ipow', Num.int(5)], ['ipow', -4]];
             
                 samples.forEach(function (bin) {
                     var a = bin[0], 
@@ -85,15 +89,24 @@ var records = {
                     });
                 
                     others.forEach( function (other) {
-                        var result, str;
+                        var result, str = "", o1str = "";
+                
+                        if (typeof other[1] !== "undefined") {
+                            if (other[1] instanceof Num) {
+                                o1str = other[1].str();
+                            } else {
+                                o1str = other[1]+"";
+                            }
+                        }
+                
                         result = a[other[0]](other[1]);
-                        str = "a " + other[0] + " " + (other[1] || "") +": ";
+                        str = "a " + other[0] + " " + o1str +": ";
                         if (result instanceof Num) {
                             actual.push(str + result.str());
                         } else {
                             actual.push(str + result);
                         }
-                        str = "b " + other[0] + " " + (other[1] || "") +": ";
+                        str = "b " + other[0] + " " + o1str +": ";
                         result = b[other[0]](other[1]);
                         if (result instanceof Num) {
                             actual.push(str+ result.str());
@@ -122,7 +135,6 @@ var records = {
                     "sub: 22",
                     "mul: -120",
                     "div: -10/12",
-                    "pow: 1/1000000000000",
                     "max: 10",
                     "mmax: -12",
                     "min: -12",
@@ -146,6 +158,11 @@ var records = {
                     "floor: 10; -12",
                     "abs: 10; 12",
                     "ceil: 10; -12",
+                    "inv: 1/10; -1/-12",
+                    "a ipow 5: 100000",
+                    "b ipow 5: -248832",
+                    "a ipow -4: 1/10000",
+                    "b ipow -4: 1/20736",
                     "a shift 2: 1000",
                     "b shift 2: -1200",
                     "a sign : ",
@@ -155,7 +172,6 @@ var records = {
                     "sub: 123456789123456789123456784",
                     "mul: 617283945617283945617283945",
                     "div: 24691357824691357824691357 4/5",
-                    "pow: 28679718746395774517519299647974067853199588896463036970972834315105461935781603131036162289536454167206060221256216795681720482949",
                     "max: 123456789123456789123456789",
                     "mmax: 123456789123456789123456789",
                     "min: 5",
@@ -179,6 +195,11 @@ var records = {
                     "floor: 123456789123456789123456789; 5",
                     "abs: 123456789123456789123456789; 5",
                     "ceil: 123456789123456789123456789; 5",
+                    "inv: 1/123456789123456789123456789; 1/5",
+                    "a ipow 5: 28679718746395774517519299647974067853199588896463036970972834315105461935781603131036162289536454167206060221256216795681720482949",
+                    "b ipow 5: 3125",
+                    "a ipow -4: 1/232305723727482137666188006551300203692658625799727977970043302090695104949336681913044437155857798251441",
+                    "b ipow -4: 1/625",
                     "a shift 2: 12345678912345678912345678900",
                     "b shift 2: 500",
                     "a sign : ",
@@ -204,10 +225,10 @@ var records = {
                     [new Num("123456789123456789123456789", "int"), new Num("5", "int")]
                 ];
                 
-                var ops = ['add', 'sub', 'mul', 'div', 'pow',  'max', 'mmax', 'min', 'mmin'];
+                var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];
                 var comps = ['mgt', 'mgte', 'mlt', 'mlte', 'meq', 'gt', 'gte', 'lt', 'lte', 'eq'];
-                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil'];
-                var others = [];
+                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
+                var others = [['ipow', Num.int(5)], ['ipow', -4]];
                 
                 others.push(["shift", 2], ["sign"]);
                 ops.push("quo", "rem", "gcd", "lcm");
@@ -233,15 +254,24 @@ var records = {
                     });
                 
                     others.forEach( function (other) {
-                        var result, str;
+                        var result, str = "", o1str = "";
+                
+                        if (typeof other[1] !== "undefined") {
+                            if (other[1] instanceof Num) {
+                                o1str = other[1].str();
+                            } else {
+                                o1str = other[1]+"";
+                            }
+                        }
+                
                         result = a[other[0]](other[1]);
-                        str = "a " + other[0] + " " + (other[1] || "") +": ";
+                        str = "a " + other[0] + " " + o1str +": ";
                         if (result instanceof Num) {
                             actual.push(str + result.str());
                         } else {
                             actual.push(str + result);
                         }
-                        str = "b " + other[0] + " " + (other[1] || "") +": ";
+                        str = "b " + other[0] + " " + o1str +": ";
                         result = b[other[0]](other[1]);
                         if (result instanceof Num) {
                             actual.push(str+ result.str());

@@ -136,6 +136,49 @@
         str : function () {
                 return this.val+"";
             },
+        ipow : function (power) {
+                var x = this;
+                if (power instanceof Num) {
+                    if (power.type === "int") {
+                        power = parseInt(power.str(), 10);
+                    } else {
+                        power = 1;
+                    }
+                }
+                var prod = x.unit(), xsq = x;
+                if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
+                    while (1) {
+                        if (power % 2) {
+                            prod = prod.mul(xsq);
+                        }
+                        power = Math.floor(power/2);
+                        if (power >0) {
+                            xsq = xsq.mul(xsq);
+                        } else {
+                            break;
+                        }
+                    }
+                    return prod;
+                } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
+                    power = -power;
+                    while (1) {
+                        if (power % 2) {
+                            prod = prod.mul(xsq);
+                        }
+                        power = Math.floor(power/2);
+                        if (power >0) {
+                            xsq = xsq.mul(xsq);
+                        } else {
+                            break;
+                        }
+                    }
+                    return prod.inv();  
+                }
+            
+            },
+        inv : function () {
+                return new Num (1/this.val, "float");
+            },
         make : float
     });
     Num.define("float,float", {
@@ -441,9 +484,53 @@
             },
         ceil : ident,
         floor: ident,
+        ipow : function (power) {
+                var x = this;
+                if (power instanceof Num) {
+                    if (power.type === "int") {
+                        power = parseInt(power.str(), 10);
+                    } else {
+                        power = 1;
+                    }
+                }
+                var prod = x.unit(), xsq = x;
+                if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
+                    while (1) {
+                        if (power % 2) {
+                            prod = prod.mul(xsq);
+                        }
+                        power = Math.floor(power/2);
+                        if (power >0) {
+                            xsq = xsq.mul(xsq);
+                        } else {
+                            break;
+                        }
+                    }
+                    return prod;
+                } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
+                    power = -power;
+                    while (1) {
+                        if (power % 2) {
+                            prod = prod.mul(xsq);
+                        }
+                        power = Math.floor(power/2);
+                        if (power >0) {
+                            xsq = xsq.mul(xsq);
+                        } else {
+                            break;
+                        }
+                    }
+                    return prod.inv();  
+                }
+            
+            },
         round: ident,
         sign: function () {
                 return (this.val.neg ? "-" : "");
+            },
+        inv : function () {
+                var x = this;
+                return Num.rat({neg: x.sign(), w:zero, n: unit, d: x});
             },
         shift : function (d) {
                 if ( d>0) {
@@ -526,48 +613,6 @@
                     reduce(ret);
                 }
                 return int(ret); 
-            },
-        pow : function (power) {
-                var x = this;
-                if (power instanceof Num) {
-                    if (power.type === "int") {
-                        power = parseInt(power.str(), 10);
-                    }
-                }
-                var prod, xsq;
-                if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
-                    prod = int(1);
-                    xsq = int(x);
-                    while (1) {
-                        if (power % 2) {
-                            prod = prod.mul(xsq);
-                        }
-                        power = Math.floor(power/2);
-                        if (power >0) {
-                            xsq = xsq.mul(xsq);
-                        } else {
-                            break;
-                        }
-                    }
-                    return prod;
-                } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
-                    prod = int(1);
-                    xsq = int(x);
-                    power = -power;
-                    while (1) {
-                        if (power % 2) {
-                            prod = prod.mul(xsq);
-                        }
-                        power = Math.floor(power/2);
-                        if (power >0) {
-                            xsq = xsq.mul(xsq);
-                        } else {
-                            break;
-                        }
-                    }
-                    return Num.rat({neg: prod.sign(), w:zero, n: unit, d: prod});
-                }
-            
             },
         div : function (b) {
                 return Num.rat(div(this, b));
@@ -812,12 +857,17 @@
             
                 return ret;
             },
-        pow : function (power) {
+        ipow : function (power) {
                 var x = this;
-                var prod, xsq;
+                if (power instanceof Num) {
+                    if (power.type === "int") {
+                        power = parseInt(power.str(), 10);
+                    } else {
+                        power = 1;
+                    }
+                }
+                var prod = x.unit(), xsq = x;
                 if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
-                    prod = unit;
-                    xsq = x.make(x.val);
                     while (1) {
                         if (power % 2) {
                             prod = prod.mul(xsq);
@@ -831,8 +881,6 @@
                     }
                     return prod;
                 } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
-                    prod = unit;
-                    xsq = x.make(x.val);
                     power = -power;
                     while (1) {
                         if (power % 2) {
@@ -845,8 +893,9 @@
                             break;
                         }
                     }
-                    return prod.inv();
+                    return prod.inv();  
                 }
+            
             },
         w : function () {
                 return this.val.w;
@@ -1296,41 +1345,45 @@
                     return this.sign()+i+"E"+this.E();        
                 }
             },
-        pow : function (power, level) {
+        ipow : function (power) {
                 var x = this;
-                var prod, xsq;
+                if (power instanceof Num) {
+                    if (power.type === "int") {
+                        power = parseInt(power.str(), 10);
+                    } else {
+                        power = 1;
+                    }
+                }
+                var prod = x.unit(), xsq = x;
                 if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
-                    prod = unit;
-                    xsq = x.make(x.val);
                     while (1) {
                         if (power % 2) {
-                            prod = prod.mul(xsq, level);
+                            prod = prod.mul(xsq);
                         }
                         power = Math.floor(power/2);
                         if (power >0) {
-                            xsq = xsq.mul(xsq, level);
+                            xsq = xsq.mul(xsq);
                         } else {
                             break;
                         }
                     }
                     return prod;
                 } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
-                    prod = unit;
-                    xsq = x.make(x.val);
                     power = -power;
                     while (1) {
                         if (power % 2) {
-                            prod = prod.mul(xsq, level);
+                            prod = prod.mul(xsq);
                         }
                         power = Math.floor(power/2);
                         if (power >0) {
-                            xsq = xsq.mul(xsq, level);
+                            xsq = xsq.mul(xsq);
                         } else {
                             break;
                         }
                     }
-                    return prod.inv();
+                    return prod.inv();  
                 }
+            
             },
         coef : function (pre) {
                 var istr;
@@ -1609,12 +1662,17 @@
                 }
                 return re + plus + im;
             },
-        pow : function (power) {
+        ipow : function (power) {
                 var x = this;
-                var prod, xsq;
+                if (power instanceof Num) {
+                    if (power.type === "int") {
+                        power = parseInt(power.str(), 10);
+                    } else {
+                        power = 1;
+                    }
+                }
+                var prod = x.unit(), xsq = x;
                 if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
-                    prod = unit;
-                    xsq = x.make(x.val);
                     while (1) {
                         if (power % 2) {
                             prod = prod.mul(xsq);
@@ -1628,8 +1686,6 @@
                     }
                     return prod;
                 } else if ( (typeof power === "number") && (power < 0) && (Math.floor(power) === power) ) {
-                    prod = unit;
-                    xsq = x.make(x.val);
                     power = -power;
                     while (1) {
                         if (power % 2) {
@@ -1642,8 +1698,9 @@
                             break;
                         }
                     }
-                    return prod.inv();
+                    return prod.inv();  
                 }
+            
             },
         re : function () {
                 return this.val.re;
