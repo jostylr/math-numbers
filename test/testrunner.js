@@ -295,7 +295,7 @@ var records = {
                 emitter.name = key;
             
                 var expected = [
-                    "zero: , one: 1/1",
+                    "zero: 0, one: 1/1",
                     "a: -23 4/5, b: 2 1/4",
                     "add: -21 11/20",
                     "sub: -25 21/20",

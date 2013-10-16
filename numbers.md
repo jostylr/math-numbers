@@ -1151,6 +1151,10 @@ Need to put together a string.
            ret += v.n.str() + "/" + v.d.str(); 
         }
 
+        if (v.w.eq(zero) && v.n.eq(zero) ) {
+            ret = "0";
+        }
+
         return ret;
     }
 
