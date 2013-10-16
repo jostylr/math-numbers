@@ -80,6 +80,7 @@ var records = {
                     });
                 
                     comps.forEach(function(comp) {
+                        //console.log(comp);
                         actual.push(comp+": " + a[comp](b));
                     });
                 
@@ -232,7 +233,6 @@ var records = {
                 
                 others.push(["shift", 2], ["sign"]);
                 ops.push("quo", "rem", "gcd", "lcm");
-                //ops = ops.filter(function (el) { return (el === "pow" ? false : true);});
             
                 samples.forEach(function (bin) {
                     var a = bin[0], 
@@ -245,6 +245,153 @@ var records = {
                     });
                 
                     comps.forEach(function(comp) {
+                        //console.log(comp);
+                        actual.push(comp+": " + a[comp](b));
+                    });
+                
+                    unitary.forEach( function(un) {
+                        //console.log(un);
+                        actual.push(un+": " + a[un]().str() + "; " + b[un]().str());
+                    });
+                
+                    others.forEach( function (other) {
+                        var result, str = "", o1str = "";
+                
+                        if (typeof other[1] !== "undefined") {
+                            if (other[1] instanceof Num) {
+                                o1str = other[1].str();
+                            } else {
+                                o1str = other[1]+"";
+                            }
+                        }
+                
+                        result = a[other[0]](other[1]);
+                        str = "a " + other[0] + " " + o1str +": ";
+                        if (result instanceof Num) {
+                            actual.push(str + result.str());
+                        } else {
+                            actual.push(str + result);
+                        }
+                        str = "b " + other[0] + " " + o1str +": ";
+                        result = b[other[0]](other[1]);
+                        if (result instanceof Num) {
+                            actual.push(str+ result.str());
+                        } else {
+                            actual.push(str+ result);
+                        }
+                
+                    });
+                
+                });
+            
+                emitter.emit("done");
+            
+            },
+        "rationals": function () {
+            
+                var emitter = new EventWhen();
+                var key = 'rationals';
+            
+                emitter.name = key;
+            
+                var expected = [
+                    "zero: , one: 1/1",
+                    "a: -23 4/5, b: 2 1/4",
+                    "add: -21 11/20",
+                    "sub: -25 21/20",
+                    "mul: -46 151/20",
+                    "div: -476/5",
+                    "max: 2 1/4",
+                    "mmax: -23 4/5",
+                    "min: -23 4/5",
+                    "mmin: 2 1/4",
+                    "mgt: true",
+                    "mgte: true",
+                    "mlt: false",
+                    "mlte: false",
+                    "meq: false",
+                    "gt: false",
+                    "gte: false",
+                    "lt: true",
+                    "lte: true",
+                    "eq: false",
+                    "neg: 23 4/5; -2 1/4",
+                    "round: 23; 2",
+                    "floor: 23; 2",
+                    "abs: 23 4/5; 2 1/4",
+                    "ceil: 24; 3",
+                    "inv: 5/4; 4/1",
+                    "a ipow 5: -23863536599/3125",
+                    "b ipow 5: 59049/1024",
+                    "a ipow -4: 625/200533921",
+                    "b ipow -4: 256/6561",
+                    "a: -34233112312312 423452345234523/52323412412341234123412424, b: 5 2/3",
+                    "add: -34233112312306 17441137471203863719705331/52323412412341234123412424",
+                    "sub: -34233112312317 34882274941984275094176139/52323412412341234123412424",
+                    "mul: -171165561561560 3582386507350194454576236887759206915467/156970237237023702370237272",
+                    "div: -5373579761025291681864345803961042596433/104646824824682468246824848",
+                    "max: 5 2/3",
+                    "mmax: -34233112312312 423452345234523/52323412412341234123412424",
+                    "min: -34233112312312 423452345234523/52323412412341234123412424",
+                    "mmin: 5 2/3",
+                    "mgt: true",
+                    "mgte: true",
+                    "mlt: false",
+                    "mlte: false",
+                    "meq: false",
+                    "gt: false",
+                    "gte: false",
+                    "lt: true",
+                    "lte: true",
+                    "eq: false",
+                    "neg: 34233112312312 423452345234523/52323412412341234123412424; -5 2/3",
+                    "round: 34233112312312; 5",
+                    "floor: 34233112312312; 5",
+                    "abs: 34233112312312 423452345234523/52323412412341234123412424; 5 2/3",
+                    "ceil: 34233112312313; 6",
+                    "inv: 52323412412341234123412424/423452345234523; 3/2",
+                    "a ipow 5: -18437932650569421958072195775638622422762334715253076404379845115803344165886352297412559421592802843253949368322255500091442294836506246138578122115238096509324962253114154262093337374065909715051/392175356152293629398425111643577904990732398694438465700698385764768525485327427419924590914679354539406274720318281365192474624",
+                    "b ipow 5: 1419857/243",
+                    "a ipow -4: 7495217495787667615444219989841352977588893131630696803681485003374663160153631942842737496611030962176/10293659052555732953647192450196681032488550896667989833038547055740407837803892449944896700685520062382768467657788604376842285353059204038564714696127865841",
+                    "b ipow -4: 81/83521"
+                    ],
+                    actual = [];
+                
+                emitter.on("done", function () {
+                    var result;
+                
+                    result = Test.same(actual, expected);
+                    if (result === true ) {
+                       tester.emit("passed", key);
+                    } else {
+                        tester.emit("failed", {key:key, result:result, actual: actual, expected: expected});
+                    }    
+                });
+            
+                var instance = new Num(4, "rat");
+                actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+                var samples = [ 
+                    [new Num("-23 4/5", "rat"), Num.rat("2 1/4")],
+                    [Num.rat("-34233112312312 423452345234523/52323412412341234123412424"), new Num("5 2/3", "rat")]
+                ];
+                
+                var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];
+                var comps = ['mgt', 'mgte', 'mlt', 'mlte', 'meq', 'gt', 'gte', 'lt', 'lte', 'eq'];
+                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
+                var others = [['ipow', Num.int(5)], ['ipow', -4]];
+            
+                samples.forEach(function (bin) {
+                    var a = bin[0], 
+                        b = bin[1];
+                
+                    actual.push("a: " + a.str() + ", b: " + b.str());
+                    ops.forEach(function(op) {
+                        //console.log(op);
+                        actual.push(op+": " + a[op](b).str());
+                    });
+                
+                    comps.forEach(function(comp) {
+                        //console.log(comp);
                         actual.push(comp+": " + a[comp](b));
                     });
                 

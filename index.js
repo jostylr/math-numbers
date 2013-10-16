@@ -832,10 +832,10 @@
             },
         inv : function () {
                 this.imp();
-                if (this.n.eq(zero)) {
+                if (this.n().eq(zero)) {
                     return rat({w:int(NaN), n:int(NaN), d: int(NaN)});
                 }
-                return rat({w:zero, n: this.d, d: this.n});
+                return rat({w:zero, n: this.d(), d: this.n()});
             },
         abs : function () {
                 var clone = rat(this.val);
@@ -989,7 +989,7 @@
             },
         frac : function () {
                 this.mix();
-                return rat({neg:this.neg, whole:zero, n:this.n, d:this.d});
+                return rat({neg:this.neg, w:zero, n:this.n(), d:this.d()});
             },
         make: rat
     });

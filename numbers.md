@@ -1117,10 +1117,10 @@ Get it to be improper and then flip and simplify. Check for non-zero.
 
     function () {
         this.imp();
-        if (this.n.eq(zero)) {
+        if (this.n().eq(zero)) {
             return rat({w:int(NaN), n:int(NaN), d: int(NaN)});
         }
-        return rat({w:zero, n: this.d, d: this.n});
+        return rat({w:zero, n: this.d(), d: this.n()});
     }
 
 ### rat Abs
@@ -1284,7 +1284,7 @@ Returns the fraction part of the rational number. This is after applying mix.
 
     function () {
         this.mix();
-        return rat({neg:this.neg, whole:zero, n:this.n, d:this.d});
+        return rat({neg:this.neg, w:zero, n:this.n(), d:this.d()});
     }
 
 ### rat Round

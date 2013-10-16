@@ -155,7 +155,137 @@ This will test the basic math functions for our float system. This is a number s
 
     others.push(["shift", 2], ["sign"]);
     ops.push("quo", "rem", "gcd", "lcm");
-    //ops = ops.filter(function (el) { return (el === "pow" ? false : true);});
+
+## Rationals
+
+[key]()
+
+    rationals
+
+[expected]()
+
+    zero: , one: 1/1
+    a: -23 4/5, b: 2 1/4
+    add: -21 11/20
+    sub: -25 21/20
+    mul: -46 151/20
+    div: -476/5
+    max: 2 1/4
+    mmax: -23 4/5
+    min: -23 4/5
+    mmin: 2 1/4
+    mgt: true
+    mgte: true
+    mlt: false
+    mlte: false
+    meq: false
+    gt: false
+    gte: false
+    lt: true
+    lte: true
+    eq: false
+    neg: 23 4/5; -2 1/4
+    round: 23; 2
+    floor: 23; 2
+    abs: 23 4/5; 2 1/4
+    ceil: 24; 3
+    inv: 5/4; 4/1
+    a ipow 5: -23863536599/3125
+    b ipow 5: 59049/1024
+    a ipow -4: 625/200533921
+    b ipow -4: 256/6561
+    a: -34233112312312 423452345234523/52323412412341234123412424, b: 5 2/3
+    add: -34233112312306 17441137471203863719705331/52323412412341234123412424
+    sub: -34233112312317 34882274941984275094176139/52323412412341234123412424
+    mul: -171165561561560 3582386507350194454576236887759206915467/156970237237023702370237272
+    div: -5373579761025291681864345803961042596433/104646824824682468246824848
+    max: 5 2/3
+    mmax: -34233112312312 423452345234523/52323412412341234123412424
+    min: -34233112312312 423452345234523/52323412412341234123412424
+    mmin: 5 2/3
+    mgt: true
+    mgte: true
+    mlt: false
+    mlte: false
+    meq: false
+    gt: false
+    gte: false
+    lt: true
+    lte: true
+    eq: false
+    neg: 34233112312312 423452345234523/52323412412341234123412424; -5 2/3
+    round: 34233112312312; 5
+    floor: 34233112312312; 5
+    abs: 34233112312312 423452345234523/52323412412341234123412424; 5 2/3
+    ceil: 34233112312313; 6
+    inv: 52323412412341234123412424/423452345234523; 3/2
+    a ipow 5: -18437932650569421958072195775638622422762334715253076404379845115803344165886352297412559421592802843253949368322255500091442294836506246138578122115238096509324962253114154262093337374065909715051/392175356152293629398425111643577904990732398694438465700698385764768525485327427419924590914679354539406274720318281365192474624
+    b ipow 5: 1419857/243
+    a ipow -4: 7495217495787667615444219989841352977588893131630696803681485003374663160153631942842737496611030962176/10293659052555732953647192450196681032488550896667989833038547055740407837803892449944896700685520062382768467657788604376842285353059204038564714696127865841
+    b ipow -4: 81/83521
+
+[code]()
+
+    var instance = new Num(4, "rat");
+    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var samples = [ 
+        [new Num("-23 4/5", "rat"), Num.rat("2 1/4")],
+        [Num.rat("-34233112312312 423452345234523/52323412412341234123412424"), new Num("5 2/3", "rat")]
+    ];
+
+    _"ops"
+
+
+
+## Scientific
+
+    var a = sci("-1.45E34");
+    var b = sci("4.532312342345234523E12");
+    var c = sci("1.2341234E-30");
+
+[key]
+
+    Scientific
+
+[expected]
+
+    1
+
+[code]
+
+    var instance = new Num(4, "rat");
+    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var samples = [ 
+        [new Num(10, "rat"), Num.rat(-12)],
+        [new Num("123456789123456789123456789", "int"), new Num("5", "int")]
+    ];
+
+    _"ops"
+
+## Complex
+
+
+[key]
+
+    Complex
+
+[expected]
+
+    1
+
+[code]
+
+    var a= com({re : int(5), im : int(10)});
+    var b = com({re:int(-8), im : int(-43)});
+
+    var instance = new Num(4, "rat");
+    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var samples = [ 
+        [new Num(10, "rat"), Num.rat(-12)],
+        [new Num("123456789123456789123456789", "int"), new Num("5", "int")]
+    ];
+
+    _"ops"
 
 ## Ops
 
@@ -182,6 +312,7 @@ This takes an array of samples and runs them through the arrays of opeartions, c
         });
 
         comps.forEach(function(comp) {
+            //console.log(comp);
             actual.push(comp+": " + a[comp](b));
         });
 
@@ -318,7 +449,8 @@ This is a simple test runner.
         
     var records = {
             "float tests" : _"float tests*test template",
-            "integers" : _"integers*test template"
+            "integers" : _"integers*test template",
+            "rationals": _"rationals*test template"
     };
 
     tester.on("passed", _":passing");
