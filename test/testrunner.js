@@ -58,8 +58,8 @@ var records = {
                     }    
                 });
             
-                var instance = new Num(4, "float");
-                actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+                var float = Num.float;
+                actual.push("zero: " + float.zero.str() +  ", one: " + float.unit.str());
                 var samples = [ 
                     [new Num(2.3, "float"), Num.float(-3)]
                 ];
@@ -219,8 +219,8 @@ var records = {
                     }    
                 });
             
-                var instance = new Num(4, "int");
-                actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+                var int = Num.int;
+                actual.push("zero: " + int.zero.str() +  ", one: " + int.unit.str());
                 var samples = [ 
                     [new Num(10, "int"), Num.int(-12)],
                     [new Num("123456789123456789123456789", "int"), new Num("5", "int")]
@@ -368,11 +368,99 @@ var records = {
                     }    
                 });
             
-                var instance = new Num(4, "rat");
-                actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+                var rat = Num.rat;
+                actual.push("zero: " + rat.zero.str() +  ", one: " + rat.unit.str());
                 var samples = [ 
                     [new Num("-23 4/5", "rat"), Num.rat("2 1/4")],
                     [Num.rat("-34233112312312 423452345234523/52323412412341234123412424"), new Num("5 2/3", "rat")]
+                ];
+                
+                var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];
+                var comps = ['mgt', 'mgte', 'mlt', 'mlte', 'meq', 'gt', 'gte', 'lt', 'lte', 'eq'];
+                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
+                var others = [['ipow', Num.int(5)], ['ipow', -4]];
+            
+                samples.forEach(function (bin) {
+                    var a = bin[0], 
+                        b = bin[1];
+                
+                    actual.push("a: " + a.str() + ", b: " + b.str());
+                    ops.forEach(function(op) {
+                        //console.log(op);
+                        actual.push(op+": " + a[op](b).str());
+                    });
+                
+                    comps.forEach(function(comp) {
+                        //console.log(comp);
+                        actual.push(comp+": " + a[comp](b));
+                    });
+                
+                    unitary.forEach( function(un) {
+                        //console.log(un);
+                        actual.push(un+": " + a[un]().str() + "; " + b[un]().str());
+                    });
+                
+                    others.forEach( function (other) {
+                        var result, str = "", o1str = "";
+                
+                        if (typeof other[1] !== "undefined") {
+                            if (other[1] instanceof Num) {
+                                o1str = other[1].str();
+                            } else {
+                                o1str = other[1]+"";
+                            }
+                        }
+                
+                        result = a[other[0]](other[1]);
+                        str = "a " + other[0] + " " + o1str +": ";
+                        if (result instanceof Num) {
+                            actual.push(str + result.str());
+                        } else {
+                            actual.push(str + result);
+                        }
+                        str = "b " + other[0] + " " + o1str +": ";
+                        result = b[other[0]](other[1]);
+                        if (result instanceof Num) {
+                            actual.push(str+ result.str());
+                        } else {
+                            actual.push(str+ result);
+                        }
+                
+                    });
+                
+                });
+            
+                emitter.emit("done");
+            
+            },
+        "scientific" : function () {
+            
+                var emitter = new EventWhen();
+                var key = 'scientific';
+            
+                emitter.name = key;
+            
+                var expected = [
+                    "1"
+                    ],
+                    actual = [];
+                
+                emitter.on("done", function () {
+                    var result;
+                
+                    result = Test.same(actual, expected);
+                    if (result === true ) {
+                       tester.emit("passed", key);
+                    } else {
+                        tester.emit("failed", {key:key, result:result, actual: actual, expected: expected});
+                    }    
+                });
+            
+                var sci = Num.sci;
+                actual.push("zero: " + sci.zero.str() +  ", one: " + sci.unit.str());
+                var samples = [ 
+                    [new Num("-1.45E34", "sci"), Num.sci("4.532312342345234523E12")],
+                    [new Num("1.2341234E-30", "sci"), new Num("2", "sci")]
                 ];
                 
                 var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];

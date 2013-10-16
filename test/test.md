@@ -47,9 +47,8 @@ This will test the basic math functions for our float system. This is a number s
 
 [code]()
 
-    
-    var instance = new Num(4, "float");
-    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var float = Num.float;
+    actual.push("zero: " + float.zero.str() +  ", one: " + float.unit.str());
     var samples = [ 
         [new Num(2.3, "float"), Num.float(-3)]
     ];
@@ -144,8 +143,8 @@ This will test the basic math functions for our float system. This is a number s
 
 [code]()
 
-    var instance = new Num(4, "int");
-    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var int = Num.int;
+    actual.push("zero: " + int.zero.str() +  ", one: " + int.unit.str());
     var samples = [ 
         [new Num(10, "int"), Num.int(-12)],
         [new Num("123456789123456789123456789", "int"), new Num("5", "int")]
@@ -226,8 +225,8 @@ This will test the basic math functions for our float system. This is a number s
 
 [code]()
 
-    var instance = new Num(4, "rat");
-    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var rat = Num.rat;
+    actual.push("zero: " + rat.zero.str() +  ", one: " + rat.unit.str());
     var samples = [ 
         [new Num("-23 4/5", "rat"), Num.rat("2 1/4")],
         [Num.rat("-34233112312312 423452345234523/52323412412341234123412424"), new Num("5 2/3", "rat")]
@@ -239,25 +238,80 @@ This will test the basic math functions for our float system. This is a number s
 
 ## Scientific
 
-    var a = sci("-1.45E34");
-    var b = sci("4.532312342345234523E12");
-    var c = sci("1.2341234E-30");
 
-[key]
+[key]()
 
-    Scientific
+    scientific
 
-[expected]
+[expected]()
 
-    1
+    zero: 0.E-Infinity:oo, one: 1
+    a: -1.45E34, b: 4.532312342345234523E12
+    add: -1.45E34
+    sub: -1.45E34
+    mul: -6.57E46
+    div: -3.20E22
+    max: 4.532312342345234523E12
+    mmax: -1.45E34
+    min: -1.45E34
+    mmin: 4.532312342345234523E12
+    mgt: true
+    mgte: true
+    mlt: false
+    mlte: false
+    meq: false
+    gt: false
+    gte: false
+    lt: true
+    lte: true
+    eq: false
+    neg: 1.45E34; -4.532312342345234523E12
+    round: -1.41E34; 4.532312342345234528E12
+    floor: -1.46E34; 4.532312342345234523E12
+    abs: 1.45E34; 4.532312342345234523E12
+    ceil: -1.45E34; 4.532312342345234524E12
+    inv: -6.90E-35; 2.206379270592265308E-13
+    a ipow 5: -6.41E170
+    b ipow 5: 1.912489930407291642E60
+    a ipow -4: 2.26E-137
+    b ipow -4: 2.369848996475508153E-49
+    a: 1.2341234E-30, b: 2
+    add: 1.2E0
+    sub: 1.2E0
+    mul: 2.5E-30
+    div: 6.2E-30
+    max: 1.2341234E-30
+    mmax: 1.2341234E-30
+    min: 2
+    mmin: 2
+    mgt: true
+    mgte: true
+    mlt: false
+    mlte: false
+    meq: false
+    gt: true
+    gte: true
+    lt: false
+    lte: false
+    eq: false
+    neg: -1.2341234E-30; -2
+    round: 1.2341239E0:37; 7
+    floor: 1.2341234E-30; 2
+    abs: 1.2341234E-30; 2
+    ceil: 1.2341235E-30; 3
+    inv: 8.1029174E29; 5.0E-1
+    a ipow 5: 2.8628127E-150
+    b ipow 5: 3.2E0
+    a ipow -4: 4.3108772E119
+    b ipow -4: 6.3E-1
 
-[code]
+[code]()
 
-    var instance = new Num(4, "rat");
-    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var sci = Num.sci;
+    actual.push("zero: " + sci.zero.str() +  ", one: " + sci.unit.str());
     var samples = [ 
-        [new Num(10, "rat"), Num.rat(-12)],
-        [new Num("123456789123456789123456789", "int"), new Num("5", "int")]
+        [new Num("-1.45E34", "sci"), Num.sci("4.532312342345234523E12")],
+        [new Num("1.2341234E-30", "sci"), new Num("2", "sci")]
     ];
 
     _"ops"
@@ -265,15 +319,15 @@ This will test the basic math functions for our float system. This is a number s
 ## Complex
 
 
-[key]
+[key]()
 
     Complex
 
-[expected]
+[expected]()
 
     1
 
-[code]
+[code]()
 
     var a= com({re : int(5), im : int(10)});
     var b = com({re:int(-8), im : int(-43)});
@@ -450,7 +504,8 @@ This is a simple test runner.
     var records = {
             "float tests" : _"float tests*test template",
             "integers" : _"integers*test template",
-            "rationals": _"rationals*test template"
+            "rationals": _"rationals*test template",
+            "scientific" : _"scientific*test template"
     };
 
     tester.on("passed", _":passing");

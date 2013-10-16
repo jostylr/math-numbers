@@ -257,8 +257,10 @@
             }
     });
     
-    Num.makeCon("zero", float(0));
-    Num.makeCon("unit", float(1));
+    float.zero = float(0);
+    float.unit = float(1);
+    Num.makeCon("zero", float.zero);
+    Num.makeCon("unit", float.unit);
     } ( Num ) );
 
     (function ( Num ) {var lim = 1e7;  //this controls the size
@@ -1137,8 +1139,10 @@
     });
     
     half = rat.half = rat({neg:false, w: zero, n: unit, d: int(2)});
-    Num.makeCon("zero", rat({neg:false, w: zero, n: zero, d: unit}));
-    Num.makeCon("unit", rat({neg:false, w: zero, n: unit, d: unit}));    
+    rat.zero = rat({neg:false, w: zero, n: zero, d: unit});
+    rat.unit = rat({neg:false, w: zero, n: unit, d: unit});
+    Num.makeCon("zero", rat.zero);
+    Num.makeCon("unit", rat.unit);    
     Num.makeCon("half", half);
     } ( Num ) );
 
@@ -1198,6 +1202,16 @@
             }
         };
     var divsci = function (num, den, pre) {
+            if (num.eq(zero)) {
+                return sci.zero;
+            }
+            if (den.eq(zero)) {
+                return sci({i : Num.int(Infinity), 
+                    E: 0,
+                    p : pre,
+                    neg : false
+                });
+            }
             var nstr = num.str();
             var dstr = den.str();
             var minpre = nstr.length - dstr.length;
@@ -1418,6 +1432,9 @@
                 return this.val.i;
             },
         E : function () {
+                if (! this.val.E) {
+                    return 0;
+                }
                 return this.val.E;
             },
         iE : function () {
@@ -1596,7 +1613,7 @@
     });
     
     sci.zero = sci({i:int(0), neg: false, p:Infinity, E: 0});
-    sci.unit = sci({i:int(0), neg: false, p:Infinity, E: 0});
+    sci.unit = sci({i:int(1), neg: false, p:Infinity, E: 0});
     Num.makeCon("zero", sci.zero);    
     Num.makeCon("unit", sci.unit);
     } ( Num ) );

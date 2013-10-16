@@ -340,8 +340,10 @@ Here we implement the basic interface using the built-in operators.
         mmin : _"minmax | substitute(INQ, mlte)"
     });
 
-    Num.makeCon("zero", float(0));
-    Num.makeCon("unit", float(1));
+    float.zero = float(0);
+    float.unit = float(1);
+    Num.makeCon("zero", float.zero);
+    Num.makeCon("unit", float.unit);
 
 
 
@@ -1023,9 +1025,12 @@ This models rational numbers as a triple pair of integers: whole, numerator, den
     });
 
     half = rat.half = rat({neg:false, w: zero, n: unit, d: int(2)});
-    Num.makeCon("zero", rat({neg:false, w: zero, n: zero, d: unit}));
-    Num.makeCon("unit", rat({neg:false, w: zero, n: unit, d: unit}));    
+    rat.zero = rat({neg:false, w: zero, n: zero, d: unit});
+    rat.unit = rat({neg:false, w: zero, n: unit, d: unit});
+    Num.makeCon("zero", rat.zero);
+    Num.makeCon("unit", rat.unit);    
     Num.makeCon("half", half);
+
 
 
 ### rat Parse
@@ -1494,7 +1499,7 @@ Exact numbers can have a precision of Infinity
     });
 
     sci.zero = sci({i:int(0), neg: false, p:Infinity, E: 0});
-    sci.unit = sci({i:int(0), neg: false, p:Infinity, E: 0});
+    sci.unit = sci({i:int(1), neg: false, p:Infinity, E: 0});
     Num.makeCon("zero", sci.zero);    
     Num.makeCon("unit", sci.unit);
 
@@ -1790,6 +1795,9 @@ This returns the integer value, that is if it is 1.34E4, then it returns 134.
 ### sci power of ten
 
     function () {
+        if (! this.val.E) {
+            return 0;
+        }
         return this.val.E;
     }
     
@@ -1978,6 +1986,16 @@ We start with the lengths of the numerator and denominator. The first quantity t
 Once we have computed the padding, we shift the numerator and do the division, getting the quotient. The length of the quotient minus the padding minus 1 is the E for the scientific number. If the length is greater than the precision, we truncate. 
 
     function (num, den, pre) {
+        if (num.eq(zero)) {
+            return sci.zero;
+        }
+        if (den.eq(zero)) {
+            return sci({i : Num.int(Infinity), 
+                E: 0,
+                p : pre,
+                neg : false
+            });
+        }
         var nstr = num.str();
         var dstr = den.str();
         var minpre = nstr.length - dstr.length;
