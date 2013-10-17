@@ -325,21 +325,36 @@ This will test the basic math functions for our float system. This is a number s
 
 [expected]()
 
-    1
+    zero: 0, one: 1
+    a: 5+10i, b: -8-43i
+    add: -3-33i
+    sub: 13+53i
+    mul: 390-295i
+    div: -470/1913+135/1913i
+    neg: -5-10i; 8+43i
+    inv: 5/125-10/125i; -8/1913+43/1913i
+    abssq: 125; 1913
+    re: 5; -8
+    im: 10; -43
+    a ipow 5: 128125-118750i
+    b ipow 5: -127317928-97004603i
+    a ipow -4: -4375/244140625+15000/244140625i
+    b ipow -4: 2712881/13392445265761+2456160/13392445265761i
 
 [code]()
 
-    var a= com({re : int(5), im : int(10)});
-    var b = com({re:int(-8), im : int(-43)});
-
-    var instance = new Num(4, "rat");
-    actual.push("zero: " + instance.zero().str() +  ", one: " + instance.unit().str());
+    var com = Num.com, int = Num.int;
+    actual.push("zero: " + com.zero.str() +  ", one: " + com.unit.str());
     var samples = [ 
-        [new Num(10, "rat"), Num.rat(-12)],
-        [new Num("123456789123456789123456789", "int"), new Num("5", "int")]
+        [com({re : int(5), im : int(10)}), com({re:int(-8), im : int(-43)})]
     ];
 
     _"ops"
+
+    ops = ['add', 'sub', 'mul', 'div'];
+    comps = [];
+    unitary = ['neg', 'inv', 'abssq', 're', 'im'];
+
 
 ## Ops
 
@@ -376,25 +391,33 @@ This takes an array of samples and runs them through the arrays of opeartions, c
         });
 
         others.forEach( function (other) {
-            var result, str = "", o1str = "";
+            var result, 
+                str = "", 
+                argstr = [],
+                args = other.slice(1),
+                op = other[0];
 
-            if (typeof other[1] !== "undefined") {
-                if (other[1] instanceof Num) {
-                    o1str = other[1].str();
+            //console.log(op);
+
+            args.forEach(function (el) {
+                if (el instanceof Num) {
+                    argstr.push(el.str());
                 } else {
-                    o1str = other[1]+"";
+                    argstr.push(el+"");
                 }
-            }
+            });
 
-            result = a[other[0]](other[1]);
-            str = "a " + other[0] + " " + o1str +": ";
+            argstr = argstr.join(" , ");
+
+            result = a[op].apply(a, args);
+            str = "a " + op + " " + argstr +": ";
             if (result instanceof Num) {
                 actual.push(str + result.str());
             } else {
                 actual.push(str + result);
             }
-            str = "b " + other[0] + " " + o1str +": ";
-            result = b[other[0]](other[1]);
+            str = "b " + op + " " + argstr +": ";
+            result = b[op].apply(b, args);
             if (result instanceof Num) {
                 actual.push(str+ result.str());
             } else {
@@ -505,7 +528,8 @@ This is a simple test runner.
             "float tests" : _"float tests*test template",
             "integers" : _"integers*test template",
             "rationals": _"rationals*test template",
-            "scientific" : _"scientific*test template"
+            "scientific" : _"scientific*test template",
+            "complex" : _"complex*test template"
     };
 
     tester.on("passed", _":passing");

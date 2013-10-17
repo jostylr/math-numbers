@@ -1648,16 +1648,13 @@
                 };
                 return com(clone);
             },
-        abs : function () {
-                return this.abssq().sqrt();
-            },
         abssq : function () {
                 var re = this.val.re;
                 var im = this.val.im;
                 return re.mul(re).add(im.mul(im));
             },
         str : function () {
-                var re, im, plus;
+                var re, im, plus, ret;
                 re = this.val.re.str();
                 if (! this.val.im.sign()) {
                     plus = "+";
@@ -1681,7 +1678,8 @@
                 if (im === "1i") {
                     im = '-i';
                 }
-                return re + plus + im;
+                ret = re + plus + im;
+                return (ret ? ret : "0");
             },
         ipow : function (power) {
                 var x = this;
@@ -1735,34 +1733,10 @@
                 return this;
             },
         apply_re : function (str) {
-                return this.val.re[str].apply(this, Array.prototype.slice.apply(arguments, 1));
+                return this.val.re[str].apply(this, Array.prototype.slice.call(arguments, 1));
             },
         apply_im : function (str) {
-                return this.val.im[str].apply(this, Array.prototype.slice.apply(arguments, 1));
-            },
-        theta : function () {
-                var v = this.val;
-                if (v.re.eq(zero)) {
-                    if (v.im.gt(zero)) {
-                        return halfpi;
-                    } else 
-                        return halfpi.mul(pi.make(1.5));
-                    }
-                var at = v.im.div(v.re).arctan();        
-                if (v.re.sign()) { //2 or 3
-                    if (v.im.sign()) { //q3
-                        return pi.add(at);
-                    } else { //q2
-                        return pi.add(at);
-                    }
-                } else { // 1, 4
-                    if (v.im.sign() ) { // q 4
-                        return tau.add(at);
-                    } else { //q 1
-                        return at;
-                    }
-                }
-            
+                return this.val.im[str].apply(this, Array.prototype.slice.call(arguments, 1));
             },
         make: com
     });

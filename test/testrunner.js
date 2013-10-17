@@ -90,25 +90,33 @@ var records = {
                     });
                 
                     others.forEach( function (other) {
-                        var result, str = "", o1str = "";
+                        var result, 
+                            str = "", 
+                            argstr = [],
+                            args = other.slice(1),
+                            op = other[0];
                 
-                        if (typeof other[1] !== "undefined") {
-                            if (other[1] instanceof Num) {
-                                o1str = other[1].str();
+                        //console.log(op);
+                
+                        args.forEach(function (el) {
+                            if (el instanceof Num) {
+                                argstr.push(el.str());
                             } else {
-                                o1str = other[1]+"";
+                                argstr.push(el+"");
                             }
-                        }
+                        });
                 
-                        result = a[other[0]](other[1]);
-                        str = "a " + other[0] + " " + o1str +": ";
+                        argstr = argstr.join(" , ");
+                
+                        result = a[op].apply(a, args);
+                        str = "a " + op + " " + argstr +": ";
                         if (result instanceof Num) {
                             actual.push(str + result.str());
                         } else {
                             actual.push(str + result);
                         }
-                        str = "b " + other[0] + " " + o1str +": ";
-                        result = b[other[0]](other[1]);
+                        str = "b " + op + " " + argstr +": ";
+                        result = b[op].apply(b, args);
                         if (result instanceof Num) {
                             actual.push(str+ result.str());
                         } else {
@@ -255,25 +263,33 @@ var records = {
                     });
                 
                     others.forEach( function (other) {
-                        var result, str = "", o1str = "";
+                        var result, 
+                            str = "", 
+                            argstr = [],
+                            args = other.slice(1),
+                            op = other[0];
                 
-                        if (typeof other[1] !== "undefined") {
-                            if (other[1] instanceof Num) {
-                                o1str = other[1].str();
+                        //console.log(op);
+                
+                        args.forEach(function (el) {
+                            if (el instanceof Num) {
+                                argstr.push(el.str());
                             } else {
-                                o1str = other[1]+"";
+                                argstr.push(el+"");
                             }
-                        }
+                        });
                 
-                        result = a[other[0]](other[1]);
-                        str = "a " + other[0] + " " + o1str +": ";
+                        argstr = argstr.join(" , ");
+                
+                        result = a[op].apply(a, args);
+                        str = "a " + op + " " + argstr +": ";
                         if (result instanceof Num) {
                             actual.push(str + result.str());
                         } else {
                             actual.push(str + result);
                         }
-                        str = "b " + other[0] + " " + o1str +": ";
-                        result = b[other[0]](other[1]);
+                        str = "b " + op + " " + argstr +": ";
+                        result = b[op].apply(b, args);
                         if (result instanceof Num) {
                             actual.push(str+ result.str());
                         } else {
@@ -401,25 +417,33 @@ var records = {
                     });
                 
                     others.forEach( function (other) {
-                        var result, str = "", o1str = "";
+                        var result, 
+                            str = "", 
+                            argstr = [],
+                            args = other.slice(1),
+                            op = other[0];
                 
-                        if (typeof other[1] !== "undefined") {
-                            if (other[1] instanceof Num) {
-                                o1str = other[1].str();
+                        //console.log(op);
+                
+                        args.forEach(function (el) {
+                            if (el instanceof Num) {
+                                argstr.push(el.str());
                             } else {
-                                o1str = other[1]+"";
+                                argstr.push(el+"");
                             }
-                        }
+                        });
                 
-                        result = a[other[0]](other[1]);
-                        str = "a " + other[0] + " " + o1str +": ";
+                        argstr = argstr.join(" , ");
+                
+                        result = a[op].apply(a, args);
+                        str = "a " + op + " " + argstr +": ";
                         if (result instanceof Num) {
                             actual.push(str + result.str());
                         } else {
                             actual.push(str + result);
                         }
-                        str = "b " + other[0] + " " + o1str +": ";
-                        result = b[other[0]](other[1]);
+                        str = "b " + op + " " + argstr +": ";
+                        result = b[op].apply(b, args);
                         if (result instanceof Num) {
                             actual.push(str+ result.str());
                         } else {
@@ -441,7 +465,65 @@ var records = {
                 emitter.name = key;
             
                 var expected = [
-                    "1"
+                    "zero: 0.E-Infinity:oo, one: 1",
+                    "a: -1.45E34, b: 4.532312342345234523E12",
+                    "add: -1.45E34",
+                    "sub: -1.45E34",
+                    "mul: -6.57E46",
+                    "div: -3.20E22",
+                    "max: 4.532312342345234523E12",
+                    "mmax: -1.45E34",
+                    "min: -1.45E34",
+                    "mmin: 4.532312342345234523E12",
+                    "mgt: true",
+                    "mgte: true",
+                    "mlt: false",
+                    "mlte: false",
+                    "meq: false",
+                    "gt: false",
+                    "gte: false",
+                    "lt: true",
+                    "lte: true",
+                    "eq: false",
+                    "neg: 1.45E34; -4.532312342345234523E12",
+                    "round: -1.41E34; 4.532312342345234528E12",
+                    "floor: -1.46E34; 4.532312342345234523E12",
+                    "abs: 1.45E34; 4.532312342345234523E12",
+                    "ceil: -1.45E34; 4.532312342345234524E12",
+                    "inv: -6.90E-35; 2.206379270592265308E-13",
+                    "a ipow 5: -6.41E170",
+                    "b ipow 5: 1.912489930407291642E60",
+                    "a ipow -4: 2.26E-137",
+                    "b ipow -4: 2.369848996475508153E-49",
+                    "a: 1.2341234E-30, b: 2",
+                    "add: 1.2E0",
+                    "sub: 1.2E0",
+                    "mul: 2.5E-30",
+                    "div: 6.2E-30",
+                    "max: 1.2341234E-30",
+                    "mmax: 1.2341234E-30",
+                    "min: 2",
+                    "mmin: 2",
+                    "mgt: true",
+                    "mgte: true",
+                    "mlt: false",
+                    "mlte: false",
+                    "meq: false",
+                    "gt: true",
+                    "gte: true",
+                    "lt: false",
+                    "lte: false",
+                    "eq: false",
+                    "neg: -1.2341234E-30; -2",
+                    "round: 1.2341239E0:37; 7",
+                    "floor: 1.2341234E-30; 2",
+                    "abs: 1.2341234E-30; 2",
+                    "ceil: 1.2341235E-30; 3",
+                    "inv: 8.1029174E29; 5.0E-1",
+                    "a ipow 5: 2.8628127E-150",
+                    "b ipow 5: 3.2E0",
+                    "a ipow -4: 4.3108772E119",
+                    "b ipow -4: 6.3E-1"
                     ],
                     actual = [];
                 
@@ -489,25 +571,146 @@ var records = {
                     });
                 
                     others.forEach( function (other) {
-                        var result, str = "", o1str = "";
+                        var result, 
+                            str = "", 
+                            argstr = [],
+                            args = other.slice(1),
+                            op = other[0];
                 
-                        if (typeof other[1] !== "undefined") {
-                            if (other[1] instanceof Num) {
-                                o1str = other[1].str();
+                        //console.log(op);
+                
+                        args.forEach(function (el) {
+                            if (el instanceof Num) {
+                                argstr.push(el.str());
                             } else {
-                                o1str = other[1]+"";
+                                argstr.push(el+"");
                             }
-                        }
+                        });
                 
-                        result = a[other[0]](other[1]);
-                        str = "a " + other[0] + " " + o1str +": ";
+                        argstr = argstr.join(" , ");
+                
+                        result = a[op].apply(a, args);
+                        str = "a " + op + " " + argstr +": ";
                         if (result instanceof Num) {
                             actual.push(str + result.str());
                         } else {
                             actual.push(str + result);
                         }
-                        str = "b " + other[0] + " " + o1str +": ";
-                        result = b[other[0]](other[1]);
+                        str = "b " + op + " " + argstr +": ";
+                        result = b[op].apply(b, args);
+                        if (result instanceof Num) {
+                            actual.push(str+ result.str());
+                        } else {
+                            actual.push(str+ result);
+                        }
+                
+                    });
+                
+                });
+            
+                emitter.emit("done");
+            
+            },
+        "complex" : function () {
+            
+                var emitter = new EventWhen();
+                var key = 'Complex';
+            
+                emitter.name = key;
+            
+                var expected = [
+                    "zero: 0, one: 1",
+                    "a: 5+10i, b: -8-43i",
+                    "add: -3-33i",
+                    "sub: 13+53i",
+                    "mul: 390-295i",
+                    "div: -470/1913+135/1913i",
+                    "neg: -5-10i; 8+43i",
+                    "inv: 5/125-10/125i; -8/1913+43/1913i",
+                    "abssq: 125; 1913",
+                    "re: 5; -8",
+                    "im: 10; -43",
+                    "a ipow 5: 128125-118750i",
+                    "b ipow 5: -127317928-97004603i",
+                    "a ipow -4: -4375/244140625+15000/244140625i",
+                    "b ipow -4: 2712881/13392445265761+2456160/13392445265761i"
+                    ],
+                    actual = [];
+                
+                emitter.on("done", function () {
+                    var result;
+                
+                    result = Test.same(actual, expected);
+                    if (result === true ) {
+                       tester.emit("passed", key);
+                    } else {
+                        tester.emit("failed", {key:key, result:result, actual: actual, expected: expected});
+                    }    
+                });
+            
+                var com = Num.com, int = Num.int;
+                actual.push("zero: " + com.zero.str() +  ", one: " + com.unit.str());
+                var samples = [ 
+                    [com({re : int(5), im : int(10)}), com({re:int(-8), im : int(-43)})]
+                ];
+                
+                var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];
+                var comps = ['mgt', 'mgte', 'mlt', 'mlte', 'meq', 'gt', 'gte', 'lt', 'lte', 'eq'];
+                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
+                var others = [['ipow', Num.int(5)], ['ipow', -4]];
+                
+                ops = ['add', 'sub', 'mul', 'div'];
+                comps = [];
+                unitary = ['neg', 'inv', 'abssq', 're', 'im'];
+            
+                samples.forEach(function (bin) {
+                    var a = bin[0], 
+                        b = bin[1];
+                
+                    actual.push("a: " + a.str() + ", b: " + b.str());
+                    ops.forEach(function(op) {
+                        //console.log(op);
+                        actual.push(op+": " + a[op](b).str());
+                    });
+                
+                    comps.forEach(function(comp) {
+                        //console.log(comp);
+                        actual.push(comp+": " + a[comp](b));
+                    });
+                
+                    unitary.forEach( function(un) {
+                        //console.log(un);
+                        actual.push(un+": " + a[un]().str() + "; " + b[un]().str());
+                    });
+                
+                    others.forEach( function (other) {
+                        var result, 
+                            str = "", 
+                            argstr = [],
+                            args = other.slice(1),
+                            op = other[0];
+                
+                        //console.log(op);
+                
+                        args.forEach(function (el) {
+                            if (el instanceof Num) {
+                                argstr.push(el.str());
+                            } else {
+                                argstr.push(el+"");
+                            }
+                        });
+                
+                        argstr = argstr.join(" , ");
+                
+                        result = a[op].apply(a, args);
+                        str = "a " + op + " " + argstr +": ";
+                        if (result instanceof Num) {
+                            actual.push(str + result.str());
+                        } else {
+                            actual.push(str + result);
+                        }
+                        str = "b " + op + " " + argstr +": ";
+                        result = b[op].apply(b, args);
                         if (result instanceof Num) {
                             actual.push(str+ result.str());
                         } else {

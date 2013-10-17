@@ -2126,7 +2126,6 @@ This should complexify the already existing types.
         parse : _"com parse",
         neg : _"com negate",
         inv : _"com reciprocal",
-        abs : _"com abs",
         abssq : _"com abssq",
         str : _"com str",
         ipow : _"ipow",
@@ -2135,7 +2134,6 @@ This should complexify the already existing types.
         apply : _"com apply to parts",
         apply_re : _"com apply to real",
         apply_im : _"com apply to imag",
-        theta : _"com polar angle",
         make: com
     });
     Num.define("com,com", {
@@ -2199,6 +2197,8 @@ We implement  1/(a+bi) =  (a-bi)/(a^2 + b^2)
     
 ### com abs
 
+This requires the square root function. Not available at this level. So this is not present
+
     function () {
         return this.abssq().sqrt();
     }
@@ -2208,7 +2208,7 @@ We implement  1/(a+bi) =  (a-bi)/(a^2 + b^2)
 Fairly simple; just use existing prints. But need to deal with 0 and 1 coeficients as well as negatives. 
 
     function () {
-        var re, im, plus;
+        var re, im, plus, ret;
         re = this.val.re.str();
         if (! this.val.im.sign()) {
             plus = "+";
@@ -2232,7 +2232,8 @@ Fairly simple; just use existing prints. But need to deal with 0 and 1 coeficien
         if (im === "1i") {
             im = '-i';
         }
-        return re + plus + im;
+        ret = re + plus + im;
+        return (ret ? ret : "0");
     }
     
     
@@ -2261,19 +2262,22 @@ The applies are mainly for manipulating presentation of rational parts.
 ### com apply to real
 
     function (str) {
-        return this.val.re[str].apply(this, Array.prototype.slice.apply(arguments, 1));
+        return this.val.re[str].apply(this, Array.prototype.slice.call(arguments, 1));
     }
 
 ### com apply to imag
 
     function (str) {
-        return this.val.im[str].apply(this, Array.prototype.slice.apply(arguments, 1));
+        return this.val.im[str].apply(this, Array.prototype.slice.call(arguments, 1));
     }
 
 
 ### com polar angle
 
-To comput the polar angle, we need to compute the quadrant and use tan(theta) = y/x. That is, arctan(i/r).
+To compute the polar angle, we need to compute the quadrant and use tan(theta) = y/x. That is, arctan(i/r).
+
+Since we don't have arctan at this level of the library, this is not actually present. To be moved to. 
+
 
     function () {
         var v = this.val;
