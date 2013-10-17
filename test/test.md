@@ -3,6 +3,13 @@
 This is a set of tests for this library to pass. 
 
 
+## TODO
+
+Comparators:  ? :  a ? b, b ? a, a ? a, b ? b,  a ? -a, b ? -b
+
+Fix sci division
+
+
 
 ## Float tests
 

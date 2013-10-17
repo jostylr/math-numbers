@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.0.1| jostylr")
+# [math-numbers](# "version: 0.0.2| jostylr")
 
 This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
 
@@ -2479,6 +2479,14 @@ Documentation and tests.
 Need a strategy for errors, particularly bad inputs. 
 
 Implement subclassing for types so that constant is not a function! Need to do this soon!
+
+Fix sci division. 
+
+Apply methods -- return new objects
+
+Rationals and the mixed/improrper stuff. Probably want to keep the original form somewhere. Do we have the ability to manipulate the form directly? 
+
+
 
 ## NPM package
 
