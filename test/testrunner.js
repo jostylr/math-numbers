@@ -16,24 +16,25 @@ var records = {
                 var expected = [
                     "zero: 0, one: 1",
                     "a: 2.3, b: -3",
-                    "add: -0.7000000000000002",
-                    "sub: 5.3",
-                    "mul: -6.8999999999999995",
-                    "div: -0.7666666666666666",
-                    "max: 2.3",
-                    "mmax: -3",
-                    "min: -3",
-                    "mmin: 2.3",
-                    "mgt: false",
-                    "mgte: false",
-                    "mlt: true",
-                    "mlte: true",
-                    "meq: false",
-                    "gt: true",
-                    "gte: true",
-                    "lt: false",
-                    "lte: false",
-                    "eq: false",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: -0.7000000000000002; -0.7000000000000002; 4.6; -6",
+                    "sub: 5.3; -5.3; 0; 0",
+                    "mul: -6.8999999999999995; -6.8999999999999995; 5.289999999999999; 9",
+                    "div: -0.7666666666666666; -1.3043478260869565; 1; 1",
+                    "max: 2.3; 2.3; 2.3; -3",
+                    "mmax: -3; -3; 2.3; -3",
+                    "min: -3; -3; 2.3; -3",
+                    "mmin: 2.3; 2.3; 2.3; -3",
+                    "mgt: false; true; false; false",
+                    "mgte: false; true; true; true",
+                    "mlt: true; false; false; false",
+                    "mlte: true; false; true; true",
+                    "meq: false; false; true; true",
+                    "gt: true; false; false; false",
+                    "gte: true; false; true; true",
+                    "lt: false; true; false; false",
+                    "lte: false; true; true; true",
+                    "eq: false; false; true; true",
                     "neg: -2.3; 3",
                     "round: 2; -3",
                     "floor: 2; -3",
@@ -74,14 +75,26 @@ var records = {
                         b = bin[1];
                 
                     actual.push("a: " + a.str() + ", b: " + b.str());
+                
+                    actual.push("?: a ? b; b ? a, a ? a, b ? a");        
                     ops.forEach(function(op) {
                         //console.log(op);
-                        actual.push(op+": " + a[op](b).str());
+                        actual.push( op+": " +
+                            a[op](b).str() + "; " +
+                            b[op](a).str() + "; " +
+                            a[op](a).str() + "; " +
+                            b[op](b).str() 
+                        );
                     });
                 
                     comps.forEach(function(comp) {
                         //console.log(comp);
-                        actual.push(comp+": " + a[comp](b));
+                        actual.push(comp + ": " +
+                            a[comp](b) + "; " +
+                            b[comp](a) + "; " +
+                            a[comp](a) + "; " +
+                            b[comp](b) 
+                        );
                     });
                 
                     unitary.forEach( function(un) {
@@ -140,28 +153,29 @@ var records = {
                 var expected = [
                     "zero: 0, one: 1",
                     "a: 10, b: -12",
-                    "add: -2",
-                    "sub: 22",
-                    "mul: -120",
-                    "div: -10/12",
-                    "max: 10",
-                    "mmax: -12",
-                    "min: -12",
-                    "mmin: 10",
-                    "quo: 0",
-                    "rem: 10",
-                    "gcd: 2",
-                    "lcm: -60",
-                    "mgt: false",
-                    "mgte: false",
-                    "mlt: true",
-                    "mlte: true",
-                    "meq: false",
-                    "gt: true",
-                    "gte: true",
-                    "lt: false",
-                    "lte: false",
-                    "eq: false",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: -2; -2; 20; -24",
+                    "sub: 22; -22; 0; 0",
+                    "mul: -120; -120; 100; 144",
+                    "div: -10/12; -1 2/10; 1 ; 1 ",
+                    "max: 10; 10; 10; -12",
+                    "mmax: -12; -12; 10; -12",
+                    "min: -12; -12; 10; -12",
+                    "mmin: 10; 10; 10; -12",
+                    "quo: 0; 1; 1; 1",
+                    "rem: 10; 2; 0; 0",
+                    "gcd: 2; 2; 10; 12",
+                    "lcm: -60; 60; 10; -12",
+                    "mgt: false; true; false; false",
+                    "mgte: false; true; true; true",
+                    "mlt: true; false; false; false",
+                    "mlte: true; false; true; true",
+                    "meq: false; false; true; true",
+                    "gt: true; false; false; false",
+                    "gte: true; false; true; true",
+                    "lt: false; true; false; false",
+                    "lte: false; true; true; true",
+                    "eq: false; false; true; true",
                     "neg: -10; 12",
                     "round: 10; -12",
                     "floor: 10; -12",
@@ -177,28 +191,29 @@ var records = {
                     "a sign : ",
                     "b sign : -",
                     "a: 123456789123456789123456789, b: 5",
-                    "add: 123456789123456789123456794",
-                    "sub: 123456789123456789123456784",
-                    "mul: 617283945617283945617283945",
-                    "div: 24691357824691357824691357 4/5",
-                    "max: 123456789123456789123456789",
-                    "mmax: 123456789123456789123456789",
-                    "min: 5",
-                    "mmin: 5",
-                    "quo: 24691357824691357824691357",
-                    "rem: 4",
-                    "gcd: 1",
-                    "lcm: 617283945617283945617283945",
-                    "mgt: true",
-                    "mgte: true",
-                    "mlt: false",
-                    "mlte: false",
-                    "meq: false",
-                    "gt: true",
-                    "gte: true",
-                    "lt: false",
-                    "lte: false",
-                    "eq: false",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: 123456789123456789123456794; 123456789123456789123456794; 246913578246913578246913578; 10",
+                    "sub: 123456789123456789123456784; -123456789123456789123456784; 0; 0",
+                    "mul: 617283945617283945617283945; 617283945617283945617283945; 15241578780673678546105778281054720515622620750190521; 25",
+                    "div: 24691357824691357824691357 4/5; 5/123456789123456789123456789; 1 ; 1 ",
+                    "max: 123456789123456789123456789; 123456789123456789123456789; 123456789123456789123456789; 5",
+                    "mmax: 123456789123456789123456789; 123456789123456789123456789; 123456789123456789123456789; 5",
+                    "min: 5; 5; 123456789123456789123456789; 5",
+                    "mmin: 5; 5; 123456789123456789123456789; 5",
+                    "quo: 24691357824691357824691357; 0; 1; 1",
+                    "rem: 4; 5; 0; 0",
+                    "gcd: 1; 1; 123456789123456789123456789; 5",
+                    "lcm: 617283945617283945617283945; 617283945617283945617283945; 123456789123456789123456789; 5",
+                    "mgt: true; false; false; false",
+                    "mgte: true; false; true; true",
+                    "mlt: false; true; false; false",
+                    "mlte: false; true; true; true",
+                    "meq: false; false; true; true",
+                    "gt: true; false; false; false",
+                    "gte: true; false; true; true",
+                    "lt: false; true; false; false",
+                    "lte: false; true; true; true",
+                    "eq: false; false; true; true",
                     "neg: -123456789123456789123456789; -5",
                     "round: 123456789123456789123456789; 5",
                     "floor: 123456789123456789123456789; 5",
@@ -247,14 +262,26 @@ var records = {
                         b = bin[1];
                 
                     actual.push("a: " + a.str() + ", b: " + b.str());
+                
+                    actual.push("?: a ? b; b ? a, a ? a, b ? a");        
                     ops.forEach(function(op) {
                         //console.log(op);
-                        actual.push(op+": " + a[op](b).str());
+                        actual.push( op+": " +
+                            a[op](b).str() + "; " +
+                            b[op](a).str() + "; " +
+                            a[op](a).str() + "; " +
+                            b[op](b).str() 
+                        );
                     });
                 
                     comps.forEach(function(comp) {
                         //console.log(comp);
-                        actual.push(comp+": " + a[comp](b));
+                        actual.push(comp + ": " +
+                            a[comp](b) + "; " +
+                            b[comp](a) + "; " +
+                            a[comp](a) + "; " +
+                            b[comp](b) 
+                        );
                     });
                 
                     unitary.forEach( function(un) {
@@ -313,24 +340,25 @@ var records = {
                 var expected = [
                     "zero: 0, one: 1/1",
                     "a: -23 4/5, b: 2 1/4",
-                    "add: -21 11/20",
-                    "sub: -25 21/20",
-                    "mul: -46 151/20",
-                    "div: -476/5",
-                    "max: 2 1/4",
-                    "mmax: -23 4/5",
-                    "min: -23 4/5",
-                    "mmin: 2 1/4",
-                    "mgt: true",
-                    "mgte: true",
-                    "mlt: false",
-                    "mlte: false",
-                    "meq: false",
-                    "gt: false",
-                    "gte: false",
-                    "lt: true",
-                    "lte: true",
-                    "eq: false",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: -21 11/20; -11/20; -46 8/5; 4 2/4",
+                    "sub: -25 21/20; 25 21/20; 23 ; 2 ",
+                    "mul: -46 151/20; -46 151/20; 529 936/25; 4 17/16",
+                    "div: -476/5; -45/16; -595/20; -36/4",
+                    "max: 2 1/4; 2 1/4; -23 4/5; 2 1/4",
+                    "mmax: -23 4/5; -23 4/5; -23 4/5; 2 1/4",
+                    "min: -23 4/5; -23 4/5; -23 4/5; 2 1/4",
+                    "mmin: 2 1/4; 2 1/4; -23 4/5; 2 1/4",
+                    "mgt: true; false; false; false",
+                    "mgte: true; false; true; true",
+                    "mlt: false; true; false; false",
+                    "mlte: false; true; true; true",
+                    "meq: false; false; true; true",
+                    "gt: false; true; false; false",
+                    "gte: false; true; true; true",
+                    "lt: true; false; false; false",
+                    "lte: true; false; true; true",
+                    "eq: false; false; true; true",
                     "neg: 23 4/5; -2 1/4",
                     "round: 23; 2",
                     "floor: 23; 2",
@@ -342,24 +370,25 @@ var records = {
                     "a ipow -4: 625/200533921",
                     "b ipow -4: 256/6561",
                     "a: -34233112312312 423452345234523/52323412412341234123412424, b: 5 2/3",
-                    "add: -34233112312306 17441137471203863719705331/52323412412341234123412424",
-                    "sub: -34233112312317 34882274941984275094176139/52323412412341234123412424",
-                    "mul: -171165561561560 3582386507350194454576236887759206915467/156970237237023702370237272",
-                    "div: -5373579761025291681864345803961042596433/104646824824682468246824848",
-                    "max: 5 2/3",
-                    "mmax: -34233112312312 423452345234523/52323412412341234123412424",
-                    "min: -34233112312312 423452345234523/52323412412341234123412424",
-                    "mmin: 5 2/3",
-                    "mgt: true",
-                    "mgte: true",
-                    "mlt: false",
-                    "mlte: false",
-                    "meq: false",
-                    "gt: false",
-                    "gte: false",
-                    "lt: true",
-                    "lte: true",
-                    "eq: false",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: -34233112312306 17441137471203863719705331/52323412412341234123412424; -34882274941137370403707093/52323412412341234123412424; -68466224624624 846904690469046/52323412412341234123412424; 10 4/3",
+                    "sub: -34233112312317 34882274941984275094176139/52323412412341234123412424; 34233112312317 34882274941984275094176139/52323412412341234123412424; 34233112312312 ; 5 ",
+                    "mul: -171165561561560 3582386507350194454576236887759206915467/156970237237023702370237272; -171165561561560 3582386507350194454576236887759206915467/156970237237023702370237272; 1171905978587367447426785344 1516969968073951608859590276477501813440211717614466777/2737739486471944725280827572160194421413058397555776; 25 64/9",
+                    "div: -5373579761025291681864345803961042596433/104646824824682468246824848; -889498011009800980098011208/1270357035703569; -93721343322245463137373824928825534965549245458936095571683427864/22156471696679046178932513595259331913752; -51/6",
+                    "max: 5 2/3; 5 2/3; -34233112312312 423452345234523/52323412412341234123412424; 5 2/3",
+                    "mmax: -34233112312312 423452345234523/52323412412341234123412424; -34233112312312 423452345234523/52323412412341234123412424; -34233112312312 423452345234523/52323412412341234123412424; 5 2/3",
+                    "min: -34233112312312 423452345234523/52323412412341234123412424; -34233112312312 423452345234523/52323412412341234123412424; -34233112312312 423452345234523/52323412412341234123412424; 5 2/3",
+                    "mmin: 5 2/3; 5 2/3; -34233112312312 423452345234523/52323412412341234123412424; 5 2/3",
+                    "mgt: true; false; false; false",
+                    "mgte: true; false; true; true",
+                    "mlt: false; true; false; false",
+                    "mlte: false; true; true; true",
+                    "meq: false; false; true; true",
+                    "gt: false; true; false; false",
+                    "gte: false; true; true; true",
+                    "lt: true; false; false; false",
+                    "lte: true; false; true; true",
+                    "eq: false; false; true; true",
                     "neg: 34233112312312 423452345234523/52323412412341234123412424; -5 2/3",
                     "round: 34233112312312; 5",
                     "floor: 34233112312312; 5",
@@ -401,14 +430,26 @@ var records = {
                         b = bin[1];
                 
                     actual.push("a: " + a.str() + ", b: " + b.str());
+                
+                    actual.push("?: a ? b; b ? a, a ? a, b ? a");        
                     ops.forEach(function(op) {
                         //console.log(op);
-                        actual.push(op+": " + a[op](b).str());
+                        actual.push( op+": " +
+                            a[op](b).str() + "; " +
+                            b[op](a).str() + "; " +
+                            a[op](a).str() + "; " +
+                            b[op](b).str() 
+                        );
                     });
                 
                     comps.forEach(function(comp) {
                         //console.log(comp);
-                        actual.push(comp+": " + a[comp](b));
+                        actual.push(comp + ": " +
+                            a[comp](b) + "; " +
+                            b[comp](a) + "; " +
+                            a[comp](a) + "; " +
+                            b[comp](b) 
+                        );
                     });
                 
                     unitary.forEach( function(un) {
@@ -467,24 +508,25 @@ var records = {
                 var expected = [
                     "zero: 0.E-Infinity:oo, one: 1",
                     "a: -1.45E34, b: 4.532312342345234523E12",
-                    "add: -1.45E34",
-                    "sub: -1.45E34",
-                    "mul: -6.57E46",
-                    "div: -3.20E22",
-                    "max: 4.532312342345234523E12",
-                    "mmax: -1.45E34",
-                    "min: -1.45E34",
-                    "mmin: 4.532312342345234523E12",
-                    "mgt: true",
-                    "mgte: true",
-                    "mlt: false",
-                    "mlte: false",
-                    "meq: false",
-                    "gt: false",
-                    "gte: false",
-                    "lt: true",
-                    "lte: true",
-                    "eq: false",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: -1.45E34; -1.45E34; -2.90E34; 9.064624684690469046E12",
+                    "sub: -1.45E34; 1.45E34; 0.E-Infinity:2; 0.E-Infinity:18",
+                    "mul: -6.57E46; -6.57E46; 2.10E68; 2.054185516857494634E24",
+                    "div: -3.20E21; -3.13E-22; 1.00E0; 1.000000000000000000E0",
+                    "max: 4.532312342345234523E12; 4.532312342345234523E12; -1.45E34; 4.532312342345234523E12",
+                    "mmax: -1.45E34; -1.45E34; -1.45E34; 4.532312342345234523E12",
+                    "min: -1.45E34; -1.45E34; -1.45E34; 4.532312342345234523E12",
+                    "mmin: 4.532312342345234523E12; 4.532312342345234523E12; -1.45E34; 4.532312342345234523E12",
+                    "mgt: true; false; false; false",
+                    "mgte: true; false; true; true",
+                    "mlt: false; true; false; false",
+                    "mlte: false; true; true; true",
+                    "meq: false; false; true; true",
+                    "gt: false; true; false; false",
+                    "gte: false; true; true; true",
+                    "lt: true; false; false; false",
+                    "lte: true; false; true; true",
+                    "eq: false; false; true; true",
                     "neg: 1.45E34; -4.532312342345234523E12",
                     "round: -1.41E34; 4.532312342345234528E12",
                     "floor: -1.46E34; 4.532312342345234523E12",
@@ -496,24 +538,25 @@ var records = {
                     "a ipow -4: 2.26E-137",
                     "b ipow -4: 2.369848996475508153E-49",
                     "a: 1.2341234E-30, b: 2",
-                    "add: 1.2E0",
-                    "sub: 1.2E0",
-                    "mul: 2.5E-30",
-                    "div: 6.2E-30",
-                    "max: 1.2341234E-30",
-                    "mmax: 1.2341234E-30",
-                    "min: 2",
-                    "mmin: 2",
-                    "mgt: true",
-                    "mgte: true",
-                    "mlt: false",
-                    "mlte: false",
-                    "meq: false",
-                    "gt: true",
-                    "gte: true",
-                    "lt: false",
-                    "lte: false",
-                    "eq: false",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: 1.2E0; 1.2E0; 2.4682468E-30; 4",
+                    "sub: 1.2E0; -1.2E0; 0.E-Infinity:7; 0.E-Infinity:1",
+                    "mul: 2.5E-30; 2.5E-30; 1.5230606E-60; 4",
+                    "div: 6.2E-31; 1.6E30; 1.0000000E0; 1.0E0",
+                    "max: 2; 2; 1.2341234E-30; 2",
+                    "mmax: 2; 2; 1.2341234E-30; 2",
+                    "min: 1.2341234E-30; 1.2341234E-30; 1.2341234E-30; 2",
+                    "mmin: 1.2341234E-30; 1.2341234E-30; 1.2341234E-30; 2",
+                    "mgt: false; true; false; false",
+                    "mgte: false; true; true; true",
+                    "mlt: true; false; false; false",
+                    "mlte: true; false; true; true",
+                    "meq: false; false; true; true",
+                    "gt: false; true; false; false",
+                    "gte: false; true; true; true",
+                    "lt: true; false; false; false",
+                    "lte: true; false; true; true",
+                    "eq: false; false; true; true",
                     "neg: -1.2341234E-30; -2",
                     "round: 1.2341239E0:37; 7",
                     "floor: 1.2341234E-30; 2",
@@ -555,14 +598,26 @@ var records = {
                         b = bin[1];
                 
                     actual.push("a: " + a.str() + ", b: " + b.str());
+                
+                    actual.push("?: a ? b; b ? a, a ? a, b ? a");        
                     ops.forEach(function(op) {
                         //console.log(op);
-                        actual.push(op+": " + a[op](b).str());
+                        actual.push( op+": " +
+                            a[op](b).str() + "; " +
+                            b[op](a).str() + "; " +
+                            a[op](a).str() + "; " +
+                            b[op](b).str() 
+                        );
                     });
                 
                     comps.forEach(function(comp) {
                         //console.log(comp);
-                        actual.push(comp+": " + a[comp](b));
+                        actual.push(comp + ": " +
+                            a[comp](b) + "; " +
+                            b[comp](a) + "; " +
+                            a[comp](a) + "; " +
+                            b[comp](b) 
+                        );
                     });
                 
                     unitary.forEach( function(un) {
@@ -621,10 +676,11 @@ var records = {
                 var expected = [
                     "zero: 0, one: 1",
                     "a: 5+10i, b: -8-43i",
-                    "add: -3-33i",
-                    "sub: 13+53i",
-                    "mul: 390-295i",
-                    "div: -470/1913+135/1913i",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: -3-33i; -3-33i; 10+20i; -16-86i",
+                    "sub: 13+53i; -13-53i; 0; 0",
+                    "mul: 390-295i; 390-295i; -75+100i; -1785+688i",
+                    "div: -470/1913+135/1913i; 3 15/125-295/125i; 125/125; 1785/1913-688/1913i",
                     "neg: -5-10i; 8+43i",
                     "inv: 5/125-10/125i; -8/1913+43/1913i",
                     "abssq: 125; 1913",
@@ -668,14 +724,26 @@ var records = {
                         b = bin[1];
                 
                     actual.push("a: " + a.str() + ", b: " + b.str());
+                
+                    actual.push("?: a ? b; b ? a, a ? a, b ? a");        
                     ops.forEach(function(op) {
                         //console.log(op);
-                        actual.push(op+": " + a[op](b).str());
+                        actual.push( op+": " +
+                            a[op](b).str() + "; " +
+                            b[op](a).str() + "; " +
+                            a[op](a).str() + "; " +
+                            b[op](b).str() 
+                        );
                     });
                 
                     comps.forEach(function(comp) {
                         //console.log(comp);
-                        actual.push(comp+": " + a[comp](b));
+                        actual.push(comp + ": " +
+                            a[comp](b) + "; " +
+                            b[comp](a) + "; " +
+                            a[comp](a) + "; " +
+                            b[comp](b) 
+                        );
                     });
                 
                     unitary.forEach( function(un) {

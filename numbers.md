@@ -558,6 +558,10 @@ The string parsing should reverse the .str method. So first it checks for a minu
             ret.pop();
         }
 
+        if ((ret.length === 1) && ret[0] === 0) {
+            ret.neg = false;
+        }
+
         return this;
     }
 
@@ -2093,8 +2097,8 @@ We implement this by slicing at the minimum pre+1 level (more precision is not w
             if (bi.length === 0) {
                 return 1;
             }
-            ain = ai.pop();
-            bin = bi.pop();
+            ain = ai.shift();
+            bin = bi.shift();
             if (ain > bin) {
                 return 1;
             } else if (ain < bin) {
