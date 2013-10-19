@@ -2130,7 +2130,6 @@ This should complexify the already existing types.
     var int = Num.int;
     var zero = int.zero;
     var unit = int.unit;
-    var pi, halfpi, tau; //!!!!  define these and arctan
 
 
     Num.define("com", {
@@ -2476,9 +2475,13 @@ Float is contagious. Its existence is as a means to speed computations up and a 
 
  ## Math-Numbers  [![Build Status](https://travis-ci.org/jostylr/math-numbers.png)](https://travis-ci.org/jostylr/math-numbers)
 
-This is a JavaScript library that implements exact integer arithmetic, arbitrary precision decimals, and other stuff. It is intended for educational purposes and is probably not performant. Yeah, the multiplication algorithm is the simple one. 
+This is a JavaScript library that implements exact integer arithmetic, arbitrary precision decimals, and other stuff. It is intended for educational purposes and most of the algorithms are fairly straightforward with little concern for performance.
 
 It should work equally well in node or browser though mostly it is for the browser. 
+
+## Install
+
+You can use node and npm:  `npm install math-numbers` ought to work if you have installed the latest node from nodejs.org
 
 
 

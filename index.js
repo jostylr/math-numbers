@@ -1640,7 +1640,6 @@
     var int = Num.int;
     var zero = int.zero;
     var unit = int.unit;
-    var pi, halfpi, tau; //!!!!  define these and arctan
     
     Num.define("com", {
         parse : function () {

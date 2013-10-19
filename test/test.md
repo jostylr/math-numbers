@@ -458,20 +458,20 @@ This takes an array of samples and runs them through the arrays of opeartions, c
 
     });
 
-## Async emitting
+## Done
 
-This is a snippet that should be placed at the end of each async function. 
+This checks whether the tests passed.
 
-    emitter.on("done", function () {
+    function (actual, expected, key) {
         var result;
 
-        result = Test.same(actual, expected);
+        result = same(actual, expected);
         if (result === true ) {
-           tester.emit("passed", key);
+            passing(key);
         } else {
-            tester.emit("failed", {key:key, result:result, actual: actual, expected: expected});
+            failing(key, result, actual, expected);
         }    
-    })
+    }
 
 
 ## Test Template
@@ -480,15 +480,10 @@ This is the test template
 
     function () {
 
-        var emitter = new EventWhen();
         var key = '_"*:key"';
-
-        emitter.name = key;
 
         var expected = _"*:expected| arrayify",
             actual = [];
-        
-        _"async emitting";
 
         _"*:code"
 
@@ -497,7 +492,7 @@ This is the test template
         _"core redundant code"
 
 
-        emitter.emit("done");
+        done(actual, expected, key);
 
     }
 
@@ -521,39 +516,54 @@ We define a command that takes a list of items separated by returns and makes an
 [arrayify](#arrayify "define: command | | now")
 
 
-## [test.js](#test.js "save: |jshint")
+## same comparison
 
 This is the set of test functions one can use. Basic. 
 
-    /*global module*/
-    module.exports.same = function (inp, out) {
-        var i, n = inp.length;
+    function (actual, expected) {
+        var i, n = actual.length;
 
-        if (inp.length !== out.length) {
-            return inp;
+        if (actual.length !== expected.length) {
+            return actual;
         }
 
         for (i =0; i <n; i+=1 ) {
-            if (inp[i] !== out[i]) {
-                return "expected: "+out[i] + "\nactual: " +inp[i];
+            if (actual[i] !== expected[i]) {
+                return "expected: " + expected[i] + "\nactual: " +actual[i];
             }
         }
         return true;
-    };
+    }
 
 ## [testrunner.js](#testrunner.js "save: |jshint")
 
 This is a simple test runner. 
 
 
-    /*global require, console, process*/
-    var Num = require('../index.js'),
-        EventWhen = require('event-when'),
-        Test = require('./test.js'),
-        tester = new EventWhen(),
-        key;
+    /*global module, require, console*/
+
+    (function () {
+
+        var Num, key, same, records, passing, failing, n, done;
+
+        if (typeof module !== 'undefined' && module.exports) {
+            Num = require('../index.js');            
+        } else {
+            Num = this.Num;
+        }
+
+        same = _"same comparison";
+
+        _"testing code"
+
+    }).call(this);
+
+
+## testing code
         
-    var records = {
+This is only suitable for synchronous testing. Hey, this is a math library, for crying out loud...
+
+    records = {
             "float tests" : _"float tests*test template",
             "integers" : _"integers*test template",
             "rationals": _"rationals*test template",
@@ -561,21 +571,21 @@ This is a simple test runner.
             "complex" : _"complex*test template"
     };
 
-    tester.on("passed", _":passing");
+    done = _"done";
 
-    tester.on("failed", _":failing");
+    passing = _":passing";
+
+    failing = _":failing";
 
     for (key in records) {
         records[key]();
     }
 
-    process.on('exit', function () {
-        var n = Object.keys(records).length;
-        if ( n > 0 ) {
-            console.log("Remaining keys:", Object.keys(records));
-            throw(n + " number of failures!");
-        }
-    });
+    n = Object.keys(records).length;
+    if ( n > 0 ) {
+        console.log("Remaining keys:", Object.keys(records));
+        throw(n + " number of failures!");
+    }
 
 
 
@@ -589,25 +599,9 @@ This is a simple test runner.
 
 [failing](# "js")
 
-    function (data) {
-        console.log("FAILED: " + data.key);
-        console.log(data.result);
-        console.log("expected:", data.expected);
-        console.log("actual:\n"+ data.actual.join("\n"));
-    }    
-
-[run sync tests](# "js")
-
-    function (tests) {
-        var key, result; 
-
-
-        for (key in tests ) {
-            result = tests[key]();
-            if (result === true) {
-                tester.emit("passed", key);
-            } else {
-                tester.emit("failed", {key:key, result:result});
-            }
-        }
+    function (key, result, actual, expected) {
+        console.log("FAILED: " + key);
+        console.log(result);
+        console.log("expected:", expected);
+        console.log("actual:\n"+ actual.join("\n"));
     }
