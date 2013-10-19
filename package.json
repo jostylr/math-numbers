@@ -1,7 +1,7 @@
 {
   "name": "math-numbers",
   "description": "A systematic implementation of different kinds of numbers with a consistent interface",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/jostylr/math-numbers",
   "author": {
     "name": "James Taylor",

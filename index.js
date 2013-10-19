@@ -848,8 +848,14 @@
                 clone.val.neg = false;
                 return clone;
             },
-        str : function () {
+        str : function (options) {
+                if (options) {
+                    if (options.simplify) {
+                        this.simplify();
+                    }
+                }
                 var v = this.val;
+            
                 var ret = '';
                 if (v.neg) {
                     ret = '-';
@@ -971,6 +977,14 @@
                 return this;
             },
         sim : function () {
+                this.mix().reduce();
+                if (this.n().eq(zero)) {
+                    return (this.sign() ? this.w().neg() : this.w());
+                } else {
+                    return this;
+                }
+            },
+        simplify : function () {
                 this.mix().reduce();
                 if (this.n().eq(zero)) {
                     return (this.sign() ? this.w().neg() : this.w());

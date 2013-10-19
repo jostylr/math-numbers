@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.0.2| jostylr")
+# [math-numbers](# "version: 0.0.3| jostylr")
 
 This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
 
@@ -1000,6 +1000,7 @@ This models rational numbers as a triple pair of integers: whole, numerator, den
         reduce : _"rat reduce",
         scale : _"rat scale",
         sim : _"rat simplify",
+        simplify : _"rat simplify",
         sign : _"sign",
         floor : _"rat floor",
         ceil : _"rat ceiling",
@@ -1147,8 +1148,14 @@ Take neg and turn it false;
 
 Need to put together a string. 
 
-    function () {
+    function (options) {
+        if (options) {
+            if (options.simplify) {
+                this.simplify();
+            }
+        }
         var v = this.val;
+
         var ret = '';
         if (v.neg) {
             ret = '-';
@@ -2483,8 +2490,6 @@ Documentation and tests.
 Need a strategy for errors, particularly bad inputs. 
 
 Implement subclassing for types so that constant is not a function! Need to do this soon!
-
-Fix sci division. 
 
 Apply methods -- return new objects
 
