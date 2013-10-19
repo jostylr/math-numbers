@@ -573,20 +573,30 @@ This is only suitable for synchronous testing. Hey, this is a math library, for 
 
     done = _"done";
 
-    passing = _":passing";
+    if (this.hasOwnProperty("test") && (typeof this.test === "function") ) {
+        passing = _":q passing";
+        failing = _":q failing";
+        this.test(            "integers" , _"integers*test template");
+        this.test("float tests" , _"float tests*test template");
+    
+        for (key in records) {
+            console.log(key);
+            this.test(key, records[key]);
+        }
+    } else {
+        passing = _":passing";
+        failing = _":failing";
 
-    failing = _":failing";
+        for (key in records) {
+            records[key]();
+        }
 
-    for (key in records) {
-        records[key]();
+        n = Object.keys(records).length;
+        if ( n > 0 ) {
+            console.log("Remaining keys:", Object.keys(records));
+            throw(n + " number of failures!");
+        }
     }
-
-    n = Object.keys(records).length;
-    if ( n > 0 ) {
-        console.log("Remaining keys:", Object.keys(records));
-        throw(n + " number of failures!");
-    }
-
 
 
 [passing](# "js")
@@ -604,4 +614,19 @@ This is only suitable for synchronous testing. Hey, this is a math library, for 
         console.log(result);
         console.log("expected:", expected);
         console.log("actual:\n"+ actual.join("\n"));
+    }
+
+
+[q passing](# "js")
+
+    function (key) {
+        this.ok(true, "Passed:"+ key);
+    }
+
+[q failing](# "js")
+
+    function (key, result, actual, expected) {
+        this.ok(false, "FAILED: " + key + 
+            result + "expected:" + expected + "actual:\n"+ actual.join("\n")
+        );
     }

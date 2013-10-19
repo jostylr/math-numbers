@@ -762,27 +762,340 @@
             }    
         };
     
-    passing = function (key) {
-            key = key.toLowerCase();
-            delete records[key];
-            console.log("passed: " + key);
-        };
+    if (this.hasOwnProperty("test") && (typeof this.test === "function") ) {
+        passing = function (key) {
+                this.ok(true, "Passed:"+ key);
+            };
+        failing = function (key, result, actual, expected) {
+                this.ok(false, "FAILED: " + key + 
+                    result + "expected:" + expected + "actual:\n"+ actual.join("\n")
+                );
+            };
+        this.test(            "integers" , function () {
+            
+                var key = 'integers';
+            
+                var expected = [
+                    "zero: 0, one: 1",
+                    "a: 10, b: -12",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: -2; -2; 20; -24",
+                    "sub: 22; -22; 0; 0",
+                    "mul: -120; -120; 100; 144",
+                    "div: -10/12; -1 2/10; 1 ; 1 ",
+                    "max: 10; 10; 10; -12",
+                    "mmax: -12; -12; 10; -12",
+                    "min: -12; -12; 10; -12",
+                    "mmin: 10; 10; 10; -12",
+                    "quo: 0; 1; 1; 1",
+                    "rem: 10; 2; 0; 0",
+                    "gcd: 2; 2; 10; 12",
+                    "lcm: -60; 60; 10; -12",
+                    "mgt: false; true; false; false",
+                    "mgte: false; true; true; true",
+                    "mlt: true; false; false; false",
+                    "mlte: true; false; true; true",
+                    "meq: false; false; true; true",
+                    "gt: true; false; false; false",
+                    "gte: true; false; true; true",
+                    "lt: false; true; false; false",
+                    "lte: false; true; true; true",
+                    "eq: false; false; true; true",
+                    "neg: -10; 12",
+                    "round: 10; -12",
+                    "floor: 10; -12",
+                    "abs: 10; 12",
+                    "ceil: 10; -12",
+                    "inv: 1/10; -1/-12",
+                    "a ipow 5: 100000",
+                    "b ipow 5: -248832",
+                    "a ipow -4: 1/10000",
+                    "b ipow -4: 1/20736",
+                    "a shift 2: 1000",
+                    "b shift 2: -1200",
+                    "a sign : ",
+                    "b sign : -",
+                    "a: 123456789123456789123456789, b: 5",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: 123456789123456789123456794; 123456789123456789123456794; 246913578246913578246913578; 10",
+                    "sub: 123456789123456789123456784; -123456789123456789123456784; 0; 0",
+                    "mul: 617283945617283945617283945; 617283945617283945617283945; 15241578780673678546105778281054720515622620750190521; 25",
+                    "div: 24691357824691357824691357 4/5; 5/123456789123456789123456789; 1 ; 1 ",
+                    "max: 123456789123456789123456789; 123456789123456789123456789; 123456789123456789123456789; 5",
+                    "mmax: 123456789123456789123456789; 123456789123456789123456789; 123456789123456789123456789; 5",
+                    "min: 5; 5; 123456789123456789123456789; 5",
+                    "mmin: 5; 5; 123456789123456789123456789; 5",
+                    "quo: 24691357824691357824691357; 0; 1; 1",
+                    "rem: 4; 5; 0; 0",
+                    "gcd: 1; 1; 123456789123456789123456789; 5",
+                    "lcm: 617283945617283945617283945; 617283945617283945617283945; 123456789123456789123456789; 5",
+                    "mgt: true; false; false; false",
+                    "mgte: true; false; true; true",
+                    "mlt: false; true; false; false",
+                    "mlte: false; true; true; true",
+                    "meq: false; false; true; true",
+                    "gt: true; false; false; false",
+                    "gte: true; false; true; true",
+                    "lt: false; true; false; false",
+                    "lte: false; true; true; true",
+                    "eq: false; false; true; true",
+                    "neg: -123456789123456789123456789; -5",
+                    "round: 123456789123456789123456789; 5",
+                    "floor: 123456789123456789123456789; 5",
+                    "abs: 123456789123456789123456789; 5",
+                    "ceil: 123456789123456789123456789; 5",
+                    "inv: 1/123456789123456789123456789; 1/5",
+                    "a ipow 5: 28679718746395774517519299647974067853199588896463036970972834315105461935781603131036162289536454167206060221256216795681720482949",
+                    "b ipow 5: 3125",
+                    "a ipow -4: 1/232305723727482137666188006551300203692658625799727977970043302090695104949336681913044437155857798251441",
+                    "b ipow -4: 1/625",
+                    "a shift 2: 12345678912345678912345678900",
+                    "b shift 2: 500",
+                    "a sign : ",
+                    "b sign : "
+                    ],
+                    actual = [];
+            
+                var int = Num.int;
+                actual.push("zero: " + int.zero.str() +  ", one: " + int.unit.str());
+                var samples = [ 
+                    [new Num(10, "int"), Num.int(-12)],
+                    [new Num("123456789123456789123456789", "int"), new Num("5", "int")]
+                ];
+                
+                var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];
+                var comps = ['mgt', 'mgte', 'mlt', 'mlte', 'meq', 'gt', 'gte', 'lt', 'lte', 'eq'];
+                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
+                var others = [['ipow', Num.int(5)], ['ipow', -4]];
+                var format = {};
+                
+                others.push(["shift", 2], ["sign"]);
+                ops.push("quo", "rem", "gcd", "lcm");
+            
+                samples.forEach(function (bin) {
+                    var a = bin[0], 
+                        b = bin[1];
+                
+                    actual.push("a: " + a.str() + ", b: " + b.str());
+                
+                    actual.push("?: a ? b; b ? a, a ? a, b ? a");        
+                    ops.forEach(function(op) {
+                        //console.log(op);
+                        actual.push( op+": " +
+                            a[op](b).str(format) + "; " +
+                            b[op](a).str(format) + "; " +
+                            a[op](a).str(format) + "; " +
+                            b[op](b).str(format) 
+                        );
+                    });
+                
+                    comps.forEach(function(comp) {
+                        //console.log(comp);
+                        actual.push(comp + ": " +
+                            a[comp](b) + "; " +
+                            b[comp](a) + "; " +
+                            a[comp](a) + "; " +
+                            b[comp](b) 
+                        );
+                    });
+                
+                    unitary.forEach( function(un) {
+                        //console.log(un);
+                        actual.push(un+": " + a[un]().str() + "; " + b[un]().str());
+                    });
+                
+                    others.forEach( function (other) {
+                        var result, 
+                            str = "", 
+                            argstr = [],
+                            args = other.slice(1),
+                            op = other[0];
+                
+                        //console.log(op);
+                
+                        args.forEach(function (el) {
+                            if (el instanceof Num) {
+                                argstr.push(el.str());
+                            } else {
+                                argstr.push(el+"");
+                            }
+                        });
+                
+                        argstr = argstr.join(" , ");
+                
+                        result = a[op].apply(a, args);
+                        str = "a " + op + " " + argstr +": ";
+                        if (result instanceof Num) {
+                            actual.push(str + result.str());
+                        } else {
+                            actual.push(str + result);
+                        }
+                        str = "b " + op + " " + argstr +": ";
+                        result = b[op].apply(b, args);
+                        if (result instanceof Num) {
+                            actual.push(str+ result.str());
+                        } else {
+                            actual.push(str+ result);
+                        }
+                
+                    });
+                
+                });
+            
+                done(actual, expected, key);
+            
+            });
+        this.test("float tests" , function () {
+            
+                var key = 'float tests';
+            
+                var expected = [
+                    "zero: 0, one: 1",
+                    "a: 2.3, b: -3",
+                    "?: a ? b; b ? a, a ? a, b ? a",
+                    "add: -0.7000000000000002; -0.7000000000000002; 4.6; -6",
+                    "sub: 5.3; -5.3; 0; 0",
+                    "mul: -6.8999999999999995; -6.8999999999999995; 5.289999999999999; 9",
+                    "div: -0.7666666666666666; -1.3043478260869565; 1; 1",
+                    "max: 2.3; 2.3; 2.3; -3",
+                    "mmax: -3; -3; 2.3; -3",
+                    "min: -3; -3; 2.3; -3",
+                    "mmin: 2.3; 2.3; 2.3; -3",
+                    "mgt: false; true; false; false",
+                    "mgte: false; true; true; true",
+                    "mlt: true; false; false; false",
+                    "mlte: true; false; true; true",
+                    "meq: false; false; true; true",
+                    "gt: true; false; false; false",
+                    "gte: true; false; true; true",
+                    "lt: false; true; false; false",
+                    "lte: false; true; true; true",
+                    "eq: false; false; true; true",
+                    "neg: -2.3; 3",
+                    "round: 2; -3",
+                    "floor: 2; -3",
+                    "abs: 2.3; 3",
+                    "ceil: 3; -3",
+                    "inv: 0.4347826086956522; -0.3333333333333333",
+                    "a ipow 5: 64.36342999999998",
+                    "b ipow 5: -243",
+                    "a ipow -4: 0.03573457784956459",
+                    "b ipow -4: 0.012345679012345678"
+                    ],
+                    actual = [];
+            
+                var float = Num.float;
+                actual.push("zero: " + float.zero.str() +  ", one: " + float.unit.str());
+                var samples = [ 
+                    [new Num(2.3, "float"), Num.float(-3)]
+                ];
+                
+                var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];
+                var comps = ['mgt', 'mgte', 'mlt', 'mlte', 'meq', 'gt', 'gte', 'lt', 'lte', 'eq'];
+                var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
+                var others = [['ipow', Num.int(5)], ['ipow', -4]];
+                var format = {};
+            
+                samples.forEach(function (bin) {
+                    var a = bin[0], 
+                        b = bin[1];
+                
+                    actual.push("a: " + a.str() + ", b: " + b.str());
+                
+                    actual.push("?: a ? b; b ? a, a ? a, b ? a");        
+                    ops.forEach(function(op) {
+                        //console.log(op);
+                        actual.push( op+": " +
+                            a[op](b).str(format) + "; " +
+                            b[op](a).str(format) + "; " +
+                            a[op](a).str(format) + "; " +
+                            b[op](b).str(format) 
+                        );
+                    });
+                
+                    comps.forEach(function(comp) {
+                        //console.log(comp);
+                        actual.push(comp + ": " +
+                            a[comp](b) + "; " +
+                            b[comp](a) + "; " +
+                            a[comp](a) + "; " +
+                            b[comp](b) 
+                        );
+                    });
+                
+                    unitary.forEach( function(un) {
+                        //console.log(un);
+                        actual.push(un+": " + a[un]().str() + "; " + b[un]().str());
+                    });
+                
+                    others.forEach( function (other) {
+                        var result, 
+                            str = "", 
+                            argstr = [],
+                            args = other.slice(1),
+                            op = other[0];
+                
+                        //console.log(op);
+                
+                        args.forEach(function (el) {
+                            if (el instanceof Num) {
+                                argstr.push(el.str());
+                            } else {
+                                argstr.push(el+"");
+                            }
+                        });
+                
+                        argstr = argstr.join(" , ");
+                
+                        result = a[op].apply(a, args);
+                        str = "a " + op + " " + argstr +": ";
+                        if (result instanceof Num) {
+                            actual.push(str + result.str());
+                        } else {
+                            actual.push(str + result);
+                        }
+                        str = "b " + op + " " + argstr +": ";
+                        result = b[op].apply(b, args);
+                        if (result instanceof Num) {
+                            actual.push(str+ result.str());
+                        } else {
+                            actual.push(str+ result);
+                        }
+                
+                    });
+                
+                });
+            
+                done(actual, expected, key);
+            
+            });
     
-    failing = function (key, result, actual, expected) {
-            console.log("FAILED: " + key);
-            console.log(result);
-            console.log("expected:", expected);
-            console.log("actual:\n"+ actual.join("\n"));
-        };
+        for (key in records) {
+            console.log(key);
+            this.test(key, records[key]);
+        }
+    } else {
+        passing = function (key) {
+                key = key.toLowerCase();
+                delete records[key];
+                console.log("passed: " + key);
+            };
+        failing = function (key, result, actual, expected) {
+                console.log("FAILED: " + key);
+                console.log(result);
+                console.log("expected:", expected);
+                console.log("actual:\n"+ actual.join("\n"));
+            };
     
-    for (key in records) {
-        records[key]();
-    }
+        for (key in records) {
+            records[key]();
+        }
     
-    n = Object.keys(records).length;
-    if ( n > 0 ) {
-        console.log("Remaining keys:", Object.keys(records));
-        throw(n + " number of failures!");
+        n = Object.keys(records).length;
+        if ( n > 0 ) {
+            console.log("Remaining keys:", Object.keys(records));
+            throw(n + " number of failures!");
+        }
     }
 
 }).call(this);
