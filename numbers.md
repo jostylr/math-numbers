@@ -12,6 +12,7 @@ A Num is an object with various properties and methods defined. (I) is for insta
 Here we define the directory structure for math-numbers.
 
 * [index.js](#num "save:|jshint") This is the node module entry point and only relevant file. It is a small file.
+* [ghpages/index.js](#num "save:|jshint") A copy of the index file for ghpages
 * [README.md](#readme "save:| clean raw") The standard README.
 * [package.json](#npm-package "save: json  | jshint") The requisite package file for a npm project. 
 * [TODO.md](#todo "save: | clean raw") A list of growing and shrinking items todo.
@@ -2565,9 +2566,10 @@ The requisite npm package file. Use `npm run-script compile` to compile the lite
 
 ## gitignore
 
-We should ignore node_modules (particularly the dev ones)
+We should ignore node_modules (particularly the dev ones) and ghpages which is just a directory where I have the gh-pages branch repo. 
 
     node_modules
+    ghpages
 
 ## npmignore
 
