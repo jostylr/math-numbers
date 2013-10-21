@@ -2499,6 +2499,9 @@ Let's say we want to compute 300!   This is a very large number. To get all of i
     console.log(fact.str() );
 
 
+
+
+
 ## TODO
 
 Documentation and tests. 
@@ -2572,6 +2575,7 @@ We should ignore test, examples, and .md files
 
     test
     examples
+    ghpages
     *.md
 
 ## Travis

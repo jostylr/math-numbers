@@ -9,6 +9,11 @@ Comparators:  ? :  a ? b, b ? a, a ? a, b ? b,  a ? -a, b ? -b
 
 Fix sci division
 
+## Files
+
+Just one file: 
+
+* [test/testrunner.js](#testrunner "save: |jshint")
 
 
 ## Float tests
@@ -535,7 +540,7 @@ This is the set of test functions one can use. Basic.
         return true;
     }
 
-## [testrunner.js](#testrunner.js "save: |jshint")
+## Testrunner
 
 This is a simple test runner. 
 
