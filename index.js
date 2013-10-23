@@ -841,7 +841,7 @@
                 if (this.n().eq(zero)) {
                     return rat({w:int(NaN), n:int(NaN), d: int(NaN)});
                 }
-                return rat({w:zero, n: this.d(), d: this.n()});
+                return rat({neg: this.sign(), w:zero, n: this.d(), d: this.n()});
             },
         abs : function () {
                 var clone = rat(this.val);
@@ -926,7 +926,7 @@
                 var imp, v, w, d, n;
                 v = this.val;
                 if (this.improper) {
-                    v = this.improper;
+                    this.val = this.improper;
                 } else {
                     this.val = this.improper = imp = {};
                     imp.neg = v.neg;
@@ -943,7 +943,7 @@
                 var mix, v, w, d, n, temp;
                 v = this.val;
                 if (this.mixed) {
-                    v = this.mixed;
+                    this.val = this.mixed;
                 } else {
                     this.mixed = this.val = mix = {};
                     mix.neg = v.neg;
@@ -997,23 +997,39 @@
             },
         floor : function () {
                 this.mix();
-                return this.w();
-            },
-        ceil : function () {
-                this.mix();
-                return this.w().add(unit);
-            },
-        round : function () {
-                this.mix();
-                if (this.frac().gt(half)) {
-                    return this.w().add(unit);
+                if (this.sign() ) {
+                    return this.w().add(unit).neg();
                 } else {
                     return this.w();
                 }
             },
+        ceil : function () {
+                this.mix();
+                if (this.sign() ) {
+                    return this.w().neg();
+                } else {
+                    return this.w().add(unit);
+                }
+            },
+        round : function () {
+                this.mix();
+                if (this.sign()) {
+                    if (this.frac().gt(half)) {
+                        return this.w().add(unit).neg();
+                    } else {
+                        return this.w().neg();
+                    }            
+                } else {
+                    if (this.frac().gt(half)) {
+                        return this.w().add(unit);
+                    } else {
+                        return this.w();
+                    }
+                }
+            },
         frac : function () {
                 this.mix();
-                return rat({neg:this.neg, w:zero, n:this.n(), d:this.d()});
+                return rat({w:zero, n:this.n(), d:this.d()});
             },
         make: rat
     });
