@@ -1,6 +1,28 @@
-var Num = require('../index.js');
+# Examples
 
-var factorial = function (n) {
+Here is a set of runnable examples
+
+
+## Files
+
+* [examples/factorial.js](#factorial-broken-up "save: | jshint")
+
+## Factorial broken up
+
+How far can we go with some intelligent factorializing? 
+
+    var Num = require('../index.js');
+
+    var factorial = _":factorial function";
+
+    var prettyprint = _":pretty print";
+
+    var ret = factorial(process.argv[2] || 300).str();
+    console.log(prettyprint(ret, process.argv[3] || 80), "Length: "+ ret.length );
+
+[factorial function]()
+
+    function (n) {
         var i;
         n = parseInt(n) || 300;
         var fact = Num.int.unit;
@@ -14,7 +36,8 @@ var factorial = function (n) {
             }
         }
         facts.push(fact);
-    
+
+
         var nfacts;
         while (facts.length > 1) {
             n = facts.length;
@@ -31,11 +54,15 @@ var factorial = function (n) {
             nfacts.push(fact);
             facts = nfacts;
         }
-    
-        return facts[0]
-    };
 
-var prettyprint = function (str,w) {
+        return facts[0]
+    }
+
+[pretty print]() 
+
+Takes a string and breaks it up into chunks of width w or 80.
+
+    function (str,w) {
         w = parseInt(w) || 80; 
         str = str || "";
         var arr = [];
@@ -45,7 +72,5 @@ var prettyprint = function (str,w) {
             i += w;
         }
         return arr.join("\n");
-    };
+    }
 
-var ret = factorial(process.argv[2] || 300).str();
-console.log(prettyprint(ret, process.argv[3] || 80), "Length: "+ ret.length );
