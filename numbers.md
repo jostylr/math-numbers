@@ -79,6 +79,8 @@ Here we define the Num class and all associated code. The code below is suitable
             this.Num = Num;
         }
 
+        var ident = function () {return this;};
+
         Num.ops ={};
 
         Num.makeOp = _"get right typed operator";
@@ -317,6 +319,8 @@ Here we implement the basic interface using the built-in operators.
         str : _"float str",
         ipow : _"ipow",
         inv : _"float reciprocal",
+        sign : _"float sign",
+        simplify : ident,
         make : float
     });
     Num.define("float,float", {
@@ -380,6 +384,16 @@ We need to parse a normal Num into a Num of type float.
 
     function () {
         return new Num (-1*this.val, "float");
+    }
+
+### Float sign 
+
+    function () {
+        if (this.val >= 0) {
+            return "";
+        } else {
+            return "-";
+        }
     }
 
 ### Float reciprocal
@@ -457,7 +471,6 @@ Each value is represented by an array of js integers with the first entry being 
     var dcom = _"directed comparison";
     var int = Num.int = Num.type("int");
     var div = Num.int.divalgo = _"int division algorithm";
-    var ident = function () {return int(this.val);};
 
     Num.define("int", {
         parse : _"int parse",
@@ -471,6 +484,7 @@ Each value is represented by an array of js integers with the first entry being 
         sign: _"sign",
         inv : _"int reciprocal",
         shift : _"int shift",
+        simplify : ident,
         make: int
     });
     Num.define("int,int", {
@@ -579,7 +593,7 @@ The string parsing should reverse the .str method. So first it checks for a minu
 
     function () {
         var x = this;
-        return Num.rat({neg: x.sign(), w:zero, n: unit, d: x});
+        return Num.rat({neg: x.sign(), w:zero, n: unit, d: x.abs()});
     }
 
 ### Int Abs
@@ -1131,7 +1145,7 @@ Get it to be improper and then flip and simplify. Check for non-zero.
         if (this.n().eq(zero)) {
             return rat({w:int(NaN), n:int(NaN), d: int(NaN)});
         }
-        return rat({neg: this.sign(), w:zero, n: this.d(), d: this.n()});
+        return rat({neg: this.sign(), w:zero, n: this.d(), d: this.n()}).simplify();
     }
 
 ### rat Abs
@@ -1410,7 +1424,12 @@ Check signs separately. Multiply all of it and combine: (w + n/d) (v + m/c) =  w
     function (b) {
         var l = this.val;
         var r = b.val;
-        var neg = (l.neg != r.neg);
+        var neg;
+        if  ( (l.neg && r.neg) || (!l.neg && !r.neg) ) {
+            neg = false;
+        } else {
+            neg = true;
+        }
         var wv = rat({w:l.w.mul(r.w), neg:false, n:zero, d: unit});
         var wmc =  rat({w:zero, neg : false, n : l.w.mul(r.n), d: r.d});
         var vnd =  rat({w:zero, neg : false, n : r.w.mul(l.n), d: l.d});
@@ -1503,6 +1522,7 @@ Exact numbers can have a precision of Infinity
         floor : _"sci floor",
         ceil : _"sci ceiling",
         round : _"sci round",
+        simplify : ident,
         make: sci
     });
     Num.define("sci,sci", {
@@ -1660,7 +1680,6 @@ Flip the sign.
         clone.val.neg = !clone.val.neg;
         return clone;
     }
-
 
 
 ### sci abs
@@ -2161,6 +2180,7 @@ This should complexify the already existing types.
         apply : _"com apply to parts",
         apply_re : _"com apply to real",
         apply_im : _"com apply to imag",
+        simplify : _"com simplify",
         make: com
     });
     Num.define("com,com", {
@@ -2186,6 +2206,11 @@ This should complexify the already existing types.
         return this;
     }
 
+### com simplify
+
+    function () {
+        return this.apply("simplify");
+    }
 
 ### com negate
 
@@ -2289,13 +2314,13 @@ The applies are mainly for manipulating presentation of rational parts.
 ### com apply to real
 
     function (str) {
-        return this.val.re[str].apply(this, Array.prototype.slice.call(arguments, 1));
+        return this.val.re[str].apply(this.val.re, Array.prototype.slice.call(arguments, 1));
     }
 
 ### com apply to imag
 
     function (str) {
-        return this.val.im[str].apply(this, Array.prototype.slice.call(arguments, 1));
+        return this.val.im[str].apply(this.val.im, Array.prototype.slice.call(arguments, 1));
     }
 
 
@@ -2354,8 +2379,8 @@ Multiplication is done by (a+bi)(c+di) =  ac + bci + adi -bd = (ac-bd) + i (bc +
     function (r) {
         var l = this;
         var res = com({
-            re : l.re().mul(r.re()).sub(l.im().mul(r.im())),
-            im : l.re().mul(r.im()).add(l.im().mul(r.re()))
+            re : l.re().mul(r.re()).sub(l.im().mul(r.im())).simplify(),
+            im : l.re().mul(r.im()).add(l.im().mul(r.re())).simplify()
         });
         return res;
     }
@@ -2517,6 +2542,8 @@ Let's say we want to compute 300!   This is a very large number. To get all of i
 
 The live example is at [JSBin](http://jsbin.com/eqiBiL/1/edit?js,console) which differs by removing the var Num line as Num is loaded as a global for the browser. 
 
+There is a better example at [JSBin](http://jsbin.com/gist/7121167/?js,console) This can handle computing 40,000! in about 22 seconds on my machine.  Hit Run, and then in the console, type `factprint(40000, 60)` to get 40,000 factorial printed out in groups of 60. It will produce the number which is 166714 digits long!
+
  ## Basic numbers
 
 The types of numbers are float, int (integer), rat (rational), sci (scientific), com (complex). 
@@ -2557,6 +2584,8 @@ Non-complex numbers all have round, floor, abs, ceil which takes, for example,  
 
 Complex numbers have abssq which, given x+iy,  will yield  x^2 + y^2. We do not have abs since that involves square roots and will lead rationals out of being rational. They also have re and im which yield x, respectively y, from an input of x+iy. 
 
+Integers have `.shift(n)` which is the equivalent of multiplying the integer by 10^n where n is a positive integer.
+
 
 
 
@@ -2572,7 +2601,7 @@ Apply methods -- return new objects
 
 Rationals and the mixed/improrper stuff. Probably want to keep the original form somewhere. Do we have the ability to manipulate the form directly? 
 
-
+Garbage collection strategy. For example, if computing 40,000!, we are currently creating ~40,000
 
 ## NPM package
 

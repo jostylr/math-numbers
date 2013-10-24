@@ -16,6 +16,8 @@
         this.Num = Num;
     }
 
+    var ident = function () {return this;};
+
     Num.ops ={};
 
     Num.makeOp = function (name) {
@@ -179,6 +181,14 @@
         inv : function () {
                 return new Num (1/this.val, "float");
             },
+        sign : function () {
+                if (this.val >= 0) {
+                    return "";
+                } else {
+                    return "-";
+                }
+            },
+        simplify : ident,
         make : float
     });
     Num.define("float,float", {
@@ -409,7 +419,6 @@
             return ret;
         
         };
-    var ident = function () {return int(this.val);};
     
     Num.define("int", {
         parse : function self () {
@@ -536,7 +545,7 @@
             },
         inv : function () {
                 var x = this;
-                return Num.rat({neg: x.sign(), w:zero, n: unit, d: x});
+                return Num.rat({neg: x.sign(), w:zero, n: unit, d: x.abs()});
             },
         shift : function (d) {
                 if ( d>0) {
@@ -550,6 +559,7 @@
                     return this;
                 }
             },
+        simplify : ident,
         make: int
     });
     Num.define("int,int", {
@@ -841,7 +851,7 @@
                 if (this.n().eq(zero)) {
                     return rat({w:int(NaN), n:int(NaN), d: int(NaN)});
                 }
-                return rat({neg: this.sign(), w:zero, n: this.d(), d: this.n()});
+                return rat({neg: this.sign(), w:zero, n: this.d(), d: this.n()}).simplify();
             },
         abs : function () {
                 var clone = rat(this.val);
@@ -1080,7 +1090,12 @@
         mul : function (b) {
                 var l = this.val;
                 var r = b.val;
-                var neg = (l.neg != r.neg);
+                var neg;
+                if  ( (l.neg && r.neg) || (!l.neg && !r.neg) ) {
+                    neg = false;
+                } else {
+                    neg = true;
+                }
                 var wv = rat({w:l.w.mul(r.w), neg:false, n:zero, d: unit});
                 var wmc =  rat({w:zero, neg : false, n : l.w.mul(r.n), d: r.d});
                 var vnd =  rat({w:zero, neg : false, n : r.w.mul(l.n), d: l.d});
@@ -1512,6 +1527,7 @@
                 var half = sci({neg: false, i:int(5), E:this.E()-(n-1)-1, p:Infinity});
                 return this.add(half).floor(n);
             },
+        simplify : ident,
         make: sci
     });
     Num.define("sci,sci", {
@@ -1766,10 +1782,13 @@
                 return this;
             },
         apply_re : function (str) {
-                return this.val.re[str].apply(this, Array.prototype.slice.call(arguments, 1));
+                return this.val.re[str].apply(this.val.re, Array.prototype.slice.call(arguments, 1));
             },
         apply_im : function (str) {
-                return this.val.im[str].apply(this, Array.prototype.slice.call(arguments, 1));
+                return this.val.im[str].apply(this.val.im, Array.prototype.slice.call(arguments, 1));
+            },
+        simplify : function () {
+                return this.apply("simplify");
             },
         make: com
     });
@@ -1785,8 +1804,8 @@
         mul : function (r) {
                 var l = this;
                 var res = com({
-                    re : l.re().mul(r.re()).sub(l.im().mul(r.im())),
-                    im : l.re().mul(r.im()).add(l.im().mul(r.re()))
+                    re : l.re().mul(r.re()).sub(l.im().mul(r.im())).simplify(),
+                    im : l.re().mul(r.im()).add(l.im().mul(r.re())).simplify()
                 });
                 return res;
             },

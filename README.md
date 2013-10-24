@@ -25,6 +25,8 @@ Let's say we want to compute 300!   This is a very large number. To get all of i
 
 The live example is at [JSBin](http://jsbin.com/eqiBiL/1/edit?js,console) which differs by removing the var Num line as Num is loaded as a global for the browser. 
 
+There is a better example at [JSBin](http://jsbin.com/gist/7121167/?js,console) This can handle computing 40,000! in about 22 seconds on my machine.  Hit Run, and then in the console, type `factprint(40000, 60)` to get 40,000 factorial printed out in groups of 60. It will produce the number which is 166714 digits long!
+
 ## Basic numbers
 
 The types of numbers are float, int (integer), rat (rational), sci (scientific), com (complex). 
@@ -63,4 +65,6 @@ The following unary operators are universal: neg which negates the number and in
 
 Non-complex numbers all have round, floor, abs, ceil which takes, for example,  -2.3 to -2, -3, 2.3, and -2. 
 
-Complex numbers have abssq which, given x+iy,  will yield  x^2 + y^2. We do not have abs since that involves square roots and will lead rationals out of being rational. They also have re and im which yield x, respectively y, from an input of x+iy.
+Complex numbers have abssq which, given x+iy,  will yield  x^2 + y^2. We do not have abs since that involves square roots and will lead rationals out of being rational. They also have re and im which yield x, respectively y, from an input of x+iy. 
+
+Integers have `.shift(n)` which is the equivalent of multiplying the integer by 10^n where n is a positive integer.
