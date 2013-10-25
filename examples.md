@@ -6,10 +6,13 @@ Here is a set of runnable examples
 ## Files
 
 * [examples/factorial.js](#factorial-broken-up "save: | jshint")
+* [examples/conversion.js](#conversions "save:|jshint")
 
 ## Factorial broken up
 
 How far can we go with some intelligent factorializing? 
+
+    /*global console, require, process*/
 
     var Num = require('../index.js');
 
@@ -17,14 +20,16 @@ How far can we go with some intelligent factorializing?
 
     var prettyprint = _":pretty print";
 
+    var digitcount = _":digit count";
+
     var ret = factorial(process.argv[2] || 300).str();
-    console.log(prettyprint(ret, process.argv[3] || 80), "Length: "+ ret.length );
+    console.log(prettyprint(ret, process.argv[3] || 80), "Length: "+ ret.length+"\n", digitcount(ret) );
 
 [factorial function]()
 
     function (n) {
         var i;
-        n = parseInt(n) || 300;
+        n = parseInt(n, 10) || 300;
         var fact = Num.int.unit;
         var facts = [];
         for (i = 1; i <= n; i += 1) {
@@ -55,7 +60,7 @@ How far can we go with some intelligent factorializing?
             facts = nfacts;
         }
 
-        return facts[0]
+        return facts[0];
     }
 
 [pretty print]() 
@@ -63,7 +68,7 @@ How far can we go with some intelligent factorializing?
 Takes a string and breaks it up into chunks of width w or 80.
 
     function (str,w) {
-        w = parseInt(w) || 80; 
+        w = parseInt(w, 10) || 80; 
         str = str || "";
         var arr = [];
         var i = 0;
@@ -74,3 +79,32 @@ Takes a string and breaks it up into chunks of width w or 80.
         return arr.join("\n");
     }
 
+
+[digit count]()
+
+Counts the frequency in the factorial number. 
+
+    function (str) {
+        var ret = [0,0,0,0,0,0,0,0,0,0],
+            i, n = str.length;
+
+        for (i = 0; i < n; i += 1) {
+            ret[parseInt(str[i], 10)] += 1;
+        }
+
+        return ret;
+    }
+
+
+## Conversions
+
+These are examples of converting from one type of number to another. 
+
+    /*global console, require*/
+    var Num = require('../index.js');
+
+    var x = Num.int(5);
+
+    var y = x.add("23/5");
+
+    console.log(y.str());

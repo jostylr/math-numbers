@@ -24,8 +24,7 @@ This is the main page
     <p>Here is 300! <span id="300"></span></p>
 
 [scripts]()
-
-    <script type="text/javascript" src="index.js"></script>
+    
     <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function () {
         var i, n =300;
@@ -37,6 +36,32 @@ This is the main page
         document.getElementById("300").innerHTML = fact.str();
     })
     </script>
+
+
+## Factorial
+
+The idea is to have a factorial computer -- n is the main parameter. There can be some output display controls. The number of digits of each kind can also be displayed. There can be an array of numbers to do multiple factorials and an analysis on each. 
+
+[title]()
+
+    Factorial
+
+[body]()
+
+    <h1>Factorial Exploration</h1>
+
+    _":questions"
+
+    _":inputs"
+
+    _":output"
+
+[questions]()
+
+    So math-numbers can do factorial 
+
+[scripts]()
+
 
 
 ## Boiler
@@ -51,6 +76,7 @@ This is the main page
         </head>
         <body>
         _"*:body"
+        <script type="text/javascript" src="index.js"></script>
         _"*:scripts? "
         </body>
     </html>
