@@ -50,7 +50,7 @@ The idea is to have a factorial computer -- n is the main parameter. There can b
 
     <h1>Factorial Exploration</h1>
 
-    _":questions"
+    _":questions |marked"
 
     _":inputs"
 
@@ -58,7 +58,16 @@ The idea is to have a factorial computer -- n is the main parameter. There can b
 
 [questions]()
 
-    So math-numbers can do factorial 
+    So math-numbers can handle factorials of extraordinary length. What might we ask of large factorials?
+
+    1. What is the most frequent digit? 
+    2. Are the digits consistent with random creation? 
+    3. As it turns out, zeros are far more numerous. If we get rid of the zeros at the end of the number, does that make all the digits uniform? 
+
+[inputs]()
+
+    <form>
+
 
 [scripts]()
 
