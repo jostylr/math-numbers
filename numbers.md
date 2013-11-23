@@ -2636,8 +2636,8 @@ The requisite npm package file. Use `npm run-script compile` to compile the lite
         "node": ">0.6"
       },
       "devDependencies" : {
-        "literate-programming" : "~0.7.2",
-        "event-when" : "=0.5.0"
+        "literate-programming" : "~0.7.5",
+        "tape" : "=2.3.0"
       },
       "dependencies":{
       },
@@ -2647,7 +2647,19 @@ The requisite npm package file. Use `npm run-script compile` to compile the lite
         "test" : "node ./test/testrunner.js"
       },
       "keywords": ["bigint", "bignum", "arithmetic", "arbitrary", "precision", "numbers"],
-      "preferGlobal": "false"
+      "testling": {
+            "files": "test/*.js",
+            "browsers": {
+              "ie": [ 8, 9, 10 ],
+              "firefox": [ 3, 24, 25, "nightly" ],
+              "chrome": [ 4, 30, 31, "canary" ],
+              "iphone" : [6],
+              "ipad" : [6],
+              "android-browser" : [4.2],
+              "safari": [ 5.1, 6 ],
+              "opera": [ 12, "next" ]
+            }
+        }
     }
 
 ## gitignore
@@ -2673,8 +2685,6 @@ A travis.yml file for continuous test integration!
     language: node_js
     node_js:
       - "0.10"
-      - "0.8"
-      - "0.6"
 
 ## LICENSE MIT
 

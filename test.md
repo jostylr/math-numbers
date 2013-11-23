@@ -2,6 +2,8 @@
 
 This is a set of tests for this library to pass. 
 
+To run, use `node testrunner.js | grep -v -e ^ok`  The grep part filters out all the ok passing lines leaving just useful stuff. 
+
 
 ## TODO
 
@@ -538,29 +540,14 @@ This takes an array of samples and runs them through the arrays of opeartions, c
 
     });
 
-## Done
-
-This checks whether the tests passed.
-
-    function (actual, expected, key) {
-        var result;
-
-        result = same(actual, expected);
-        if (result === true ) {
-            passing(key);
-        } else {
-            failing(key, result, actual, expected);
-        }    
-    }
-
 
 ## Test Template
 
 This is the test template
 
-    function () {
+    function (t) {
 
-        var key = '_"*:key"';
+        // var key = '_"*:key"';
 
         var expected = _"*:expected| arrayify",
             actual = [];
@@ -571,9 +558,13 @@ This is the test template
 
         _"core redundant code"
 
+        var i, n = actual.length;
 
-        done(actual, expected, key);
+        for (i =0; i <n; i+=1 ) {
+            t.equal(actual[i], expected[i]);
+        }
 
+        t.end();
     }
 
 ## Arrayify
@@ -596,117 +587,35 @@ We define a command that takes a list of items separated by returns and makes an
 [arrayify](#arrayify "define: command | | now")
 
 
-## same comparison
-
-This is the set of test functions one can use. Basic. 
-
-    function (actual, expected) {
-        var i, n = actual.length;
-
-        /*if (actual.length !== expected.length) {
-            return actual;
-        }*/
-
-        for (i =0; i <n; i+=1 ) {
-            if (actual[i] !== expected[i]) {
-                return "expected: " + expected[i] + "\nactual: " +actual[i];
-            }
-        }
-        return true;
-    }
 
 ## Testrunner
 
 This is a simple test runner. 
 
 
-    /*global module, require, console*/
+    /*global require*/
 
-    (function () {
 
-        var Num, key, same, records, passing, failing, n, done;
+    var Num, test;
 
-        if (typeof module !== 'undefined' && module.exports) {
-            Num = require('../index.js');            
-        } else {
-            Num = this.Num;
-        }
+    Num = require('../index.js');
+    test = require('tape');
 
-        same = _"same comparison";
+    _"testing code"
 
-        _"testing code"
-
-    }).call(this);
 
 
 ## testing code
         
 This is only suitable for synchronous testing. Hey, this is a math library, for crying out loud...
 
-    records = {
-            "float tests" : _"float tests*test template",
-            "integers" : _"integers*test template",
-            "rationals": _"rationals*test template",
-            "scientific" : _"scientific*test template",
-            "complex" : _"complex*test template"
-    };
 
-    done = _"done";
+    test("float tests" , _"float tests*test template");
 
-    if (this.hasOwnProperty("test") && (typeof this.test === "function") ) {
-        passing = _":q passing";
-        failing = _":q failing";
-        this.test(            "integers" , _"integers*test template");
-        this.test("float tests" , _"float tests*test template");
+    test("integers",  _"integers*test template");
     
-        for (key in records) {
-            console.log(key);
-            this.test(key, records[key]);
-        }
-    } else {
-        passing = _":passing";
-        failing = _":failing";
+    test("rationals" , _"rationals*test template");
+    
+    test("scientific" , _"scientific*test template");
 
-        for (key in records) {
-            records[key]();
-        }
-
-        n = Object.keys(records).length;
-        if ( n > 0 ) {
-            console.log("Remaining keys:", Object.keys(records));
-            throw(n + " number of failures!");
-        }
-    }
-
-
-[passing](# "js")
-
-    function (key) {
-        key = key.toLowerCase();
-        delete records[key];
-        console.log("passed: " + key);
-    }
-
-[failing](# "js")
-
-    function (key, result, actual, expected) {
-        console.log("FAILED: " + key);
-        console.log(result);
-        //console.log("expected:", expected);
-        //console.log("actual:\n"+ actual.join("\n"));
-    }
-
-
-[q passing](# "js")
-
-    function (key) {
-        this.ok(true, "Passed:"+ key);
-    }
-
-[q failing](# "js")
-
-    function (key, result, actual, expected) {
-        this.ok(false, "FAILED: " + key + 
-            result + "expected:" + expected + "actual:\n"+ actual.join("\n")
-        );
-    }
+    test("complex" , _"complex*test template");
