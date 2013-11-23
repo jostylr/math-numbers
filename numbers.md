@@ -2520,6 +2520,8 @@ Float is contagious. Its existence is as a means to speed computations up and a 
 This is a JavaScript library that implements exact integer arithmetic, arbitrary precision decimals, and other stuff. It is intended for educational purposes and most of the algorithms are fairly straightforward with little concern for performance.
 
 It should work equally well in node or browser though mostly it is for the browser. 
+
+[![browser support](https://ci.testling.com/jostylr/math-numbers.png)](https://ci.testling.com/jostylr/math-numbers)
  
  ## Install
 

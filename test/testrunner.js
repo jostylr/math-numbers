@@ -10,7 +10,7 @@ test("float tests" , function (t) {
     // var key = 'float tests';
 
     var expected = [
-        "zero: 0, one: 1",
+        "zero: 0, one: 12",
         "a: 2.3, b: -3",
         "?: a ? b; b ? a, a ? a, b ? a",
         "add: -0.7000000000000002; -0.7000000000000002; 4.6; -6",
