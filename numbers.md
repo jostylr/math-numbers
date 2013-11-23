@@ -2646,7 +2646,7 @@ The requisite npm package file. Use `npm run-script compile` to compile the lite
       "scripts" : { 
         "prepublish" : "node ./node_modules/literate-programming/bin/literate-programming.js numbers.md",
         "compile" : "node ./node_modules/literate-programming/bin/literate-programming.js numbers.md",
-        "test" : "node ./test/testrunner.js"
+        "test" : "node ./test/testrunner.js | grep -v -e ^ok"
       },
       "keywords": ["bigint", "bignum", "arithmetic", "arbitrary", "precision", "numbers"],
       "testling": {
