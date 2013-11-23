@@ -2652,9 +2652,9 @@ The requisite npm package file. Use `npm run-script compile` to compile the lite
       "testling": {
             "files": "test/*.js",
             "browsers": {
-              "ie": [ 8, 9, 10 ],
-              "firefox": [ 3, 24, 25, "nightly" ],
-              "chrome": [ 4, 30, 31, "canary" ],
+              "ie": [ 9, 10 ],
+              "firefox": [ 24, 25, "nightly" ],
+              "chrome": [ 30, 31, "canary" ],
               "iphone" : [6],
               "ipad" : [6],
               "android-browser" : [4.2],
