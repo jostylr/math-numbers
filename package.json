@@ -40,13 +40,9 @@
         "files": "test/*.js",
         "browsers": {
           "ie": [ 9, 10 ],
-          "firefox": [ 24, 25, "nightly" ],
-          "chrome": [ 30, 31, "canary" ],
-          "iphone" : [6],
-          "ipad" : [6],
-          "android-browser" : [4.2],
-          "safari": [ 5.1, 6 ],
-          "opera": [ 12, "next" ]
+          "firefox": [ 25, "nightly" ],
+          "chrome": [ 31, "canary" ],
+          "safari": [ 5.1]
         }
     }
 }
