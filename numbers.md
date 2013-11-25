@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.0.4| jostylr")
+# [math-numbers](# "version: 0.0.5| jostylr")
 
 This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
 
