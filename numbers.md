@@ -93,6 +93,10 @@ Here we define the Num class and all associated code. The code below is suitable
 
         Num.str = _"args to string";
 
+        Num.toStr =  _"make toString work";
+
+        Num.each = _"generate a string from array of values";
+
         _"float | ife(Num)";
 
         _"integer | ife(Num)";
@@ -104,6 +108,7 @@ Here we define the Num class and all associated code. The code below is suitable
         _"complex | ife(Num) ";
 
         _"combo setup | ife(Num)";
+
 
     }).call(this);
 
@@ -185,8 +190,8 @@ To load a set of ops based on a type, we use the following function. It expects 
 
 ### Short version of defining number
 
-Writing out `new Num(3, "float")` is a hassle. So instead we will create a method that creates bound functions to allow for shorthand. 
-`
+Writing out `new Num(3, "float")` is a hassle. So instead we will create a method that creates bound functions to allow for shorthand `Num.float(3)`
+
 
     function (type) { 
         Num.prototype[type] = function () {
@@ -203,6 +208,62 @@ Writing out `new Num(3, "float")` is a hassle. So instead we will create a metho
         var ret = [], i, n = arguments.length;
         for (i=0; i < n; i += 1) {
             ret.push( arguments[i].str() );
+        }
+        return ret;
+    }
+
+### make toString work
+
+    function (type) {
+
+        switch (type) {
+            case "inspect" :
+                Num.prototype.inspect = function () {
+                    return this.str();
+                };
+            break;
+            case "toString" :
+                Num.prototype.toString = function () {
+                    return this.str();
+                };
+            break;
+            case "noInspect" :
+                delete Num.prototype.inspect;
+            break;
+            case "noToString" :
+                delete Num.prototype.toString;
+            break;
+        }
+
+    }
+
+### Generate a string from array of values
+
+Given an array, we loop over it, generating a new array. The first argument is the array and the rest is an array to apply to the .str methods
+
+It checks for it each element being an instance of Num. If it is, .str() is applied. If not, .toString() is applied.
+
+    function (arr) {
+        var ret = [], a, b, args;
+        if (arguments.length <= 3) {
+            a = arguments[1];
+            b = arguments[2];
+            arr.forEach(function (el) {
+                if (el instanceof Num) {
+                    ret.push( el.str(a, b) );
+                } else {
+                    ret.push( el.toString() );
+                }
+            });
+        } else {
+            args = Array.prototype.slice.call(arguments, 1);
+            arr.forEach(function (el) {
+                if (el instanceof Num) {
+                    ret.push( el.str.apply(el, args) );
+                } else {
+                    ret.push( el.toString() );
+                }
+            });
         }
         return ret;
     }
@@ -494,6 +555,7 @@ Each value is represented by an array of js integers with the first entry being 
         div : _"int div",
         quo : _"int quo",
         rem : _"int rem",
+        qure : _"int full division return",
         mgt : _"int bool | substitute(C, mcom, INQ, > 0)",
         mgte : _"int bool | substitute(C, mcom, INQ, >= 0)",
         mlt : _"int bool | substitute(C, mcom, INQ, <  0)",
@@ -969,6 +1031,13 @@ Returns a rational number.
         return Num.rat(div(this, b));
     }
 
+### Int Full Division Return
+
+Return quotient and remainder.
+
+    function (b) {
+        return div(this, b);
+    }
 
 ### Int Quo
 

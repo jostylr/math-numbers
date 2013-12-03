@@ -95,6 +95,54 @@
             return ret;
         };
 
+    Num.toStr =  function (type) {
+        
+            switch (type) {
+                case "inspect" :
+                    Num.prototype.inspect = function () {
+                        return this.str();
+                    };
+                break;
+                case "toString" :
+                    Num.prototype.toString = function () {
+                        return this.str();
+                    };
+                break;
+                case "noInspect" :
+                    delete Num.prototype.inspect;
+                break;
+                case "noToString" :
+                    delete Num.prototype.toString;
+                break;
+            }
+        
+        };
+
+    Num.each = function (arr) {
+            var ret = [], a, b, args;
+            if (arguments.length <= 3) {
+                a = arguments[1];
+                b = arguments[2];
+                arr.forEach(function (el) {
+                    if (el instanceof Num) {
+                        ret.push( el.str(a, b) );
+                    } else {
+                        ret.push( el.toString() );
+                    }
+                });
+            } else {
+                args = Array.prototype.slice.call(arguments, 1);
+                arr.forEach(function (el) {
+                    if (el instanceof Num) {
+                        ret.push( el.str.apply(el, args) );
+                    } else {
+                        ret.push( el.toString() );
+                    }
+                });
+            }
+            return ret;
+        };
+
     (function ( Num ) {var float = Num.float = Num.type("float");
     Num.define("float", {
         parse : function () {
@@ -638,6 +686,9 @@
             },
         rem : function (b) {
                 return div(this, b).r;
+            },
+        qure : function (b) {
+                return div(this, b);
             },
         mgt : function (b) {
                 return (mcom(this.val,b.val) > 0 ) ? true : false;
