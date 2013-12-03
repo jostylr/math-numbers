@@ -16,6 +16,8 @@
         this.Num = Num;
     }
 
+    var ident = function () {return this;};
+
     Num.ops ={};
 
     Num.makeOp = function (name) {
@@ -89,6 +91,54 @@
             var ret = [], i, n = arguments.length;
             for (i=0; i < n; i += 1) {
                 ret.push( arguments[i].str() );
+            }
+            return ret;
+        };
+
+    Num.toStr =  function (type) {
+        
+            switch (type) {
+                case "inspect" :
+                    Num.prototype.inspect = function () {
+                        return this.str();
+                    };
+                break;
+                case "toString" :
+                    Num.prototype.toString = function () {
+                        return this.str();
+                    };
+                break;
+                case "noInspect" :
+                    delete Num.prototype.inspect;
+                break;
+                case "noToString" :
+                    delete Num.prototype.toString;
+                break;
+            }
+        
+        };
+
+    Num.each = function (arr) {
+            var ret = [], a, b, args;
+            if (arguments.length <= 3) {
+                a = arguments[1];
+                b = arguments[2];
+                arr.forEach(function (el) {
+                    if (el instanceof Num) {
+                        ret.push( el.str(a, b) );
+                    } else {
+                        ret.push( el.toString() );
+                    }
+                });
+            } else {
+                args = Array.prototype.slice.call(arguments, 1);
+                arr.forEach(function (el) {
+                    if (el instanceof Num) {
+                        ret.push( el.str.apply(el, args) );
+                    } else {
+                        ret.push( el.toString() );
+                    }
+                });
             }
             return ret;
         };
@@ -179,6 +229,14 @@
         inv : function () {
                 return new Num (1/this.val, "float");
             },
+        sign : function () {
+                if (this.val >= 0) {
+                    return "";
+                } else {
+                    return "-";
+                }
+            },
+        simplify : ident,
         make : float
     });
     Num.define("float,float", {
@@ -409,7 +467,6 @@
             return ret;
         
         };
-    var ident = function () {return int(this.val);};
     
     Num.define("int", {
         parse : function self () {
@@ -536,7 +593,7 @@
             },
         inv : function () {
                 var x = this;
-                return Num.rat({neg: x.sign(), w:zero, n: unit, d: x});
+                return Num.rat({neg: x.sign(), w:zero, n: unit, d: x.abs()});
             },
         shift : function (d) {
                 if ( d>0) {
@@ -550,6 +607,7 @@
                     return this;
                 }
             },
+        simplify : ident,
         make: int
     });
     Num.define("int,int", {
@@ -628,6 +686,9 @@
             },
         rem : function (b) {
                 return div(this, b).r;
+            },
+        qure : function (b) {
+                return div(this, b);
             },
         mgt : function (b) {
                 return (mcom(this.val,b.val) > 0 ) ? true : false;
@@ -841,7 +902,7 @@
                 if (this.n().eq(zero)) {
                     return rat({w:int(NaN), n:int(NaN), d: int(NaN)});
                 }
-                return rat({w:zero, n: this.d(), d: this.n()});
+                return rat({neg: this.sign(), w:zero, n: this.d(), d: this.n()}).simplify();
             },
         abs : function () {
                 var clone = rat(this.val);
@@ -926,7 +987,7 @@
                 var imp, v, w, d, n;
                 v = this.val;
                 if (this.improper) {
-                    v = this.improper;
+                    this.val = this.improper;
                 } else {
                     this.val = this.improper = imp = {};
                     imp.neg = v.neg;
@@ -943,7 +1004,7 @@
                 var mix, v, w, d, n, temp;
                 v = this.val;
                 if (this.mixed) {
-                    v = this.mixed;
+                    this.val = this.mixed;
                 } else {
                     this.mixed = this.val = mix = {};
                     mix.neg = v.neg;
@@ -997,23 +1058,39 @@
             },
         floor : function () {
                 this.mix();
-                return this.w();
-            },
-        ceil : function () {
-                this.mix();
-                return this.w().add(unit);
-            },
-        round : function () {
-                this.mix();
-                if (this.frac().gt(half)) {
-                    return this.w().add(unit);
+                if (this.sign() ) {
+                    return this.w().add(unit).neg();
                 } else {
                     return this.w();
                 }
             },
+        ceil : function () {
+                this.mix();
+                if (this.sign() ) {
+                    return this.w().neg();
+                } else {
+                    return this.w().add(unit);
+                }
+            },
+        round : function () {
+                this.mix();
+                if (this.sign()) {
+                    if (this.frac().gt(half)) {
+                        return this.w().add(unit).neg();
+                    } else {
+                        return this.w().neg();
+                    }            
+                } else {
+                    if (this.frac().gt(half)) {
+                        return this.w().add(unit);
+                    } else {
+                        return this.w();
+                    }
+                }
+            },
         frac : function () {
                 this.mix();
-                return rat({neg:this.neg, w:zero, n:this.n(), d:this.d()});
+                return rat({w:zero, n:this.n(), d:this.d()});
             },
         make: rat
     });
@@ -1064,7 +1141,12 @@
         mul : function (b) {
                 var l = this.val;
                 var r = b.val;
-                var neg = (l.neg != r.neg);
+                var neg;
+                if  ( (l.neg && r.neg) || (!l.neg && !r.neg) ) {
+                    neg = false;
+                } else {
+                    neg = true;
+                }
                 var wv = rat({w:l.w.mul(r.w), neg:false, n:zero, d: unit});
                 var wmc =  rat({w:zero, neg : false, n : l.w.mul(r.n), d: r.d});
                 var vnd =  rat({w:zero, neg : false, n : r.w.mul(l.n), d: l.d});
@@ -1496,6 +1578,7 @@
                 var half = sci({neg: false, i:int(5), E:this.E()-(n-1)-1, p:Infinity});
                 return this.add(half).floor(n);
             },
+        simplify : ident,
         make: sci
     });
     Num.define("sci,sci", {
@@ -1750,10 +1833,13 @@
                 return this;
             },
         apply_re : function (str) {
-                return this.val.re[str].apply(this, Array.prototype.slice.call(arguments, 1));
+                return this.val.re[str].apply(this.val.re, Array.prototype.slice.call(arguments, 1));
             },
         apply_im : function (str) {
-                return this.val.im[str].apply(this, Array.prototype.slice.call(arguments, 1));
+                return this.val.im[str].apply(this.val.im, Array.prototype.slice.call(arguments, 1));
+            },
+        simplify : function () {
+                return this.apply("simplify");
             },
         make: com
     });
@@ -1769,8 +1855,8 @@
         mul : function (r) {
                 var l = this;
                 var res = com({
-                    re : l.re().mul(r.re()).sub(l.im().mul(r.im())),
-                    im : l.re().mul(r.im()).add(l.im().mul(r.re()))
+                    re : l.re().mul(r.re()).sub(l.im().mul(r.im())).simplify(),
+                    im : l.re().mul(r.im()).add(l.im().mul(r.re())).simplify()
                 });
                 return res;
             },
