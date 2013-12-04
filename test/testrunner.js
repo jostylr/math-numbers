@@ -57,7 +57,7 @@ test("float tests" , function (t) {
     var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
     var others = [['ipow', Num.int(5)], ['ipow', -4], ['sign']];
     var nosim = [];
-    var format = {};
+    var format = "";
 
     samples.forEach(function (bin) {
         var a = bin[0], 
@@ -270,7 +270,7 @@ test("integers",  function (t) {
         var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
         var others = [['ipow', Num.int(5)], ['ipow', -4], ['sign']];
         var nosim = [];
-        var format = {};
+        var format = "";
         
         others.push(["shift", 2]);
         ops.push("quo", "rem", "gcd", "lcm");
@@ -498,13 +498,13 @@ test("rationals" , function (t) {
         var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
         var others = [['ipow', Num.int(5)], ['ipow', -4], ['sign']];
         var nosim = [];
-        var format = {};
+        var format = "";
         
         unitary.push("w", "n", "d", "mix", "reduce", "sim", "simplify", "frac");
         
         nosim.push(["scale", 5], ["imp"]);
         
-        format.simplify = true;
+        format = "simplify";
     
         samples.forEach(function (bin) {
             var a = bin[0], 
@@ -705,7 +705,7 @@ test("scientific" , function (t) {
         var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
         var others = [['ipow', Num.int(5)], ['ipow', -4], ['sign']];
         var nosim = [];
-        var format = {};
+        var format = "";
     
         samples.forEach(function (bin) {
             var a = bin[0], 
@@ -856,7 +856,7 @@ test("complex" , function (t) {
         var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
         var others = [['ipow', Num.int(5)], ['ipow', -4], ['sign']];
         var nosim = [];
-        var format = {};
+        var format = "";
         
         ops = ['add', 'sub', 'mul', 'div'];
         comps = [];

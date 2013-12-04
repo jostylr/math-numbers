@@ -117,43 +117,63 @@ These are examples of converting from one type of number to another.
     console.log( Num.each([x, y, true],  "sci" ).join("\n") );
 
 
+## Old Division
+
+    /*global console, require*/
+  
+    var ratdec = function (num, den, max) {
+  
+        max = max || 100;
+        var orig, res, a, b, index = Infinity;
+
+        den = Num.int(den);
+        var zero = den.zero();
+        orig = Num.int(num);
+        res = orig.qure(den);
+
+        var rem = [res.r.str()];
+        var quo = [res.q.str()];
+        var rep = [];
+
+        a = res.r;
+
+        for (i = 0; i<max; i += 1) { 
+            a = a.mul(10);
+            res = a.qure(den);
+            quo.push(res.q.str());
+
+            b = res.r.str();
+            index = rem.indexOf(b);
+            if (index !== -1) {
+                break;
+            }
+            rem.push(b);
+            a = res.r;
+        }
+
+        console.log(orig.str()+'/'+den.str());
+        if (index === -1) {
+            return quo[0]+"."+quo.join('');
+        } else {
+            return quo[0]+"."+quo.slice(1,index+1).join('') +    ' ' +  quo.slice(index+1).join('');
+        }
+      
+        
+    };
+
+Type in ratdec(num, den) where num is the numerator (integer) and den is the denominator (integer).
+
+Example:  ratdec(42, 3)
+
+If you want to do something long, you can try ratdec(42, 823, 1000). The third number is the max period detectable before giving up.
+
 ## Division
 
     /*global console, require*/
     var Num = require('../index.js');
+    var r = Num.rat("2 5/4");
 
-    var orig, res, a, b, i, index = Infinity;
+    console.log(r.str("dec:10"));
 
-    var den = Num.int('5');
-    var zero = den.zero();
-    orig = Num.int('4');
-    res = orig.qure(den);
 
-    var rem = [res.r.str()];
-    var quo = [res.q.str()];
-    var rep = [];
 
-    a = res.r;
-
-    for (i = 0; i<2000; i += 1) { 
-        a = a.mul(10);
-        res = a.qure(den);
-        quo.push(res.q.str());
-
-Check to see if we have seen the remainder already.
-
-        b = res.r.str();
-        index = rem.indexOf(b);
-        if (index !== -1) {
-            break;
-        }
-        rem.push(b);
-        a = res.r;
-    }
-
-    console.log(orig.str()+'/'+den.str());
-    if (index === -1) {
-        console.log(quo[0]+"."+quo.join(''));
-    } else {
-        console.log(quo[0]+"."+quo.slice(1,index+1).join('')+' '+quo.slice(index+1).join(''));
-    }

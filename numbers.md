@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.0.5| jostylr")
+# [math-numbers](# "version: 0.0.6| jostylr")
 
 This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
 
@@ -12,7 +12,7 @@ A Num is an object with various properties and methods defined. (I) is for insta
 Here we define the directory structure for math-numbers.
 
 * [index.js](#num "save:|jshint") This is the node module entry point and only relevant file. It is a small file.
-* [ghpages/index.js](#num "save:|jshint") A copy of the index file for ghpages
+* [ghpages/index.js](#num "save:") A copy of the index file for ghpages
 * [README.md](#readme "save:| clean raw") The standard README.
 * [package.json](#npm-package "save: json  | jshint") The requisite package file for a npm project. 
 * [TODO.md](#todo "save: | clean raw") A list of growing and shrinking items todo.
@@ -78,6 +78,8 @@ Here we define the Num class and all associated code. The code below is suitable
         } else {
             this.Num = Num;
         }
+
+        var parseFormat = _"parse str format";
 
         var ident = function () {return this;};
 
@@ -274,6 +276,36 @@ Just a simple function to implement iterating over an array of Nums and getting 
 
     function (value) {
         return value.str(); 
+    }
+
+### Parse str format
+
+Here we need to take a string of the form "key:val,keyA:val1:val2,keyB" into {key:val, keyA:[val1, val2], keyB:true}. This is a dumb parser, so commas and colons are excluded from key, value names.
+
+    function (str) {
+        var ret = {};
+        if (! str) {
+            return ret;
+        }
+        var arr = str.split(",");
+        arr.forEach(function (el) {
+            var temp = el.split(":");
+            if (temp.length === 0) {
+                return;
+            }
+            var key = temp[0].trim();
+            if (temp.length === 1) {
+                ret[key] = true;
+            } else if (temp.length === 2) {
+                ret[key] = temp[1].trim();
+            } else {
+                ret[key] = temp.slice(1).map(function (el) {
+                    return el.trim();
+                });
+            }
+        });
+
+        return ret;
     }
 
 ### Make a constant
@@ -1230,20 +1262,38 @@ Take neg and turn it false;
 
 ### rat Str
 
-Need to put together a string. 
+Need to put together a string. name:val1:val2,name:val... with name, given value of true. Most likely case is name:val
 
-    function (options) {
-        if (options) {
-            if (options.simplify) {
-                this.simplify();
-            }
+Example  "dec:10" for decimal version with at most 10 digits; reps will work.
+
+    function (format) {
+
+        var options = parseFormat(format);
+
+        if (options.simplify) {
+            this.simplify();
         }
-        var v = this.val;
 
-        var ret = '';
+        var v = this.val,
+            ret = '',
+            parts; 
+
         if (v.neg) {
             ret = '-';
         }
+        
+        if ( options.hasOwnProperty("dec") ) {
+            
+            parts = _"ratdec |ife(num=v.n, den=v.d, max=options.dec)";
+
+            ret += v.w.add(parts[0]).str()+".";
+            ret += parts[1];
+            ret += " " + parts[2];
+            return ret;
+        }
+        
+        //default
+        
         if (!v.w.eq(zero) ) {
             ret += v.w.str() + " ";
         }
@@ -1259,6 +1309,43 @@ Need to put together a string.
     }
 
 
+#### ratdec
+
+This will convert a rational number into a decimal. 
+
+From env: num, den, max. 
+    
+        max = max || 100;
+        var orig, res, a, b, index = Infinity, i;
+
+        den = Num.int(den);
+        orig = Num.int(num);
+        res = orig.qure(den);
+
+        var rem = [res.r.str()];
+        var quo = [res.q.str()];
+
+        a = res.r;
+
+        for (i = 0; i<max; i += 1) { 
+            a = a.mul(10);
+            res = a.qure(den);
+            quo.push(res.q.str());
+
+            b = res.r.str();
+            index = rem.indexOf(b);
+            if (index !== -1) {
+                break;
+            }
+            rem.push(b);
+            a = res.r;
+        }
+
+        if (index === -1) {
+            return [quo[0], quo.join('')];
+        } else {
+            return [quo[0], quo.slice(1,index+1).join(''),  quo.slice(index+1).join('')];
+        }
 
 
 ### rat Whole

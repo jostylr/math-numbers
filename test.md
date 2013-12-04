@@ -287,7 +287,7 @@ This will test the basic math functions for our float system. This is a number s
 
     nosim.push(["scale", 5], ["imp"]);
 
-    format.simplify = true;
+    format = "simplify";
 
 
 ## Scientific
@@ -427,7 +427,7 @@ These are the operations, comparisons (yielding true/false), and unitary operato
     var unitary = ['neg', 'round', 'floor', 'abs', 'ceil', 'inv'];
     var others = [['ipow', Num.int(5)], ['ipow', -4], ['sign']];
     var nosim = [];
-    var format = {};
+    var format = "";
 
 
 ## Core redundant code

@@ -16,6 +16,32 @@
         this.Num = Num;
     }
 
+    var parseFormat = function (str) {
+            var ret = {};
+            if (! str) {
+                return ret;
+            }
+            var arr = str.split(",");
+            arr.forEach(function (el) {
+                var temp = el.split(":");
+                if (temp.length === 0) {
+                    return;
+                }
+                var key = temp[0].trim();
+                if (temp.length === 1) {
+                    ret[key] = true;
+                } else if (temp.length === 2) {
+                    ret[key] = temp[1].trim();
+                } else {
+                    ret[key] = temp.slice(1).map(function (el) {
+                        return el.trim();
+                    });
+                }
+            });
+        
+            return ret;
+        };
+
     var ident = function () {return this;};
 
     Num.ops ={};
@@ -909,18 +935,65 @@
                 clone.val.neg = false;
                 return clone;
             },
-        str : function (options) {
-                if (options) {
-                    if (options.simplify) {
-                        this.simplify();
-                    }
-                }
-                var v = this.val;
+        str : function (format) {
             
-                var ret = '';
+                var options = parseFormat(format);
+            
+                if (options.simplify) {
+                    this.simplify();
+                }
+            
+                var v = this.val,
+                    ret = '',
+                    parts; 
+            
                 if (v.neg) {
                     ret = '-';
                 }
+                
+                if ( options.hasOwnProperty("dec") ) {
+                    
+                    parts = (function ( num, den, max ) {    max = max || 100;
+                            var orig, res, a, b, index = Infinity, i;
+                        
+                            den = Num.int(den);
+                            orig = Num.int(num);
+                            res = orig.qure(den);
+                        
+                            var rem = [res.r.str()];
+                            var quo = [res.q.str()];
+                        
+                            a = res.r;
+                        
+                            for (i = 0; i<max; i += 1) { 
+                                a = a.mul(10);
+                                res = a.qure(den);
+                                quo.push(res.q.str());
+                        
+                                b = res.r.str();
+                                index = rem.indexOf(b);
+                                if (index !== -1) {
+                                    break;
+                                }
+                                rem.push(b);
+                                a = res.r;
+                            }
+                        
+                            if (index === -1) {
+                                return [quo[0], quo.join('')];
+                            } else {
+                                return [quo[0], quo.slice(1,index+1).join(''),  quo.slice(index+1).join('')];
+                            }
+                        } ( v.n,v.d,options.dec ) );
+            
+                    ret += v.w.add(parts[0]).str()+".";
+                    ret += parts[1];
+                    ret += " " + parts[2];
+                    return ret;
+                }
+                
+                //default
+                
                 if (!v.w.eq(zero) ) {
                     ret += v.w.str() + " ";
                 }
