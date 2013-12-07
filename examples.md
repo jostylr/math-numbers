@@ -8,6 +8,7 @@ Here is a set of runnable examples
 * [examples/factorial.js](#factorial-broken-up "save: | jshint")
 * [examples/conversion.js](#conversions "save:|jshint")
 * [examples/division.js](#division "save:|jshint")
+* [examples/ratdecparse.js](#parsing-ratdec "save:|jshint")
 
 ## Factorial broken up
 
@@ -175,5 +176,13 @@ If you want to do something long, you can try ratdec(42, 823, 1000). The third n
 
     console.log(r.str("dec:10"));
 
+
+## Parsing ratdec
+
+    /*global console, require */
+    var Num = require('../index.js');
+    var r = Num.rat("6.24 3");
+    console.log(r, r.w);
+    console.log(r.str(), r.str("simplify"));
 
 

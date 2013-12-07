@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.0.6| jostylr")
+# [math-numbers](# "version: 0.0.7| jostylr")
 
 This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
 
@@ -116,13 +116,16 @@ Here we define the Num class and all associated code. The code below is suitable
 
 ## Num constructor
 
+Using ret since this allows the parsing to parse out a number (ratdec, looking at you) and return that instead. Most of the time, it is this that is being returned. 
+
 
     function (val, type, options) {
+        var ret;
         this.original = val;
         this.type = type;
-        this.parse.apply(this, options);  // will convert original into appropriate val
+        ret = this.parse.apply(this, options);  // will convert original into appropriate val
 
-        return this;
+        return ret;
     }
 
 
@@ -360,6 +363,9 @@ We need to filter this into separate cases. If the power is a positive integer, 
             } else {
                 power = 1;
             }
+        }
+        if (power === 0) {
+            return Num.int(1);
         }
         var prod = x.unit(), xsq = x;
         if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
@@ -1158,14 +1164,26 @@ This models rational numbers as a triple pair of integers: whole, numerator, den
 
 string, number, objects already in basic form. Given a version with numbers, probably should clone it. 
 
+This whole parsing things needs to be cleaned up.
+
     function () {
-        var o = this.original, m;
+        var o = this.original, m, ret;
         if (typeof o === "string") {
+            //mixed
             m =  o.match(/^\s*(-)?\s*(\d+)?\s+(\d+)?\s*\/?\s*(\d+)?\s*$/);
             if (!m) {
+                //fraction
                 m =  o.match(/^\s*(-)?(\d+)?\s*\/\s*(\d+)?\s*$/);
                 if (!m) {
-                    this.val = {neg: false, w: int(NaN), n: int(NaN), d: int(NaN)};
+                    //rational in decimal form
+                    m = o.match(/^\s*(-)?(\d+)?\.(\d+)?\s(\d+)\s*(E(-|\+)?(\d+))?\s*$/);
+                    if (!m) {
+                        this.val = {neg: false, w: int(NaN), n: int(NaN), d: int(NaN)};
+                    } else {
+                        ret = _"parsing rational dec |ife(m)";
+                        ret.original = o;
+                        return ret;
+                    }
                 } else {
                     this.val = {
                         neg: !!m[1], 
@@ -1225,6 +1243,42 @@ string, number, objects already in basic form. Given a version with numbers, pro
 
         return this;
     }
+
+#### parsing rational dec
+
+We want to convert a rational written in decimal form back into rational form. 
+
+Form:  sign lead.nonrep rep E
+
+rep into fraction is done by computing rep/ ( 10^{length of rep}  - 1)
+
+Then we add that to rep followed by dividing by 10^length of nonrep
+
+We add that to the lead, negate if needed, and shift it using E if needed. 
+
+
+    var lead = m[2],
+        nonrep = m[3],
+        rep = m[4],
+        unit = Num.int(1),
+        E, ret, shift, repfrac, dec ;
+
+    repfrac = Num.int(rep).div(Num.int(10).ipow(rep.length).sub( unit ) );
+    dec = Num.int(nonrep).add(repfrac).div(Num.int(10).ipow(nonrep.length));
+    ret = (Num.int(lead)).add(dec);
+    
+    if (m[1]) {
+        ret = ret.neg();
+    }
+
+    if (m[5]) {
+        E = parseInt(m[5].slice(1), 10);
+        shift = Num.int(10).ipow(E);
+        return ret.mul(shift);
+    } else {
+        return ret;
+    }
+
 
 ### rat Negate
 
@@ -1342,7 +1396,7 @@ From env: num, den, max.
         }
 
         if (index === -1) {
-            return [quo[0], quo.join('')];
+            return [quo[0], quo.join(''), ''];
         } else {
             return [quo[0], quo.slice(1,index+1).join(''),  quo.slice(index+1).join('')];
         }

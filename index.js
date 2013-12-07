@@ -3,11 +3,12 @@
     /*global module*/
 
     var Num = function (val, type, options) {
+            var ret;
             this.original = val;
             this.type = type;
-            this.parse.apply(this, options);  // will convert original into appropriate val
+            ret = this.parse.apply(this, options);  // will convert original into appropriate val
         
-            return this;
+            return ret;
         };
 
     if (typeof module !== 'undefined' && module.exports) {
@@ -220,6 +221,9 @@
                     } else {
                         power = 1;
                     }
+                }
+                if (power === 0) {
+                    return Num.int(1);
                 }
                 var prod = x.unit(), xsq = x;
                 if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
@@ -582,6 +586,9 @@
                         power = 1;
                     }
                 }
+                if (power === 0) {
+                    return Num.int(1);
+                }
                 var prod = x.unit(), xsq = x;
                 if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
                     while (1) {
@@ -852,13 +859,44 @@
     
     Num.define("rat", {
         parse : function () {
-                var o = this.original, m;
+                var o = this.original, m, ret;
                 if (typeof o === "string") {
+                    //mixed
                     m =  o.match(/^\s*(-)?\s*(\d+)?\s+(\d+)?\s*\/?\s*(\d+)?\s*$/);
                     if (!m) {
+                        //fraction
                         m =  o.match(/^\s*(-)?(\d+)?\s*\/\s*(\d+)?\s*$/);
                         if (!m) {
-                            this.val = {neg: false, w: int(NaN), n: int(NaN), d: int(NaN)};
+                            //rational in decimal form
+                            m = o.match(/^\s*(-)?(\d+)?\.(\d+)?\s(\d+)\s*(E(-|\+)?(\d+))?\s*$/);
+                            if (!m) {
+                                this.val = {neg: false, w: int(NaN), n: int(NaN), d: int(NaN)};
+                            } else {
+                                ret = (function ( m ) {var lead = m[2],
+                                        nonrep = m[3],
+                                        rep = m[4],
+                                        unit = Num.int(1),
+                                        E, ret, shift, repfrac, dec ;
+                                    
+                                    repfrac = Num.int(rep).div(Num.int(10).ipow(rep.length).sub( unit ) );
+                                    dec = Num.int(nonrep).add(repfrac).div(Num.int(10).ipow(nonrep.length));
+                                    ret = (Num.int(lead)).add(dec);
+                                    
+                                    if (m[1]) {
+                                        ret = ret.neg();
+                                    }
+                                    
+                                    if (m[5]) {
+                                        E = parseInt(m[5].slice(1), 10);
+                                        shift = Num.int(10).ipow(E);
+                                        return ret.mul(shift);
+                                    } else {
+                                        return ret;
+                                    }
+                                    } ( m ) );
+                                ret.original = o;
+                                return ret;
+                            }
                         } else {
                             this.val = {
                                 neg: !!m[1], 
@@ -980,7 +1018,7 @@
                             }
                         
                             if (index === -1) {
-                                return [quo[0], quo.join('')];
+                                return [quo[0], quo.join(''), ''];
                             } else {
                                 return [quo[0], quo.slice(1,index+1).join(''),  quo.slice(index+1).join('')];
                             }
@@ -1015,6 +1053,9 @@
                     } else {
                         power = 1;
                     }
+                }
+                if (power === 0) {
+                    return Num.int(1);
                 }
                 var prod = x.unit(), xsq = x;
                 if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
@@ -1545,6 +1586,9 @@
                         power = 1;
                     }
                 }
+                if (power === 0) {
+                    return Num.int(1);
+                }
                 var prod = x.unit(), xsq = x;
                 if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
                     while (1) {
@@ -1862,6 +1906,9 @@
                     } else {
                         power = 1;
                     }
+                }
+                if (power === 0) {
+                    return Num.int(1);
                 }
                 var prod = x.unit(), xsq = x;
                 if ( (typeof power === "number") && (power > 0) && (Math.floor(power) === power) ) {
