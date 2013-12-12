@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.0.7| jostylr")
+# [math-numbers](# "version: 0.0.8| jostylr")
 
 This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
 
@@ -1164,7 +1164,7 @@ This models rational numbers as a triple pair of integers: whole, numerator, den
 
 string, number, objects already in basic form. Given a version with numbers, probably should clone it. 
 
-This whole parsing things needs to be cleaned up.
+!!!!!!!!!!!  This whole parsing things needs to be cleaned up.
 
     function () {
         var o = this.original, m, ret;
@@ -1178,7 +1178,12 @@ This whole parsing things needs to be cleaned up.
                     //rational in decimal form
                     m = o.match(/^\s*(-)?(\d+)?\.(\d+)?\s(\d+)\s*(E(-|\+)?(\d+))?\s*$/);
                     if (!m) {
-                        this.val = {neg: false, w: int(NaN), n: int(NaN), d: int(NaN)};
+                        m = o.match(/^\s*(-)?(\d+)\s*$/);
+                        if (!m) {
+                            return false;
+                        } else {
+                            this.val = {neg: !!m[1], w: int(m[2]), n: zero, d: int(1)};
+                        }
                     } else {
                         ret = _"parsing rational dec |ife(m)";
                         ret.original = o;
@@ -1190,7 +1195,7 @@ This whole parsing things needs to be cleaned up.
                         w: zero,
                         n: int(m[2]||0),
                         d: int(m[3]||1)
-                    };                        
+                    };  
                 }
             } else {
                 this.val = { 
@@ -1198,7 +1203,7 @@ This whole parsing things needs to be cleaned up.
                     w: int(m[2]||0),
                     n: int(m[3]||0),
                     d: int(m[4]||1)
-                };
+                };                            
             }
         } else if (typeof o === "number") {
             if (Math.floor(o) === o ) { // integer
@@ -1343,7 +1348,7 @@ Example  "dec:10" for decimal version with at most 10 digits; reps will work.
             ret += v.w.add(parts[0]).str()+".";
             ret += parts[1];
             ret += " " + parts[2];
-            return ret;
+            return ret.trim();
         }
         
         //default
@@ -1359,7 +1364,7 @@ Example  "dec:10" for decimal version with at most 10 digits; reps will work.
             ret = "0";
         }
 
-        return ret;
+        return ret.trim();
     }
 
 
@@ -1367,9 +1372,13 @@ Example  "dec:10" for decimal version with at most 10 digits; reps will work.
 
 This will convert a rational number into a decimal. 
 
-From env: num, den, max. 
+From env: num, den, max. Note if max is true, then no limit was passed in. What a hack!
+
+We are given something of the form n/d and we want to make this into something of the form w.q r  where w is a whole number, q is a non-repeating part of the division and r is a repeating part. We go through computing the remainder and quotient, shifting by 10 on each loop. If the remainder is ever repeated, then we have hit a loop. 
     
-        max = max || 100;
+        if (max === true) {
+            max = 100;
+        }
         var orig, res, a, b, index = Infinity, i;
 
         den = Num.int(den);
@@ -1396,7 +1405,7 @@ From env: num, den, max.
         }
 
         if (index === -1) {
-            return [quo[0], quo.join(''), ''];
+            return [quo[0], quo.slice(1).join(''), ''];
         } else {
             return [quo[0], quo.slice(1,index+1).join(''),  quo.slice(index+1).join('')];
         }

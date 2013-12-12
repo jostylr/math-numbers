@@ -870,7 +870,12 @@
                             //rational in decimal form
                             m = o.match(/^\s*(-)?(\d+)?\.(\d+)?\s(\d+)\s*(E(-|\+)?(\d+))?\s*$/);
                             if (!m) {
-                                this.val = {neg: false, w: int(NaN), n: int(NaN), d: int(NaN)};
+                                m = o.match(/^\s*(-)?(\d+)\s*$/);
+                                if (!m) {
+                                    return false;
+                                } else {
+                                    this.val = {neg: !!m[1], w: int(m[2]), n: zero, d: int(1)};
+                                }
                             } else {
                                 ret = (function ( m ) {var lead = m[2],
                                         nonrep = m[3],
@@ -903,7 +908,7 @@
                                 w: zero,
                                 n: int(m[2]||0),
                                 d: int(m[3]||1)
-                            };                        
+                            };  
                         }
                     } else {
                         this.val = { 
@@ -911,7 +916,7 @@
                             w: int(m[2]||0),
                             n: int(m[3]||0),
                             d: int(m[4]||1)
-                        };
+                        };                            
                     }
                 } else if (typeof o === "number") {
                     if (Math.floor(o) === o ) { // integer
@@ -991,7 +996,9 @@
                 
                 if ( options.hasOwnProperty("dec") ) {
                     
-                    parts = (function ( num, den, max ) {    max = max || 100;
+                    parts = (function ( num, den, max ) {    if (max === true) {
+                                max = 100;
+                            }
                             var orig, res, a, b, index = Infinity, i;
                         
                             den = Num.int(den);
@@ -1018,7 +1025,7 @@
                             }
                         
                             if (index === -1) {
-                                return [quo[0], quo.join(''), ''];
+                                return [quo[0], quo.slice(1).join(''), ''];
                             } else {
                                 return [quo[0], quo.slice(1,index+1).join(''),  quo.slice(index+1).join('')];
                             }
@@ -1027,7 +1034,7 @@
                     ret += v.w.add(parts[0]).str()+".";
                     ret += parts[1];
                     ret += " " + parts[2];
-                    return ret;
+                    return ret.trim();
                 }
                 
                 //default
@@ -1043,7 +1050,7 @@
                     ret = "0";
                 }
             
-                return ret;
+                return ret.trim();
             },
         ipow : function (power) {
                 var x = this;

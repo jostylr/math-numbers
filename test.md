@@ -619,3 +619,23 @@ This is only suitable for synchronous testing. Hey, this is a math library, for 
     test("scientific" , _"scientific*test template");
 
     test("complex" , _"complex*test template");
+
+    test("ad hoc" , _"adhoc");
+
+
+## adhoc
+
+This is a place to stick tests for problems that come up. This is opposed to the others which are supposed to be more systematic. 
+
+    function (t) {
+
+        t.equal( Num.rat("1/7").str("dec"), "0. 142857", "purely repeating fraction, no limit");
+
+        t.equal( Num.rat("1/7").str("dec:3"), "0.142", "purely repeating fraction, not enough digits to display");
+
+        t.equal( Num.rat("1 1/7").str("dec"), "1. 142857", "purely repeating fraction with integer");
+
+        t.equal(Num.rat("2").add(Num.rat("3")).str(), "5", "2+3 = 5, rationally");
+
+        t.end();
+    }
