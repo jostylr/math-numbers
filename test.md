@@ -643,7 +643,7 @@ This is a place to stick tests for problems that come up. This is opposed to the
         t.equal(x.sub(Num.sci("1.5E0:30")).str(), "6.66E-2:28");
         t.equal(x.sub(Num.sci("1.566:30")).str(), "6E-4:26");
 
-        t.equal(Num.sci("1.566E0:30").str("level:3"), "1.56");
+        t.equal(Num.sci("1.566E0:30").str("level:3"), "1.566");
 
 
         t.end();

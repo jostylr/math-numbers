@@ -1951,8 +1951,11 @@ Format:  level:precision number for display, full is for showing the full number
             ret = "0";
         }
 
+        isInteger =  ( (temp.length === (this.E()+1) ) || (ret === "0") ) ;
+
+
         // d
-        if ( (!options.full) && (temp.length < pre + 1) && (temp.length > 1) ) {
+        if ( (!options.full) && (temp.length < pre + 1) && !isInteger ) {
             if (isFinite(pre)) {
                 ret += ":"+pre;        
             } else {

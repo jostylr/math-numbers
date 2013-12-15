@@ -1573,10 +1573,6 @@
                     pre = Infinity;
                 }
             
-                if (this.E() === -Infinity) {
-                    return "0";
-                }
-            
                 var out = this.round(pre+1);
                 var temp = out.val.i.str();
             
@@ -1593,8 +1589,15 @@
                     ret += "E"+this.E();
                 }
             
+                //overwrites
+                if (this.E() === -Infinity) {
+                    ret = "0";
+                }
+            
+                isInteger =  ( (temp.length === (this.E()+1) ) || (ret === "0") ) ;
+            
                 // d
-                if ( (!options.full) && (temp.length < pre + 1) && (temp.length > 1) ) {
+                if ( (!options.full) && (temp.length < pre + 1) && !isInteger ) {
                     if (isFinite(pre)) {
                         ret += ":"+pre;        
                     } else {
