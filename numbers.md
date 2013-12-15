@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.0.8| jostylr")
+# [math-numbers](# "version: 0.0.9| jostylr")
 
 This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
 
@@ -1951,7 +1951,7 @@ Format:  level:precision number for display, full is for showing the full number
             ret = "0";
         }
 
-        isInteger =  ( (temp.length === (this.E()+1) ) || (ret === "0") ) ;
+        var isInteger =  ( (temp.length === (this.E()+1) ) || (ret === "0") ) ;
 
 
         // d

@@ -1594,7 +1594,7 @@
                     ret = "0";
                 }
             
-                isInteger =  ( (temp.length === (this.E()+1) ) || (ret === "0") ) ;
+                var isInteger =  ( (temp.length === (this.E()+1) ) || (ret === "0") ) ;
             
                 // d
                 if ( (!options.full) && (temp.length < pre + 1) && !isInteger ) {
