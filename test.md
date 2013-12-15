@@ -299,13 +299,13 @@ This will test the basic math functions for our float system. This is a number s
 
 [expected]()
 
-    zero: 0.E-Infinity:oo, one: 1
+    zero: 0, one: 1
     a: -1.45E34, b: 4.532312342345234523E12
     ?: a ? b; b ? a, a ? a, b ? a
     add: -1.45E34; -1.45E34; -2.90E34; 9.064624684690469046E12
-    sub: -1.45E34; 1.45E34; 0.E-Infinity:2; 0.E-Infinity:18
+    sub: -1.45E34; 1.45E34; 0; 0
     mul: -6.57E46; -6.57E46; 2.10E68; 2.054185516857494634E24
-    div: -3.20E21; -3.13E-22; 1.00E0; 1.000000000000000000E0
+    div: -3.20E21; -3.13E-22; 1.00; 1.000000000000000000
     max: 4.532312342345234523E12; 4.532312342345234523E12; -1.45E34; 4.532312342345234523E12
     mmax: -1.45E34; -1.45E34; -1.45E34; 4.532312342345234523E12
     min: -1.45E34; -1.45E34; -1.45E34; 4.532312342345234523E12
@@ -332,16 +332,16 @@ This will test the basic math functions for our float system. This is a number s
     b ipow -4: 2.369848996475508153E-49
     a sign : -
     b sign : 
-    a: 1.2341234E-30, b: 2
+    a: 1.2341234E-30:50, b: 2
     ?: a ? b; b ? a, a ? a, b ? a
-    add: 1.2E0; 1.2E0; 2.4682468E-30; 4
-    sub: 1.2E0; -1.2E0; 0.E-Infinity:7; 0.E-Infinity:1
-    mul: 2.5E-30; 2.5E-30; 1.5230606E-60; 4
-    div: 6.2E-31; 1.6E30; 1.0000000E0; 1.0E0
-    max: 2; 2; 1.2341234E-30; 2
-    mmax: 2; 2; 1.2341234E-30; 2
-    min: 1.2341234E-30; 1.2341234E-30; 1.2341234E-30; 2
-    mmin: 1.2341234E-30; 1.2341234E-30; 1.2341234E-30; 2
+    add: 2.0000000000000000000000000000012341234:50; 2.0000000000000000000000000000012341234:50; 2.4682468E-30:50; 4
+    sub: -1.9999999999999999999999999999987658766:50; 1.9999999999999999999999999999987658766:50; 0; 0
+    mul: 2.4682468E-30:50; 2.4682468E-30:50; 1.52306056642756E-60:50; 4
+    div: 6.17061700000000000000000000000000000000000000000000E-31; 1.62058348460129675849270826564021069529999998379417E30; 1.00000000000000000000000000000000000000000000000000; 1.00000000000000000000000000000000000000000000000000
+    max: 2; 2; 1.2341234E-30:50; 2
+    mmax: 2; 2; 1.2341234E-30:50; 2
+    min: 1.2341234E-30:50; 1.2341234E-30:50; 1.2341234E-30:50; 2
+    mmin: 1.2341234E-30:50; 1.2341234E-30:50; 1.2341234E-30:50; 2
     mgt: false; true; false; false
     mgte: false; true; true; true
     mlt: true; false; false; false
@@ -352,16 +352,16 @@ This will test the basic math functions for our float system. This is a number s
     lt: true; false; false; false
     lte: true; false; true; true
     eq: false; false; true; true
-    neg: -1.2341234E-30; -2
-    round: 1.2341239E0:37; 7
-    floor: 1.2341234E-30; 2
-    abs: 1.2341234E-30; 2
-    ceil: 1.2341235E-30; 3
-    inv: 8.1029174E29; 5.0E-1
-    a ipow 5: 2.8628127E-150
-    b ipow 5: 3.2E0
-    a ipow -4: 4.3108772E119
-    b ipow -4: 6.3E-1
+    neg: -1.2341234E-30:50; -2
+    round: 1.2341239:80; 7
+    floor: 1.2341234E-30:50; 2
+    abs: 1.2341234E-30:50; 2
+    ceil: 1.2341235E-30:50; 3
+    inv: 8.10291742300648379246354132820105347649999991897083E29; 5.00000000000000000000000000000000000000000000000000E-1
+    a ipow 5: 2.86281269807873706507238858292251424E-150:50
+    b ipow 5: 3.2:50
+    a ipow -4: 4.31087720418535539870480940138687709429732542850646E119
+    b ipow -4: 6.25000000000000000000000000000000000000000000000000E-1
     a sign : 
     b sign : 
 
@@ -371,7 +371,7 @@ This will test the basic math functions for our float system. This is a number s
     actual.push("zero: " + sci.zero.str() +  ", one: " + sci.unit.str());
     var samples = [ 
         [new Num("-1.45E34", "sci"), Num.sci("4.532312342345234523E12")],
-        [new Num("1.2341234E-30", "sci"), new Num("2", "sci")]
+        [new Num("1.2341234E-30:50", "sci"), new Num("2:50", "sci")]
     ];
 
     _"ops"
@@ -610,15 +610,15 @@ This is a simple test runner.
 This is only suitable for synchronous testing. Hey, this is a math library, for crying out loud...
 
 
-test("float tests" , _"float tests*test template");
+    test("float tests" , _"float tests*test template");
 
-test("integers",  _"integers*test template");
+    test("integers",  _"integers*test template");
 
-test("rationals" , _"rationals*test template");
+    test("rationals" , _"rationals*test template");
 
     test("scientific" , _"scientific*test template");
 
-test("complex" , _"complex*test template");
+    test("complex" , _"complex*test template");
 
     test("ad hoc" , _"adhoc");
 
