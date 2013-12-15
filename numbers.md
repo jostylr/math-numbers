@@ -1787,7 +1787,7 @@ The precision is the number of significant digits. Generally, one extra digit is
                 this.val = {
                     neg: !!m[1], 
                     i: int(digits),
-                    E: parseInt(m[4], 10),
+                    E: parseInt(( m[4] || 0), 10),
                     p: (m[5] ? parseInt(m[5], 10) : digits.length-1 ) || 1 
                 };              
             } 
@@ -1911,26 +1911,56 @@ Flip the sign.
 
 ### sci str
 
-    function (level) {
-        var pre = this.pre();
-        pre =detpre(level, pre);
+Produces, mostly something of the form -?a.bEc:d  where a is a digit, b is a string of digits, c is an integer, and d is an integer representing precision. For some numbers, parts of this will be missing.
+
+long strings should be truncated to the precision.
+
+!! should be able to add in engineering format, etc., fairly easily. 
+
+Format:  level:precision number for display, full is for showing the full number in memory. 
+
+    function (format) {
+
+        var options = parseFormat(format);
+
+        var pre = detpre(options.level, this.pre() );
+
+        if (options.full) {
+            pre = Infinity;
+        }
+
+
         var out = this.round(pre+1);
         var temp = out.val.i.str();
 
-        // !! quick hack to get 0 and 1 looking reasonable
-        if ( (temp.length === 1) && (this.E() === 0) ) {
-            return this.sign() + temp;
+        // -?a
+        var ret = this.sign() + temp[0];
+
+        // b
+        if (temp.length > 1) {
+            ret += "."+temp.slice(1, pre+1);
+        } 
+
+        // c
+        if (this.E() !== 0) {
+            ret += "E"+this.E();
         }
-        var i = temp[0]+"."+temp.slice(1);
-        if (temp.length < pre + 1) {
+
+        //overwrites
+        if (this.E() === -Infinity) {
+            ret = "0";
+        }
+
+        // d
+        if ( (!options.full) && (temp.length < pre + 1) && (temp.length > 1) ) {
             if (isFinite(pre)) {
-                return this.sign()+i+"E"+this.E()+ ":"+pre;        
+                ret += ":"+pre;        
             } else {
-                return this.sign()+i+"E"+this.E()+ ":oo";
+                ret += ":oo";
             }        
-        } else {
-            return this.sign()+i+"E"+this.E();        
         }
+
+        return ret;
     }
 
 #### figure out to string precision
@@ -2146,13 +2176,13 @@ The precision of the new number should be set so that the minimum of the iE vers
         var iE = Math.min(l.iE(), r.iE());
         // get left value in shape
         var lval = l.coef().shift(l.iE()-iE);
-        var llength = lval.str();
+        var llength = lval.str().length;
         if (l.sign()) {
             lval = lval.neg();
         }
         // get right value in shape
         var rval = r.coef().shift(r.iE()-iE);
-        var rlength = rval.str();
+        var rlength = rval.str().length;
         if (r.sign() ) {
             rval = rval.neg();
         }
@@ -2167,13 +2197,12 @@ The precision of the new number should be set so that the minimum of the iE vers
             ret.neg = false;
         }
         // new E level
-        ret.E = Math.max(l.E(), r.E());
-        if (ret.i.str().length > Math.max(llength, rlength) ) {
-            ret.E += 1;
-        }
+
+        ret.E = Math.max(l.E(), r.E()) + ret.i.str().length - Math.max(llength, rlength);
+
         // precision issues 
         var lpie = l.E() - (l.pre()-1);
-        var rpie = r.E() - (r.pre() -1);
+        var rpie = r.E() - (r.pre()-1);
         ret.p = detpre(level, ret.E - Math.max(lpie, rpie)+1);
         return sci(ret);
     }
@@ -2187,6 +2216,8 @@ The precision of the new number should be set so that the minimum of the iE vers
 ### sci mul
 
 To multiply scientific numbers, we multiply the integers, add the Es and then truncate the digits based on the min precision level. We do a bit of precision pruning before multiplication to minimize computations. The +4 is a bit random, but we want to make sure the precision is sufficient. This should be investigated. I imagine +1 or +2 is fine, but +4 should be very safe and not a big drain on resources.
+
+!! looks like the +4 is actually a +20 ??
 
     function (r,level) {
         var l = this;

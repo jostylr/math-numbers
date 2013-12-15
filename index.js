@@ -1486,7 +1486,7 @@
                         this.val = {
                             neg: !!m[1], 
                             i: int(digits),
-                            E: parseInt(m[4], 10),
+                            E: parseInt(( m[4] || 0), 10),
                             p: (m[5] ? parseInt(m[5], 10) : digits.length-1 ) || 1 
                         };              
                     } 
@@ -1563,26 +1563,46 @@
                 clone.val.neg = false;
                 return clone;
             },
-        str : function (level) {
-                var pre = this.pre();
-                pre =detpre(level, pre);
+        str : function (format) {
+            
+                var options = parseFormat(format);
+            
+                var pre = detpre(options.level, this.pre() );
+            
+                if (options.full) {
+                    pre = Infinity;
+                }
+            
+                if (this.E() === -Infinity) {
+                    return "0";
+                }
+            
                 var out = this.round(pre+1);
                 var temp = out.val.i.str();
             
-                // !! quick hack to get 0 and 1 looking reasonable
-                if ( (temp.length === 1) && (this.E() === 0) ) {
-                    return this.sign() + temp;
+                // -?a
+                var ret = this.sign() + temp[0];
+            
+                // b
+                if (temp.length > 1) {
+                    ret += "."+temp.slice(1, pre+1);
+                } 
+            
+                // c
+                if (this.E() !== 0) {
+                    ret += "E"+this.E();
                 }
-                var i = temp[0]+"."+temp.slice(1);
-                if (temp.length < pre + 1) {
+            
+                // d
+                if ( (!options.full) && (temp.length < pre + 1) && (temp.length > 1) ) {
                     if (isFinite(pre)) {
-                        return this.sign()+i+"E"+this.E()+ ":"+pre;        
+                        ret += ":"+pre;        
                     } else {
-                        return this.sign()+i+"E"+this.E()+ ":oo";
+                        ret += ":oo";
                     }        
-                } else {
-                    return this.sign()+i+"E"+this.E();        
                 }
+            
+                return ret;
             },
         ipow : function (power) {
                 var x = this;
@@ -1712,13 +1732,13 @@
                 var iE = Math.min(l.iE(), r.iE());
                 // get left value in shape
                 var lval = l.coef().shift(l.iE()-iE);
-                var llength = lval.str();
+                var llength = lval.str().length;
                 if (l.sign()) {
                     lval = lval.neg();
                 }
                 // get right value in shape
                 var rval = r.coef().shift(r.iE()-iE);
-                var rlength = rval.str();
+                var rlength = rval.str().length;
                 if (r.sign() ) {
                     rval = rval.neg();
                 }
@@ -1733,13 +1753,12 @@
                     ret.neg = false;
                 }
                 // new E level
-                ret.E = Math.max(l.E(), r.E());
-                if (ret.i.str().length > Math.max(llength, rlength) ) {
-                    ret.E += 1;
-                }
+            
+                ret.E = Math.max(l.E(), r.E()) + ret.i.str().length - Math.max(llength, rlength);
+            
                 // precision issues 
                 var lpie = l.E() - (l.pre()-1);
-                var rpie = r.E() - (r.pre() -1);
+                var rpie = r.E() - (r.pre()-1);
                 ret.p = detpre(level, ret.E - Math.max(lpie, rpie)+1);
                 return sci(ret);
             },

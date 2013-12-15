@@ -610,15 +610,15 @@ This is a simple test runner.
 This is only suitable for synchronous testing. Hey, this is a math library, for crying out loud...
 
 
-    test("float tests" , _"float tests*test template");
+test("float tests" , _"float tests*test template");
 
-    test("integers",  _"integers*test template");
-    
-    test("rationals" , _"rationals*test template");
-    
+test("integers",  _"integers*test template");
+
+test("rationals" , _"rationals*test template");
+
     test("scientific" , _"scientific*test template");
 
-    test("complex" , _"complex*test template");
+test("complex" , _"complex*test template");
 
     test("ad hoc" , _"adhoc");
 
@@ -636,6 +636,15 @@ This is a place to stick tests for problems that come up. This is opposed to the
         t.equal( Num.rat("1 1/7").str("dec"), "1. 142857", "purely repeating fraction with integer");
 
         t.equal(Num.rat("2").add(Num.rat("3")).str(), "5", "2+3 = 5, rationally");
+
+        var x = Num.sci("1.5666E0:30");
+        t.equal(x.mul(x).sub(Num.int(2)).str(), "4.5423556E-1:29");
+        t.equal(x.sub(Num.int(2)).str(), "-4.334E-1:29");
+        t.equal(x.sub(Num.sci("1.5E0:30")).str(), "6.66E-2:28");
+        t.equal(x.sub(Num.sci("1.566:30")).str(), "6E-4:26");
+
+        t.equal(Num.sci("1.566E0:30").str("level:3"), "1.56");
+
 
         t.end();
     }
