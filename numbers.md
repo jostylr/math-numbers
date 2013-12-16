@@ -1185,6 +1185,7 @@ string, number, objects already in basic form. Given a version with numbers, pro
                             this.val = {neg: !!m[1], w: int(m[2]), n: zero, d: int(1)};
                         }
                     } else {
+                        console.log(m);
                         ret = _"parsing rational dec |ife(m)";
                         ret.original = o;
                         return ret;

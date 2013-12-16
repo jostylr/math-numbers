@@ -877,6 +877,7 @@
                                     this.val = {neg: !!m[1], w: int(m[2]), n: zero, d: int(1)};
                                 }
                             } else {
+                                console.log(m);
                                 ret = (function ( m ) {var lead = m[2],
                                         nonrep = m[3],
                                         rep = m[4],

@@ -9,6 +9,8 @@ Here is a set of runnable examples
 * [examples/conversion.js](#conversions "save:|jshint")
 * [examples/division.js](#division "save:|jshint")
 * [examples/ratdecparse.js](#parsing-ratdec "save:|jshint")
+* [examples/squarerat.js](#repeating-squared "save:|jshint")
+
 
 ## Factorial broken up
 
@@ -186,3 +188,11 @@ If you want to do something long, you can try ratdec(42, 823, 1000). The third n
         console.log(el, ": ", r.str(), " || ", r.str("simplify"));
     });
 
+## Repeating squared
+
+    /*global console, require */
+    var Num = require('../index.js');
+
+    var r = Num.rat("4.2 131282");
+
+    console.log(r.str(), r.mul(r).str("simplify"), r.str("dec"), r.mul(r).str("dec:100") );
