@@ -1,10 +1,10 @@
 # [math-numbers](# "version: 0.0.9| jostylr")
 
-This is what a "Num" should conform to. Initially, it will just be the usual Nums in the system, but with their operations replaced with a function call. Why? So that we can swap out Nums easily. For example, we may want to use exact arithmetic (at least as much as we can) or complex Nums or some other ring/field/...
+Math-numbers is a project dedicated to exploring math with as little concern about floating point approximations as possible. The idea is that we can use integers and rational numbers of perfect precision while we can still drop into the scientific numbers with an arbitrary precision level whenever we want to. 
 
-## What is a Num?
+The coding syntax for using the numbers is x.add(y).mul(z)  to indicate (x+y)*z while  x.add(y.mul(z)) to do x+(y*z). 
 
-A Num is an object with various properties and methods defined. (I) is for instance and (P) is for prototype
+The methods are designed here so that we can write algorithms that will work as long as the input types support the given methods. It is more or less subclassing, but since we need to subclass with operators of multiple arguments and types, it gets a little tricky (as far as I can tell). 
 
 
 ## Files
@@ -21,33 +21,25 @@ Here we define the directory structure for math-numbers.
 * [.gitignore](#gitignore "Save:") A .gitignore file
 * [.npmignore](#npmignore "Save:") A .npmignore file
 
+Other litpro files (all need extensive work):
 
-### Examples
+* ghpages.md generates the documentation that get displayed in the ghpages for this project. 
+* examples.md generates the examples in examples that are also put in ghpages as well.
+* test.md generates all the tests.  
 
-    x = new Num(5, "eint");
-    y = new Num(2, "fint");
-    z = x.add(y); 
-    z = z.mul(x.add(x).sub(y)).quo(y)  // is equivalent to   (z *  (x+x-y)) /y  (intergal part), .rem for remainder
-    z = z.mul(y.sub(x.add(3)).div(y) ) // is equivalent to  (z* ((y - (x+3) ) /y)
-    z = z.pow(x).floor()   // is  z^x  then floored. 
+## Basic flow
 
-    z = num(5, "fcplx");
+The constuctor `Num` is used to construct a number.  So  `new Num('509823423408', 'int')` creates an integer with the given value.  We also support Num.int('509823423408')`. Working on simply `Num('509823423408')` where it will do a round-robin parsing of the string given to it. 
 
-    z = num(5, "fcplx").add(x);
+If parsing fails, it will return a Num object of type `NaN` that infects all other objects that it comes into contact with. But the idea is that there will be tracking information put into it. 
 
-    (z.sin().exp().add(5)).mul(m) //  (exp(sin(z))+5) * m
+!!! Currently thinking about using underscores for spaces in numbers. Examples:  `1_3/4` for 1 and three-quarters,  `1.2_3` for 1.233333333... 3 repeating (also 1.2+1/30). Or for complex `1.2_4i` Numbers should have no spaces in them for the parsing. 
 
-The `num` function results in the same as `new Num(5)` but it is more compact. This is appropriate for chaining, more so than anything else.  Note that it is only required if the first part of the chain. All the operators will check the arguments and do appropriate parsing. 
-
-### Properties
-
-1. (I) Value. This is some object whose sole function is to represent the value to be used elsewhere. 
-2. (P) Type. A name we give it. 
-3. (P) Precision.  
+We can also use E notation for numbers:  `123E9` represents one hundred and twenty-three billion. 
 
 ### Methods
 
-All methods are on the prototype object. 
+All methods are on the prototype object of Num. 
 
 1. The operators should be inherited from an operator object passed in. 
 2. print (format instructions) -> string representing Num
@@ -61,6 +53,7 @@ The prototype object on Num has all of the operators. They then pass everything 
 2. one  Represents multiplicative identity. 
 3. inf Represents infinity
 4. neginf Reprents negative infinity
+
 
 
 ## Num
@@ -79,7 +72,7 @@ Here we define the Num class and all associated code. The code below is suitable
             this.Num = Num;
         }
 
-        var parseFormat = _"parse str format";
+        var Num.parseFormat = parseFormat = _"parse str format";
 
         var ident = function () {return this;};
 
@@ -116,18 +109,78 @@ Here we define the Num class and all associated code. The code below is suitable
 
 ## Num constructor
 
-Using ret since this allows the parsing to parse out a number (ratdec, looking at you) and return that instead. Most of the time, it is this that is being returned. 
+Standard usage is that this is a constructor with `this` as the main return value, though it is possible for the parsing to create a new object that gets returned. This is true for [ratdec](#ratdec).
+
+The type could be of the form type "type|options" where type is the number type and options is a string to be parsed using parseFormat. Note that the pipe should appear just once. Anything after a second pipe will be ignored. So no pipe, comma, or colon except as delimiters according to the formatter.
+
+Also allowed is just val using pipe, pipe, pipe, pipe...
 
 
-    function (val, type, options) {
-        var ret;
-        this.original = val;
-        this.type = type;
-        ret = this.parse.apply(this, options);  // will convert original into appropriate val
+
+    function Num (val, type) {
+        var ret, options, temp;
+
+Checks for whether this was a construct call or not. If not, calls the constructor and returns result.
+
+        // allows Num(...) to be used directly without new. For shame!
+        if (!(this instanceof Num) ) {
+            return new Num(val, type);
+        }
+
+Here we parse out the values. If no type and val is a string, then type/options might be part of val string. Otherwise, we check type for type/options.
+
+        if ( (typeof type === "undefined") && (typeof val === "string" ) ) {
+            temp = val.split("|");
+            val = temp[0] || "";
+            type = temp[1] || "";
+            options = this.parseFormat(temp[2] || "");
+        } else {
+           temp = (type || "").split("|");
+           type = temp[0] || "";
+           options = this.parseFormat(temp[1] || "");
+       }
+
+We want to store the original input value, but if it is a Num object, then we stringify it for both debugging and not holding onto a reference unnecessarily. 
+
+        if (val instanceof Num) {
+            // to make original more viewable for debugging
+            this.original = val.str() + "|" + val.type + "||str";
+        } else {
+            this.original = val;
+        }
+
+The type can be used to say what the value should be converted to. So if type is a string other than "", then that becomes the type and 
+
+        if (type) {
+            this.type = type;
+            ret = this.parse.apply(this, options);  // will convert original into appropriate val
+        } else {
+            ret = this.tryParse(this, options);
+        }
+
+        if (ret === false) {
+            this.type = "NaN";
+            the.val = NaN;
+        }   
 
         return ret;
     }
 
+### Short version of defining number
+
+Writing out `new Num(3, "float")` is a hassle. So instead we will create a method that creates bound functions to allow for shorthand `Num.float(3)`
+
+
+    function (type) { 
+        Num.prototype[type] = function () {
+            return new Num(this, type);
+        };
+        return function (val) {
+            return new Num(val, type);
+        };
+    }
+
+### Tr
 
 
 ## Operators
@@ -193,19 +246,7 @@ To load a set of ops based on a type, we use the following function. It expects 
     }
 
 
-### Short version of defining number
 
-Writing out `new Num(3, "float")` is a hassle. So instead we will create a method that creates bound functions to allow for shorthand `Num.float(3)`
-
-
-    function (type) { 
-        Num.prototype[type] = function () {
-            return new Num(this, type);
-        };
-        return function (val) {
-            return new Num(val, type);
-        };
-    }
 
 ### args to string
 
@@ -2765,6 +2806,12 @@ Float is contagious. Its existence is as a means to speed computations up and a 
         };
     }
 
+## Making functions
+
+So most functions are used as  f(x, y, ...)  but we may want them to be of the form x.f(y, z)  for chaining purposes. So we need a little function that takes in a function and some 
+
+Num.Fun(f, 
+
 
 ## README
 
@@ -2847,6 +2894,24 @@ Integers have `.shift(n)` which is the equivalent of multiplying the integer by 
 
 ## TODO
 
+.E()  for all types
+
+.norm() is abs value for all except complex which is the sum of absolute values. 
+
+Figure out construction for hooking functions easily and smoothly. want f, [relevant types]
+
+Can we subtype so positive integer is possible? 
+
+round robin parser
+
+.to(type) for converting to the given type. Use .type to get the current type. 
+
+Some common questions such as .isZero, .isOne, .isPositive, .isNegative 
+
+Complex: Octant  1a meaning a > b > 0,  1b meaning b > a > 0,  2a meaning -a > b > 0, ...
+
+Write up docs. 
+
 Documentation and tests. 
 
 Need a strategy for errors, particularly bad inputs. 
@@ -2857,7 +2922,7 @@ Apply methods -- return new objects
 
 Rationals and the mixed/improrper stuff. Probably want to keep the original form somewhere. Do we have the ability to manipulate the form directly? 
 
-Garbage collection strategy. For example, if computing 40,000!, we are currently creating ~40,000
+Garbage collection strategy. For example, if computing 40,000!, we are currently creating many intermediate objects. 
 
 ## NPM package
 
