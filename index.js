@@ -3,32 +3,26 @@
     /*global module*/
 
     var Num = function (val, type) {
-            var ret, options, temp;
+            var ret, temp;
         
             // allows Num(...) to be used directly without new. For shame!
             if (!(this instanceof Num) ) {
                 return new Num(val, type);
             }
         
-            if ( (typeof type === "undefined") && (typeof val === "string" ) ) {
-                temp = val.split("|");
-                val = temp[0] || "";
-                type = temp[1] || "";
-                options = this.parseFormat(temp[2] || "");
-            } else {
-               temp = (type || "").split("|");
-               type = temp[0] || "";
-               options = this.parseFormat(temp[1] || "");
-           }
-        
             this.original = val;
         
             if (type) {
                 this.type = type;
-                ret = this.parse.apply(this, options);  // will convert original into appropriate val
+                ret = this.parse();  // will convert original into appropriate val
+            } else if (typeof val === "string") {
+                ret = Num.tryParse(this);
+            } else if (val.type) {
+                this.type = val.type;
+                ret = this.parse();
             } else {
-                ret = this.tryParse(this, options);
-            }
+                ret = false;
+            } 
         
             if (ret === false) {
                 ret = this;
@@ -925,6 +919,8 @@
                                     if (m[1]) {
                                         ret = ret.neg();
                                     }
+                                    
+                                    ret.original = m[0];
                                     
                                     if (m[5]) {
                                         E = parseInt(m[5].slice(1), 10);
@@ -2137,5 +2133,7 @@
             };
         });
     } ( Num ) );
+
+    Num.types = ["com","rat", "sci", "int"]
 
 }).call(this);

@@ -33,7 +33,7 @@ The constuctor `Num` is used to construct a number.  So  `new Num('509823423408'
 
 If parsing fails, it will return a Num object of type `NaN` that infects all other objects that it comes into contact with. But the idea is that there will be tracking information put into it. 
 
-!!! Currently thinking about using underscores for spaces in numbers. Examples:  `1_3/4` for 1 and three-quarters,  `1.2_3` for 1.233333333... 3 repeating (also 1.2+1/30). Or for complex `1.2_4i` Numbers should have no spaces in them for the parsing. 
+!!! Currently thinking about using underscores for spaces in numbers. Examples:  `1_3/4` for 1 and three-quarters,  `1.2_3` for 1.233333333... 3 repeating (also 1.2+1/30). Or for complex `1.2_4i` Numbers should have no spaces in them for the parsing. Thinking not.
 
 We can also use E notation for numbers:  `123E9` represents one hundred and twenty-three billion. 
 
@@ -104,6 +104,7 @@ Here we define the Num class and all associated code. The code below is suitable
 
         _"combo setup | ife(Num)";
 
+        Num.types = ["com","rat", "sci", "int"]
 
     }).call(this);
 
@@ -111,14 +112,9 @@ Here we define the Num class and all associated code. The code below is suitable
 
 Standard usage is that this is a constructor with `this` as the main return value, though it is possible for the parsing to create a new object that gets returned. This is true for [ratdec](#ratdec).
 
-The type could be of the form type "type|options" where type is the number type and options is a string to be parsed using parseFormat. Note that the pipe should appear just once. Anything after a second pipe will be ignored. So no pipe, comma, or colon except as delimiters according to the formatter.
-
-Also allowed is just val using pipe, pipe, pipe, pipe...
-
-
 
     function (val, type) {
-        var ret, options, temp;
+        var ret, temp;
 
 Checks for whether this was a construct call or not. If not, calls the constructor and returns result.
 
@@ -127,30 +123,19 @@ Checks for whether this was a construct call or not. If not, calls the construct
             return new Num(val, type);
         }
 
-Here we parse out the values. If no type and val is a string, then type/options might be part of val string. Otherwise, we check type for type/options.
-
-        if ( (typeof type === "undefined") && (typeof val === "string" ) ) {
-            temp = val.split("|");
-            val = temp[0] || "";
-            type = temp[1] || "";
-            options = this.parseFormat(temp[2] || "");
-        } else {
-           temp = (type || "").split("|");
-           type = temp[0] || "";
-           options = this.parseFormat(temp[1] || "");
-       }
-
-
         this.original = val;
-
-The type can be used to say what the value should be converted to. So if type is a string other than "", then that becomes the type and 
 
         if (type) {
             this.type = type;
-            ret = this.parse.apply(this, options);  // will convert original into appropriate val
+            ret = this.parse();  // will convert original into appropriate val
+        } else if (typeof val === "string") {
+            ret = Num.tryParse(this);
+        } else if (val.type) {
+            this.type = val.type;
+            ret = this.parse();
         } else {
-            ret = this.tryParse(this, options);
-        }
+            ret = false;
+        } 
 
         if (ret === false) {
             ret = this;
@@ -184,7 +169,152 @@ Writing out `new Num(3, "float")` is a hassle. So instead we will create a metho
         };
     }
 
-### Tr
+### Try Parsing
+
+We are just given a string and we want to try parsing it as a number, figuring out its type. 
+
+    function (num) {
+        var Num = this,
+            types = Num.types;
+
+        return types.some(function (el) {
+            var temp;
+            temp = el.parse;
+            if (temp) {
+                num.type = el.type;
+
+            return num.parse();
+        });
+
+    }
+
+### Reg Matching
+
+
+Rational mixed form: (-)w n/d
+
+    ["rat", /^(-)?(\d+) (\d+)\/(\d+)$/, function (m) {
+         return { 
+            neg: !!m[1], 
+            w: int(m[2]),
+            n: int(m[3]),
+            d: int(m[4])
+    }],
+
+Rational fraction only (-)n/d
+
+    ["rat", /^(-)?(\d+)\/(\d+)$/, function (m) {
+         return { 
+            neg: !!m[1], 
+            w: zero,
+            n: int(m[2]),
+            d: int(m[3])
+        }
+    }],
+
+Rational in decimal form  (-)#.# #E#  1.2 3 E34
+
+    ["rat", ^(-)?(\d+)?\.(\d+)? (\d+)\s?(E(-|\+)?(\d+))?$/, function (m) {
+         _"parsing rational dec";
+    }],
+
+Scientific number  (-)#.#E(-)#:#  1.2 E34 :3  Using non-naming grouping for E and : since we can tell a match by existence of the number after the flag. 
+
+    ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E((?:-|\+)?\d+))? ?(?:\:(\d+))?$/, function (m) {
+        _"sci parsing"
+    }],
+
+
+
+#### Sci parsing
+
+We have a match, now we need to make an object out of it. 
+
+    var neg = !!m[1],
+        whole = m[2],
+        frac = m[3] || '',
+        E, pre;
+
+Precision is either given by `:#` or we read it from the length of the digits.
+
+    if (m[5]) {
+        pre = parseInt(m[5], 10);
+    } else {
+        pre = whole.length + frac.length;
+    }
+
+E is either given or assumed to be 0. 
+
+    if (m[4]) {
+        E = parseInt(m[4], 10);
+    } else {
+        E = 0;
+    }
+
+If the leading digit is zero, we use frac to get to a non-leading zero. 
+
+    while ((whole === "0") && (frac.length)) {
+        E -= 1;
+        whole = frac[0];
+        frac = frac.slice(1);
+    }
+
+
+If the whole is more than a single digit (courtesy to engineering kind of notation), we adjust E by adding the length offset by 1. So for example 12E3 translates to 1.2E4. Note that there is always a leading digit.
+
+    E += whole.length-1; //subtract 1 from length first
+
+The number is just zero.
+
+    if (whole === "0") {
+        E = 0;
+        neg = false;
+    }
+
+    return {
+        neg: neg,
+        i: int(whole+frac),
+        E: E
+        p: pre
+    };              
+
+
+#### parsing rational dec
+
+We want to convert a rational written in decimal form back into rational form. 
+
+Form:  sign lead.nonrep rep E
+
+rep into fraction is done by computing rep/ ( 10^{length of rep}  - 1)
+
+Then we add that to rep followed by dividing by 10^length of nonrep
+
+We add that to the lead, negate if needed, and shift it using E if needed. 
+
+
+    var lead = m[2],
+        nonrep = m[3],
+        rep = m[4],
+        unit = Num.int(1),
+        E, ret, shift, repfrac, dec ;
+
+    repfrac = Num.int(rep).div(Num.int(10).ipow(rep.length).sub( unit ) );
+    dec = Num.int(nonrep).add(repfrac).div(Num.int(10).ipow(nonrep.length));
+    ret = (Num.int(lead)).add(dec);
+    
+    if (m[1]) {
+        ret = ret.neg();
+    }
+
+    ret.original = m[0];
+
+    if (m[5]) {
+        E = parseInt(m[5].slice(1), 10);
+        shift = Num.int(10).ipow(E);
+        return ret.mul(shift);
+    } else {
+        return ret;
+    }
 
 
 ## Operators
@@ -1294,40 +1424,6 @@ string, number, objects already in basic form. Given a version with numbers, pro
         return this;
     }
 
-#### parsing rational dec
-
-We want to convert a rational written in decimal form back into rational form. 
-
-Form:  sign lead.nonrep rep E
-
-rep into fraction is done by computing rep/ ( 10^{length of rep}  - 1)
-
-Then we add that to rep followed by dividing by 10^length of nonrep
-
-We add that to the lead, negate if needed, and shift it using E if needed. 
-
-
-    var lead = m[2],
-        nonrep = m[3],
-        rep = m[4],
-        unit = Num.int(1),
-        E, ret, shift, repfrac, dec ;
-
-    repfrac = Num.int(rep).div(Num.int(10).ipow(rep.length).sub( unit ) );
-    dec = Num.int(nonrep).add(repfrac).div(Num.int(10).ipow(nonrep.length));
-    ret = (Num.int(lead)).add(dec);
-    
-    if (m[1]) {
-        ret = ret.neg();
-    }
-
-    if (m[5]) {
-        E = parseInt(m[5].slice(1), 10);
-        shift = Num.int(10).ipow(E);
-        return ret.mul(shift);
-    } else {
-        return ret;
-    }
 
 
 ### rat Negate
