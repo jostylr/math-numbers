@@ -2,11 +2,44 @@
 
     /*global module*/
 
-    var Num = function (val, type, options) {
-            var ret;
+    var Num = function (val, type) {
+            var ret, options, temp;
+        
+            // allows Num(...) to be used directly without new. For shame!
+            if (!(this instanceof Num) ) {
+                return new Num(val, type);
+            }
+        
+            if ( (typeof type === "undefined") && (typeof val === "string" ) ) {
+                temp = val.split("|");
+                val = temp[0] || "";
+                type = temp[1] || "";
+                options = this.parseFormat(temp[2] || "");
+            } else {
+               temp = (type || "").split("|");
+               type = temp[0] || "";
+               options = this.parseFormat(temp[1] || "");
+           }
+        
             this.original = val;
-            this.type = type;
-            ret = this.parse.apply(this, options);  // will convert original into appropriate val
+        
+            if (type) {
+                this.type = type;
+                ret = this.parse.apply(this, options);  // will convert original into appropriate val
+            } else {
+                ret = this.tryParse(this, options);
+            }
+        
+            if (ret === false) {
+                ret = this;
+                this.type = "NaN";
+                this.val = NaN;
+            }   
+        
+            if (val instanceof Num) {
+                // to make original more viewable for debugging
+                ret.original = val.str() + "|" + val.type + "||str";
+            }
         
             return ret;
         };
@@ -17,7 +50,7 @@
         this.Num = Num;
     }
 
-    var parseFormat = function (str) {
+    var parseFormat = Num.prototype.parseFormat  = function (str) {
             var ret = {};
             if (! str) {
                 return ret;
@@ -93,9 +126,11 @@
 
     Num.type = (function ( Num ) {
          return function (type) { 
+            // prototype converts an existing num into new type
             Num.prototype[type] = function () {
                 return new Num(this, type);
             };
+            // this is standalone function to return the type
             return function (val) {
                 return new Num(val, type);
             };
@@ -877,7 +912,6 @@
                                     this.val = {neg: !!m[1], w: int(m[2]), n: zero, d: int(1)};
                                 }
                             } else {
-                                console.log(m);
                                 ret = (function ( m ) {var lead = m[2],
                                         nonrep = m[3],
                                         rep = m[4],

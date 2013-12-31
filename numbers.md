@@ -72,7 +72,7 @@ Here we define the Num class and all associated code. The code below is suitable
             this.Num = Num;
         }
 
-        var Num.parseFormat = parseFormat = _"parse str format";
+        var parseFormat = Num.prototype.parseFormat  = _"parse str format";
 
         var ident = function () {return this;};
 
@@ -117,7 +117,7 @@ Also allowed is just val using pipe, pipe, pipe, pipe...
 
 
 
-    function Num (val, type) {
+    function (val, type) {
         var ret, options, temp;
 
 Checks for whether this was a construct call or not. If not, calls the constructor and returns result.
@@ -140,14 +140,8 @@ Here we parse out the values. If no type and val is a string, then type/options 
            options = this.parseFormat(temp[1] || "");
        }
 
-We want to store the original input value, but if it is a Num object, then we stringify it for both debugging and not holding onto a reference unnecessarily. 
 
-        if (val instanceof Num) {
-            // to make original more viewable for debugging
-            this.original = val.str() + "|" + val.type + "||str";
-        } else {
-            this.original = val;
-        }
+        this.original = val;
 
 The type can be used to say what the value should be converted to. So if type is a string other than "", then that becomes the type and 
 
@@ -159,9 +153,17 @@ The type can be used to say what the value should be converted to. So if type is
         }
 
         if (ret === false) {
+            ret = this;
             this.type = "NaN";
-            the.val = NaN;
+            this.val = NaN;
         }   
+
+We want to store the original input value, but if it is a Num object, then we stringify it for both debugging and not holding onto a reference unnecessarily. 
+
+        if (val instanceof Num) {
+            // to make original more viewable for debugging
+            ret.original = val.str() + "|" + val.type + "||str";
+        }
 
         return ret;
     }
@@ -172,9 +174,11 @@ Writing out `new Num(3, "float")` is a hassle. So instead we will create a metho
 
 
     function (type) { 
+        // prototype converts an existing num into new type
         Num.prototype[type] = function () {
             return new Num(this, type);
         };
+        // this is standalone function to return the type
         return function (val) {
             return new Num(val, type);
         };
@@ -1226,7 +1230,6 @@ string, number, objects already in basic form. Given a version with numbers, pro
                             this.val = {neg: !!m[1], w: int(m[2]), n: zero, d: int(1)};
                         }
                     } else {
-                        console.log(m);
                         ret = _"parsing rational dec |ife(m)";
                         ret.original = o;
                         return ret;
