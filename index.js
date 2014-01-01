@@ -3,7 +3,7 @@
     /*global module*/
 
     var Num = function (val, type) {
-            var ret, temp;
+            var ret;
         
             // allows Num(...) to be used directly without new. For shame!
             if (!(this instanceof Num) ) {
@@ -24,7 +24,10 @@
                 ret = false;
             } 
         
+            this.original = val;
+        
             if (ret === false) {
+                console.log("NaN found", this);
                 ret = this;
                 this.type = "NaN";
                 this.val = NaN;
@@ -197,6 +200,37 @@
                 });
             }
             return ret;
+        };
+
+    Num.tryParse = function (num, givenType) {
+            var Num = this,
+                types = Num.types;
+        
+            if (givenType) {
+                types = types.filter(function (el) {
+                    return (givenType === el[0]);
+                });
+            }
+        
+            return types.some(function (el) {
+                var type = el[0],
+                    reg = el[1],
+                    fun = el[2],
+                    m, ret;
+        
+                m = reg.exec(num.original);
+                if (m) {
+                    ret = fun(m);
+                    if (!ret) {
+                        return false;
+                    }
+                    num.type = type;
+                    num.parsed = ret;
+                    return num.parse();
+                }
+                return false;
+            });
+        
         };
 
     (function ( Num ) {var float = Num.float = Num.type("float");
@@ -380,12 +414,14 @@
     Num.makeCon("unit", float.unit);
     } ( Num ) );
 
-    (function ( Num ) {var lim = 1e7;  //this controls the size
+    (function ( Num ) {var int = Num.int = Num.type("int");
+    int.lim = 1e7;  //this controls the size
     var zero, unit; 
-    var halflim = 5e6;
-    var digits = (lim+"").slice(1);
+    int.halflim = 5e6;
+    int.digits = (int.lim+"").slice(1);
     var reduce = function (arr) {
-            var i, n = arr.length, cur, big;
+            var i, n = arr.length, cur, big,
+                lim = int.lim;
         
             for (i = 0; i < n; i += 1) {
                 cur = arr[i];
@@ -434,7 +470,6 @@
         
             }
         };
-    var int = Num.int = Num.type("int");
     var div = Num.int.divalgo = function self (top, den) {
         
             var ret = {neg: (top.val.neg !== den.val.neg)};
@@ -464,6 +499,7 @@
             var d = den.val;
             var dl = d.length-1;
             var dbig = d[dl]; 
+            var halflim = int.halflim;
         
             if (dbig < halflim) {
                scale = int(Math.floor(halflim/dbig) + 1);
@@ -529,7 +565,7 @@
     
     Num.define("int", {
         parse : function self () {
-                var o = this.original, dl;
+                var o = this.original;
                 var ret = [], i, n, digit;
                 if (Array.isArray(o)) {
                     ret.neg = o.neg || false;   
@@ -545,18 +581,11 @@
                             ret[i] = parseInt(digit, 10);
                         }
                     }
+                } else if (this.parsed) {
+                    ret = this.parsed;
+                    delete this.parsed;
                 } else if (typeof o === "string") {
-                    if (o[0] === "-") {
-                        ret.neg = true;
-                        o = o.slice(1);
-                    } else {
-                        ret.neg = false;
-                    }
-                    dl = digits.length;
-                    while (o.length >0) {
-                        ret.push(parseInt(o.slice(-dl), 10));
-                        o = o.slice(0, -dl); 
-                    }
+                    return Num.tryParse(this, "int");
                 } else if (typeof o === "number") {
                     if (o < 0) {
                         ret.neg = true;
@@ -598,7 +627,7 @@
                 for (i = 0; i < n-1; i +=1 ) {
                     temp = strarr[i] + "";
                     // add zeros
-                    strarr[i] = digits.slice(temp.length) + temp;
+                    strarr[i] = int.digits.slice(temp.length) + temp;
                 }
                 strarr[n-1] = strarr[n-1]+"";
                 var minus = this.val.neg ? "-" : "";
@@ -2134,6 +2163,117 @@
         });
     } ( Num ) );
 
-    Num.types = ["com","rat", "sci", "int"]
+    var int = Num.int;
+
+    Num.types = [["com", /^([\-0-9 _E:.\/]+)\~([\-0-9 _E:.\/]+)i$/, function (m) {
+            var a = new Num(m[1]),
+                b = new Num(m[2]);
+            if  ( (a.type !== "NaN") && (b.type !== "NaN") ) {
+                return {
+                    re : a,
+                    im : b
+                };
+            } else {
+                return false;
+            }
+        }],
+        
+        ["rat", /^(-)?(\d+)[ _](\d+)\/(\d+)$/, function (m) {
+             return { 
+                neg: !!m[1], 
+                w: int(m[2]),
+                n: int(m[3]),
+                d: int(m[4])
+            };
+        }],
+        
+        ["rat", /^(-)?(\d+)\/(\d+)$/, function (m) {
+             return { 
+                neg: !!m[1], 
+                w: int.zero(),
+                n: int(m[2]),
+                d: int(m[3])
+            };
+        }],
+        
+        ["rat", /^(-)?(\d+)?\.(\d+)? (\d+)\s?(E-?(\d+))?$/, function (m) {
+             var lead = m[2],
+                 nonrep = m[3],
+                 rep = m[4],
+                 unit = Num.int(1),
+                 E, ret, shift, repfrac, dec ;
+             
+             repfrac = Num.int(rep).div(Num.int(10).ipow(rep.length).sub( unit ) );
+             dec = Num.int(nonrep).add(repfrac).div(Num.int(10).ipow(nonrep.length));
+             ret = (Num.int(lead)).add(dec);
+             
+             if (m[1]) {
+                 ret = ret.neg();
+             }
+             
+             ret.original = m[0];
+             
+             if (m[5]) {
+                 E = parseInt(m[5].slice(1), 10);
+                 shift = Num.int(10).ipow(E);
+                 return ret.mul(shift);
+             } else {
+                 return ret;
+             }
+        }],
+        
+        ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E(-?\d+))? ?(?:\:(\d+))?$/, function (m) {
+            var neg = !!m[1],
+                whole = m[2],
+                frac = m[3] || '',
+                E, pre;
+            
+            if (m[5]) {
+                pre = parseInt(m[5], 10);
+            } else {
+                pre = whole.length + frac.length;
+            }
+            
+            if (m[4]) {
+                E = parseInt(m[4], 10);
+            } else {
+                E = 0;
+            }
+            
+            while ((whole === "0") && (frac.length)) {
+                E -= 1;
+                whole = frac[0];
+                frac = frac.slice(1);
+            }
+            
+            E += whole.length-1; //subtract 1 from length first
+            
+            if (whole === "0") {
+                E = 0;
+                neg = false;
+            }
+            
+            return {
+                neg: neg,
+                i: int(whole+frac),
+                E: E,
+                p: pre
+            };              
+        }],
+        
+        ["int", /^(-)?(\d+)$/, function (m) {
+            var ret = [],
+                dstr = m[2],
+                dl = Num.int.digits.length;
+            
+            ret.neg = !!m[1];
+            
+            while (dstr.length > 0) {
+                ret.push(parseInt(dstr.slice(-dl), 10));
+                dstr = dstr.slice(0, -dl); 
+            }
+            
+            return ret;
+        }]];
 
 }).call(this);

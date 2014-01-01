@@ -92,6 +92,8 @@ Here we define the Num class and all associated code. The code below is suitable
 
         Num.each = _"generate a string from array of values";
 
+        Num.tryParse = _"try parsing";
+
         _"float | ife(Num)";
 
         _"integer | ife(Num)";
@@ -104,7 +106,9 @@ Here we define the Num class and all associated code. The code below is suitable
 
         _"combo setup | ife(Num)";
 
-        Num.types = ["com","rat", "sci", "int"]
+        var int = Num.int;
+
+        Num.types = [_"Reg Matching"];
 
     }).call(this);
 
@@ -114,7 +118,7 @@ Standard usage is that this is a constructor with `this` as the main return valu
 
 
     function (val, type) {
-        var ret, temp;
+        var ret;
 
 Checks for whether this was a construct call or not. If not, calls the constructor and returns result.
 
@@ -137,7 +141,10 @@ Checks for whether this was a construct call or not. If not, calls the construct
             ret = false;
         } 
 
+        this.original = val;
+
         if (ret === false) {
+            console.log("NaN found", this);
             ret = this;
             this.type = "NaN";
             this.val = NaN;
@@ -173,32 +180,68 @@ Writing out `new Num(3, "float")` is a hassle. So instead we will create a metho
 
 We are just given a string and we want to try parsing it as a number, figuring out its type. 
 
-    function (num) {
+See [Reg Matching](#reg-matching) for the array types. We go in order, trying to match the string to the given reg. Right now, I have the end of the string, but I may want to change that -- not sure. It could cause false matches without it. 
+
+Anyway, given a sucessful match, it then goes through the function to get an object that can then be fed into the type's parser. The return object is then returned to the some function which sees it as truthy and will then return that object up to the Num constructor. If nothing matches, then 
+
+    function (num, givenType) {
         var Num = this,
             types = Num.types;
 
-        return types.some(function (el) {
-            var temp;
-            temp = el.parse;
-            if (temp) {
-                num.type = el.type;
+        if (givenType) {
+            types = types.filter(function (el) {
+                return (givenType === el[0]);
+            });
+        }
 
-            return num.parse();
+        return types.some(function (el) {
+            var type = el[0],
+                reg = el[1],
+                fun = el[2],
+                m, ret;
+
+            m = reg.exec(num.original);
+            if (m) {
+                ret = fun(m);
+                if (!ret) {
+                    return false;
+                }
+                num.type = type;
+                num.parsed = ret;
+                return num.parse();
+            }
+            return false;
         });
 
     }
 
 ### Reg Matching
 
+Complex form:  a+ib  where a and b are numbers matching one of the other forms. 3+4i. For pure imaginary, use 0+bi
+
+    ["com", /^([\-0-9 _E:.\/]+)\~([\-0-9 _E:.\/]+)i$/, function (m) {
+        var a = new Num(m[1]),
+            b = new Num(m[2]);
+        if  ( (a.type !== "NaN") && (b.type !== "NaN") ) {
+            return {
+                re : a,
+                im : b
+            };
+        } else {
+            return false;
+        }
+    }],
+
 
 Rational mixed form: (-)w n/d
 
-    ["rat", /^(-)?(\d+) (\d+)\/(\d+)$/, function (m) {
+    ["rat", /^(-)?(\d+)[ _](\d+)\/(\d+)$/, function (m) {
          return { 
             neg: !!m[1], 
             w: int(m[2]),
             n: int(m[3]),
             d: int(m[4])
+        };
     }],
 
 Rational fraction only (-)n/d
@@ -206,24 +249,46 @@ Rational fraction only (-)n/d
     ["rat", /^(-)?(\d+)\/(\d+)$/, function (m) {
          return { 
             neg: !!m[1], 
-            w: zero,
+            w: int.zero(),
             n: int(m[2]),
             d: int(m[3])
-        }
+        };
     }],
 
 Rational in decimal form  (-)#.# #E#  1.2 3 E34
 
-    ["rat", ^(-)?(\d+)?\.(\d+)? (\d+)\s?(E(-|\+)?(\d+))?$/, function (m) {
-         _"parsing rational dec";
+    ["rat", /^(-)?(\d+)?\.(\d+)? (\d+)\s?(E-?(\d+))?$/, function (m) {
+         _"parsing rational dec"
     }],
 
 Scientific number  (-)#.#E(-)#:#  1.2 E34 :3  Using non-naming grouping for E and : since we can tell a match by existence of the number after the flag. 
 
-    ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E((?:-|\+)?\d+))? ?(?:\:(\d+))?$/, function (m) {
+    ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E(-?\d+))? ?(?:\:(\d+))?$/, function (m) {
         _"sci parsing"
     }],
 
+Integers are real simple
+
+    ["int", /^(-)?(\d+)$/, function (m) {
+        _"int parsing"
+    }]
+
+#### Int parsing
+
+With integers, we have an array that represents the full number. We fill it in reverse order so that the small part comes first. Num.int.digits represents the string of the limit, which is generally 1E7. 
+
+    var ret = [],
+        dstr = m[2],
+        dl = Num.int.digits.length;
+
+    ret.neg = !!m[1];
+
+    while (dstr.length > 0) {
+        ret.push(parseInt(dstr.slice(-dl), 10));
+        dstr = dstr.slice(0, -dl); 
+    }
+
+    return ret;
 
 
 #### Sci parsing
@@ -274,7 +339,7 @@ The number is just zero.
     return {
         neg: neg,
         i: int(whole+frac),
-        E: E
+        E: E,
         p: pre
     };              
 
@@ -736,14 +801,14 @@ I am coding this up without worrying about performance at this time. The goal is
 
 Each value is represented by an array of js integers with the first entry being the lowest entry. That is, 23,567,654 would be represented as [3567654, 2]. The array also has a property called neg which is a boolean flag for being negative or not. 
 
-    var lim = 1e7;  //this controls the size
+    var int = Num.int = Num.type("int");
+    int.lim = 1e7;  //this controls the size
     var zero, unit; 
-    var halflim = 5e6;
-    var digits = (lim+"").slice(1);
+    int.halflim = 5e6;
+    int.digits = (int.lim+"").slice(1);
     var reduce = _"int reduce";
     var mcom = _"mass comparison";
     var dcom = _"directed comparison";
-    var int = Num.int = Num.type("int");
     var div = Num.int.divalgo = _"int division algorithm";
 
     Num.define("int", {
@@ -800,7 +865,7 @@ Initially already assume given in form. Just to get the rest right.
 The string parsing should reverse the .str method. So first it checks for a minus sign. Then it parses backwards 7 digits 
 
     function self () {
-        var o = this.original, dl;
+        var o = this.original;
         var ret = [], i, n, digit;
         if (Array.isArray(o)) {
             ret.neg = o.neg || false;   
@@ -816,18 +881,11 @@ The string parsing should reverse the .str method. So first it checks for a minu
                     ret[i] = parseInt(digit, 10);
                 }
             }
+        } else if (this.parsed) {
+            ret = this.parsed;
+            delete this.parsed;
         } else if (typeof o === "string") {
-            if (o[0] === "-") {
-                ret.neg = true;
-                o = o.slice(1);
-            } else {
-                ret.neg = false;
-            }
-            dl = digits.length;
-            while (o.length >0) {
-                ret.push(parseInt(o.slice(-dl), 10));
-                o = o.slice(0, -dl); 
-            }
+            return Num.tryParse(this, "int");
         } else if (typeof o === "number") {
             if (o < 0) {
                 ret.neg = true;
@@ -913,7 +971,7 @@ Reverse the array and join it. This is wrong as it misses 0's in between. Need t
         for (i = 0; i < n-1; i +=1 ) {
             temp = strarr[i] + "";
             // add zeros
-            strarr[i] = digits.slice(temp.length) + temp;
+            strarr[i] = int.digits.slice(temp.length) + temp;
         }
         strarr[n-1] = strarr[n-1]+"";
         var minus = this.val.neg ? "-" : "";
@@ -927,7 +985,8 @@ We need to have something implements reduction of values below the safe limit of
 For this, all entries should be positive. 
 
     function (arr) {
-        var i, n = arr.length, cur, big;
+        var i, n = arr.length, cur, big,
+            lim = int.lim;
 
         for (i = 0; i < n; i += 1) {
             cur = arr[i];
@@ -1127,6 +1186,7 @@ I checked the experimental results with WolframAlpha and it all checks out.
         var d = den.val;
         var dl = d.length-1;
         var dbig = d[dl]; 
+        var halflim = int.halflim;
 
         _"modify to make sure denominator is large enough"
 

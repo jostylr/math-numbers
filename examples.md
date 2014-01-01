@@ -5,11 +5,33 @@ Here is a set of runnable examples
 
 ## Files
 
+* [examples/numberparsing.js](#number-parsing "save: |jshint")
 * [examples/factorial.js](#factorial-broken-up "save: | jshint")
 * [examples/conversion.js](#conversions "save:|jshint")
 * [examples/division.js](#division "save:|jshint")
 * [examples/ratdecparse.js](#parsing-ratdec "save:|jshint")
 * [examples/squarerat.js](#repeating-squared "save:|jshint")
+
+## Number parsing
+
+We just want to try some number parsing and see if we can get some trouble.
+
+    /*jshint node:true*/
+
+    var Num = require('../index.js');
+
+    var a = ["0", "1", "-0", "-1234567890123456789"];
+    var b = [];
+
+    a.forEach(function (el) {
+        var x = Num.int(el);
+        b.push(x);
+        console.log(x.str());    
+    });
+
+
+
+
 
 
 ## Factorial broken up
