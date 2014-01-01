@@ -10,3 +10,5 @@ a.forEach(function (el) {
 });
 
 console.log(Num("1 3/4").add("5 2/3").str());
+
+console.log(Num("-1.45E34").str());

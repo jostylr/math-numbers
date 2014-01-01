@@ -1951,19 +1951,11 @@ The precision is the number of significant digits. Generally, one extra digit is
 
     function () {
         var o = this.original, m, digits;
-        if (typeof o === "string") {
-            m =  o.match(/^(-)?(\d+)(?:\.(\d+))?(?:(?:E|e)((?:\-|\+)?\d+))?(?:\:(\d+))?$/);
-            if (!m) {
-                this.val = {neg: false, i: int(NaN), E: 0, p: 0};
-            } else {
-                digits = m[2] + (m[3]||'');
-                this.val = {
-                    neg: !!m[1], 
-                    i: int(digits),
-                    E: parseInt(( m[4] || 0), 10),
-                    p: (m[5] ? parseInt(m[5], 10) : digits.length-1 ) || 1 
-                };              
-            } 
+        if (this.parsed) {
+            this.val = this.parsed;
+            delete this.parsed;
+        } else if (typeof o === "string") {
+            return Num.tryParse(this, "sci");
         } else if (typeof o === "number") {
             this.val = sci(o.toExponential()).val; // lazy path
         } else if (o.hasOwnProperty("E") ) { // basically correct form already
@@ -2105,6 +2097,7 @@ Format:  level:precision number for display, full is for showing the full number
 
         var out = this.round(pre+1);
         var temp = out.val.i.str();
+        var flag = (temp.length <  pre );
 
         // -?a
         var ret = this.sign() + temp[0];
@@ -2128,7 +2121,7 @@ Format:  level:precision number for display, full is for showing the full number
 
 
         // d
-        if ( (!options.full) && (temp.length < pre + 1) && !isInteger ) {
+        if ( (!options.full) && (flag) && !isInteger ) {
             if (isFinite(pre)) {
                 ret += ":"+pre;        
             } else {

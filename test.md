@@ -302,10 +302,10 @@ This will test the basic math functions for our float system. This is a number s
     zero: 0, one: 1
     a: -1.45E34, b: 4.532312342345234523E12
     ?: a ? b; b ? a, a ? a, b ? a
-    add: -1.45E34; -1.45E34; -2.90E34; 9.064624684690469046E12
-    sub: -1.45E34; 1.45E34; 0; 0
-    mul: -6.57E46; -6.57E46; 2.10E68; 2.054185516857494634E24
-    div: -3.20E21; -3.13E-22; 1.00; 1.000000000000000000
+    add: -1.450E34; -1.450E34; -2.90E34; 9.064624684690469046E12
+    sub: -1.450E34; 1.450E34; 0; 0
+    mul: -6.572E46; -6.572E46; 2.103E68; 2.0541855168574946343E24
+    div: -3.199E21; -3.126E-22; 1.000; 1.0000000000000000000
     max: 4.532312342345234523E12; 4.532312342345234523E12; -1.45E34; 4.532312342345234523E12
     mmax: -1.45E34; -1.45E34; -1.45E34; 4.532312342345234523E12
     min: -1.45E34; -1.45E34; -1.45E34; 4.532312342345234523E12
@@ -325,11 +325,11 @@ This will test the basic math functions for our float system. This is a number s
     floor: -1.46E34; 4.532312342345234523E12
     abs: 1.45E34; 4.532312342345234523E12
     ceil: -1.45E34; 4.532312342345234524E12
-    inv: -6.90E-35; 2.206379270592265308E-13
-    a ipow 5: -6.41E170
-    b ipow 5: 1.912489930407291642E60
-    a ipow -4: 2.26E-137
-    b ipow -4: 2.369848996475508153E-49
+    inv: -6.897E-35; 2.2063792705922653079E-13
+    a ipow 5: -6.410E170
+    b ipow 5: 1.9124899304072916416E60
+    a ipow -4: 2.262E-137
+    b ipow -4: 2.3698489964755081534E-49
     a sign : -
     b sign : 
     a: 1.2341234E-30:50, b: 2
@@ -371,7 +371,7 @@ This will test the basic math functions for our float system. This is a number s
     actual.push("zero: " + sci.zero.str() +  ", one: " + sci.unit.str());
     var samples = [ 
         [new Num("-1.45E34", "sci"), Num.sci("4.532312342345234523E12")],
-        [new Num("1.2341234E-30:50", "sci"), new Num("2:50", "sci")]
+        [new Num("1.2341234E-30:50", "sci"), new Num("2.:50", "sci")]
     ];
 
     _"ops"
