@@ -20,6 +20,12 @@
             } else if (val.type) {
                 this.type = val.type;
                 ret = this.parse();
+            } else if (typeof val === "number") {
+                if (Math.floor(val) === val) {
+                    ret = Num.int(val);
+                } else {
+                    ret = Num.float(val);
+                }
             } else {
                 ret = false;
             } 
@@ -918,66 +924,11 @@
     Num.define("rat", {
         parse : function () {
                 var o = this.original, m, ret;
-                if (typeof o === "string") {
-                    //mixed
-                    m =  o.match(/^\s*(-)?\s*(\d+)?\s+(\d+)?\s*\/?\s*(\d+)?\s*$/);
-                    if (!m) {
-                        //fraction
-                        m =  o.match(/^\s*(-)?(\d+)?\s*\/\s*(\d+)?\s*$/);
-                        if (!m) {
-                            //rational in decimal form
-                            m = o.match(/^\s*(-)?(\d+)?\.(\d+)?\s(\d+)\s*(E(-|\+)?(\d+))?\s*$/);
-                            if (!m) {
-                                m = o.match(/^\s*(-)?(\d+)\s*$/);
-                                if (!m) {
-                                    return false;
-                                } else {
-                                    this.val = {neg: !!m[1], w: int(m[2]), n: zero, d: int(1)};
-                                }
-                            } else {
-                                ret = (function ( m ) {var lead = m[2],
-                                        nonrep = m[3],
-                                        rep = m[4],
-                                        unit = Num.int(1),
-                                        E, ret, shift, repfrac, dec ;
-                                    
-                                    repfrac = Num.int(rep).div(Num.int(10).ipow(rep.length).sub( unit ) );
-                                    dec = Num.int(nonrep).add(repfrac).div(Num.int(10).ipow(nonrep.length));
-                                    ret = (Num.int(lead)).add(dec);
-                                    
-                                    if (m[1]) {
-                                        ret = ret.neg();
-                                    }
-                                    
-                                    ret.original = m[0];
-                                    
-                                    if (m[5]) {
-                                        E = parseInt(m[5].slice(1), 10);
-                                        shift = Num.int(10).ipow(E);
-                                        return ret.mul(shift);
-                                    } else {
-                                        return ret;
-                                    }
-                                    } ( m ) );
-                                ret.original = o;
-                                return ret;
-                            }
-                        } else {
-                            this.val = {
-                                neg: !!m[1], 
-                                w: zero,
-                                n: int(m[2]||0),
-                                d: int(m[3]||1)
-                            };  
-                        }
-                    } else {
-                        this.val = { 
-                            neg: !!m[1], 
-                            w: int(m[2]||0),
-                            n: int(m[3]||0),
-                            d: int(m[4]||1)
-                        };                            
-                    }
+                if (this.parsed) {
+                    this.val = this.parsed;
+                    delete this.parsed;
+                } else if (typeof o === "string") {
+                    return Num.tryParse(this, "rat");
                 } else if (typeof o === "number") {
                     if (Math.floor(o) === o ) { // integer
                         this.val = {
@@ -1010,10 +961,10 @@
                     };
                 } else if (o.type === "rat") {
                     this.val = {
-                        neg : o.w.sign(),
-                        w :   o.w,
-                        n :  o.n,
-                        d :  o.d
+                        neg : o.val.w.sign(),
+                        w :   o.w(),
+                        n :  o.n(),
+                        d :  o.d()
                     };            
                 } else {
                     return false;    
@@ -2147,7 +2098,7 @@
     converter(['int', 'rat', 'sci', 'float'], '', fullops, function (op) {
             return function (r) {
                 var result;
-                var right = this.make(r);
+                var right = this.make(Num(r));     // this.make(r);
                 result = this[op](right);
                 return result;        
             };
@@ -2155,7 +2106,7 @@
     converter(['com'], '', arithops, function (op) {
             return function (r) {
                 var result;
-                var right = this.re().make(r);
+                var right = this.re().make(Num(r));
                 right = Num.com({re: right, im: right.zero});
                 result = this[op](right);
                 return result;
@@ -2190,7 +2141,7 @@
         ["rat", /^(-)?(\d+)\/(\d+)$/, function (m) {
              return { 
                 neg: !!m[1], 
-                w: int.zero(),
+                w: int.zero,
                 n: int(m[2]),
                 d: int(m[3])
             };

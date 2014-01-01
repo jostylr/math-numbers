@@ -635,7 +635,7 @@ This is a place to stick tests for problems that come up. This is opposed to the
 
         t.equal( Num.rat("1 1/7").str("dec"), "1. 142857", "purely repeating fraction with integer");
 
-        t.equal(Num.rat("2").add(Num.rat("3")).str(), "5", "2+3 = 5, rationally");
+        t.equal(Num("2").rat().add(Num("3").rat()).str(), "5", "2+3 = 5, rationally");
 
         var x = Num.sci("1.5666E0:30");
         t.equal(x.mul(x).sub(Num.int(2)).str(), "4.5423556E-1:29");
