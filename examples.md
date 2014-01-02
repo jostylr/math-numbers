@@ -20,7 +20,9 @@ We just want to try some number parsing and see if we can get some trouble.
 
     var Num = require('../index.js');
 
-    var a = ["1 3/4", "-1 3/4", "5"];
+    console.log("START");
+    
+    var a = ["1 3/4", "-1_3/4", "1._75", "1. 75", "5"];
 
     a.forEach(function (el) {
         var x = Num(el);
@@ -30,6 +32,8 @@ We just want to try some number parsing and see if we can get some trouble.
     console.log(Num("1 3/4").add("5 2/3").str());
 
     console.log(Num("-1.45E34").str());
+
+    console.log(Num("1.3E7+2_3/4i").add("0-i").str() );
 
 
 

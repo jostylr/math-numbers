@@ -150,7 +150,7 @@ Checks for whether this was a construct call or not. If not, calls the construct
         this.original = val;
 
         if (ret === false) {
-            console.log("NaN found", this);
+            console.log("NaN found", this, ret, val);
             ret = this;
             this.type = "NaN";
             this.val = NaN;
@@ -161,6 +161,14 @@ We want to store the original input value, but if it is a Num object, then we st
         if (val instanceof Num) {
             // to make original more viewable for debugging
             ret.original = val.str() + "|" + val.type + "||str";
+        }
+
+        if (!ret) {
+            ret = this;
+        }
+
+        if (ret.type === "com") {
+            console.log("num", ret, this);
         }
 
         return ret;
@@ -200,11 +208,13 @@ Anyway, given a sucessful match, it then goes through the function to get an obj
             });
         }
 
-        return types.some(function (el) {
+        var ret = false;
+
+        types.some(function (el) {
             var type = el[0],
                 reg = el[1],
                 fun = el[2],
-                m, ret;
+                m, stamp = Math.random();
 
             m = reg.exec(num.original);
             if (m) {
@@ -214,10 +224,19 @@ Anyway, given a sucessful match, it then goes through the function to get an obj
                 }
                 num.type = type;
                 num.parsed = ret;
-                return num.parse();
+                if (num.type === "com") {
+                    console.log("pre", stamp, ret);
+                    ret = num.parse();
+                    console.log("post", stamp, ret);
+                } else {
+                    ret = num.parse();
+                }
+                return ret;
             }
             return false;
         });
+
+        return ret;
 
     }
 
@@ -225,9 +244,14 @@ Anyway, given a sucessful match, it then goes through the function to get an obj
 
 Complex form:  a+ib  where a and b are numbers matching one of the other forms. 3+4i. For pure imaginary, use 0+bi
 
-    ["com", /^([\-0-9 _E:.\/]+)\~([\-0-9 _E:.\/]+)i$/, function (m) {
-        var a = new Num(m[1]),
-            b = new Num(m[2]);
+    ["com", /^(-?[0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)(\+|\-)([0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)?i$/, function (m) {
+        var a = new Num(m[1]), 
+            b = m[3] || "1";
+        if (m[2] === "+") {
+            b = new Num(b);
+        } else {
+            b = new Num("-"+b);
+        }
         if  ( (a.type !== "NaN") && (b.type !== "NaN") ) {
             return {
                 re : a,
@@ -263,7 +287,7 @@ Rational fraction only (-)n/d
 
 Rational in decimal form  (-)#.# #E#  1.2 3 E34
 
-    ["rat", /^(-)?(\d+)?\.(\d+)? (\d+)\s?(E-?(\d+))?$/, function (m) {
+    ["rat", /^(-)?(\d+)?\.(\d+)?[ _](\d+)\s?(E-?(\d+))?$/, function (m) {
          _"parsing rational dec"
     }],
 
@@ -364,28 +388,27 @@ We add that to the lead, negate if needed, and shift it using E if needed.
 
 
     var lead = m[2],
-        nonrep = m[3],
+        nonrep = m[3] || "",
         rep = m[4],
-        unit = Num.int(1),
+        unit = Num.int.unit,
         E, ret, shift, repfrac, dec ;
 
     repfrac = Num.int(rep).div(Num.int(10).ipow(rep.length).sub( unit ) );
-    dec = Num.int(nonrep).add(repfrac).div(Num.int(10).ipow(nonrep.length));
+    dec = Num.int(nonrep||"0").add(repfrac).div(Num.int(10).ipow(nonrep.length));
     ret = (Num.int(lead)).add(dec);
     
+
     if (m[1]) {
         ret = ret.neg();
     }
 
-    ret.original = m[0];
-
     if (m[5]) {
         E = parseInt(m[5].slice(1), 10);
         shift = Num.int(10).ipow(E);
-        return ret.mul(shift);
-    } else {
-        return ret;
-    }
+        ret = ret.mul(shift);
+    } 
+
+    return ret.val;
 
 
 ## Operators
@@ -1506,6 +1529,9 @@ Example  "dec:10" for decimal version with at most 10 digits; reps will work.
             this.simplify();
         }
 
+        var sep = options.sep || "_";
+
+
         var v = this.val,
             ret = '',
             parts; 
@@ -1520,14 +1546,14 @@ Example  "dec:10" for decimal version with at most 10 digits; reps will work.
 
             ret += v.w.add(parts[0]).str()+".";
             ret += parts[1];
-            ret += " " + parts[2];
+            ret += sep + parts[2];
             return ret.trim();
         }
         
         //default
         
         if (!v.w.eq(zero) ) {
-            ret += v.w.str() + " ";
+            ret += v.w.str() + sep;
         }
         if (!v.n.eq(zero) ) {
            ret += v.n.str() + "/" + v.d.str(); 
@@ -1539,6 +1565,7 @@ Example  "dec:10" for decimal version with at most 10 digits; reps will work.
 
         return ret.trim();
     }
+
 
 
 #### ratdec
@@ -1951,6 +1978,9 @@ The precision is the number of significant digits. Generally, one extra digit is
 
     function () {
         var o = this.original, m, digits;
+        if (!o) {
+            return false;
+        }
         if (this.parsed) {
             this.val = this.parsed;
             delete this.parsed;
@@ -1965,7 +1995,13 @@ The precision is the number of significant digits. Generally, one extra digit is
                 E : o.E,
                 p : o.p || 32
             };
-
+        } else if (o.type === "sci" ) { // basically correct form already
+            this.val = {
+                neg : o.val.neg,
+                i : o.val.i || zero,
+                E : o.val.E,
+                p : o.val.p || 32
+            };
         } else if (o.type === "int") {
             this.val = {
                 neg : o.sign(),
@@ -2619,9 +2655,23 @@ This should complexify the already existing types.
 
     function () {
         var o = this.original;
-        if (o.hasOwnProperty("re") && o.hasOwnProperty("im") ) {
+        if (this.parsed) {
+            this.val = this.parsed;
+            delete this.parsed;
+        } else if (typeof o === "string") {
+            return Num.tryParse(this, "com");
+        } else if (o instanceof Num) {
+            if (o.type === "com") {
+                this.val = {re : o.val.re, im : o.val.im};
+            } else {
+                this.val = {re : o, im : o.zero()};
+            }
+        } else if (o.hasOwnProperty("re") && o.hasOwnProperty("im") ) {
             this.val = {re: o.re, im: o.im};
-        } 
+        } else {
+            return false;
+        }
+
         return this;
     }
 
@@ -2862,8 +2912,7 @@ If complex, we need to use the real part's make.
     function (op) {
         return function (r) {
             var result;
-            var right = this.re().make(Num(r));
-            right = Num.com({re: right, im: right.zero});
+            var right = Num(r).com(); 
             result = this[op](right);
             return result;
         };
