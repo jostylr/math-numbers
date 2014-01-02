@@ -48,10 +48,6 @@
                 ret = this;
             }
         
-            if (ret.type === "com") {
-                console.log("num", ret, this);
-            }
-        
             return ret;
         };
 
@@ -232,7 +228,7 @@
                 var type = el[0],
                     reg = el[1],
                     fun = el[2],
-                    m, stamp = Math.random();
+                    m;
         
                 m = reg.exec(num.original);
                 if (m) {
@@ -243,9 +239,7 @@
                     num.type = type;
                     num.parsed = ret;
                     if (num.type === "com") {
-                        console.log("pre", stamp, ret);
                         ret = num.parse();
-                        console.log("post", stamp, ret);
                     } else {
                         ret = num.parse();
                     }
@@ -942,7 +936,7 @@
     
     Num.define("rat", {
         parse : function () {
-                var o = this.original, m, ret;
+                var o = this.original;
                 if (this.parsed) {
                     this.val = this.parsed;
                     delete this.parsed;
@@ -1065,20 +1059,29 @@
             
                     ret += v.w.add(parts[0]).str()+".";
                     ret += parts[1];
-                    ret += sep + parts[2];
+                    if (parts[2]) {
+                        ret += sep + parts[2];
+                    }
                     return ret.trim();
                 }
                 
                 //default
+                var wz = v.w.eq(zero),
+                    nz = v.n.eq(zero);
                 
-                if (!v.w.eq(zero) ) {
-                    ret += v.w.str() + sep;
-                }
-                if (!v.n.eq(zero) ) {
-                   ret += v.n.str() + "/" + v.d.str(); 
+                if (!wz ) {
+                    ret += v.w.str();
                 }
             
-                if (v.w.eq(zero) && v.n.eq(zero) ) {
+                if (!wz && !nz) {
+                    ret += sep;
+                }
+            
+                if (!nz ) {
+                   ret +=  v.n.str() + "/" + v.d.str(); 
+                }
+            
+                if (wz && nz ) {
                     ret = "0";
                 }
             
@@ -1508,7 +1511,7 @@
     
     Num.define("sci", {
         parse : function () {
-                var o = this.original, m, digits;
+                var o = this.original;
                 if (!o) {
                     return false;
                 }

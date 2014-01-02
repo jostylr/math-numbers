@@ -167,10 +167,6 @@ We want to store the original input value, but if it is a Num object, then we st
             ret = this;
         }
 
-        if (ret.type === "com") {
-            console.log("num", ret, this);
-        }
-
         return ret;
     }
 
@@ -214,7 +210,7 @@ Anyway, given a sucessful match, it then goes through the function to get an obj
             var type = el[0],
                 reg = el[1],
                 fun = el[2],
-                m, stamp = Math.random();
+                m;
 
             m = reg.exec(num.original);
             if (m) {
@@ -225,9 +221,7 @@ Anyway, given a sucessful match, it then goes through the function to get an obj
                 num.type = type;
                 num.parsed = ret;
                 if (num.type === "com") {
-                    console.log("pre", stamp, ret);
                     ret = num.parse();
-                    console.log("post", stamp, ret);
                 } else {
                     ret = num.parse();
                 }
@@ -1429,7 +1423,7 @@ This models rational numbers as a triple pair of integers: whole, numerator, den
 string, number, objects already in basic form. Given a version with numbers, probably should clone it. 
 
     function () {
-        var o = this.original, m, ret;
+        var o = this.original;
         if (this.parsed) {
             this.val = this.parsed;
             delete this.parsed;
@@ -1546,20 +1540,29 @@ Example  "dec:10" for decimal version with at most 10 digits; reps will work.
 
             ret += v.w.add(parts[0]).str()+".";
             ret += parts[1];
-            ret += sep + parts[2];
+            if (parts[2]) {
+                ret += sep + parts[2];
+            }
             return ret.trim();
         }
         
         //default
+        var wz = v.w.eq(zero),
+            nz = v.n.eq(zero);
         
-        if (!v.w.eq(zero) ) {
-            ret += v.w.str() + sep;
-        }
-        if (!v.n.eq(zero) ) {
-           ret += v.n.str() + "/" + v.d.str(); 
+        if (!wz ) {
+            ret += v.w.str();
         }
 
-        if (v.w.eq(zero) && v.n.eq(zero) ) {
+        if (!wz && !nz) {
+            ret += sep;
+        }
+
+        if (!nz ) {
+           ret +=  v.n.str() + "/" + v.d.str(); 
+        }
+
+        if (wz && nz ) {
             ret = "0";
         }
 
@@ -1977,7 +1980,7 @@ A scientific number value contains a sign, an integer, an exponent E for power o
 The precision is the number of significant digits. Generally, one extra digit is left on for semi-significance. When parsing in a string, the last digit is considered semi-significant.
 
     function () {
-        var o = this.original, m, digits;
+        var o = this.original;
         if (!o) {
             return false;
         }
