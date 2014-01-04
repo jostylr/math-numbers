@@ -16,3 +16,7 @@ console.log(Num("1 3/4").add("5 2/3").str());
 console.log(Num("-1.45E34").str());
 
 console.log(Num("1.3_0E7+2_3/4i").add("0-i").mul("2+3i").str() );
+
+console.log(Num("ab").add(3).mul("57").abs().div("cd").str());
+
+console.log((Num(3).mul(7)).add("ab").div("7").add(Num(57).sub(4)).add("cd").str());

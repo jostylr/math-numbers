@@ -106,11 +106,16 @@ Here we define the Num class and all associated code. The code below is suitable
 
         _"combo setup | ife(Num)";
 
+        _"nan | ife(Num)";
+
         var int = Num.int;
 
         Num.types = [_"Reg Matching"];
 
+
     }).call(this);
+
+We added a Num.nan function for making explicit NaN values. This is a handy way of having errors that can propagate up through the chains. 
 
 ## Num constructor
 
@@ -128,6 +133,10 @@ Checks for whether this was a construct call or not. If not, calls the construct
         }
 
         this.original = val;
+
+        if ((val instanceof Num) && (val.type === "NaN") ) {
+            return val;
+        }
 
         if (type) {
             this.type = type;
@@ -150,7 +159,6 @@ Checks for whether this was a construct call or not. If not, calls the construct
         this.original = val;
 
         if (ret === false) {
-            console.log("NaN found", this, ret, val);
             ret = this;
             this.type = "NaN";
             this.val = NaN;
@@ -160,7 +168,10 @@ We want to store the original input value, but if it is a Num object, then we st
 
         if (val instanceof Num) {
             // to make original more viewable for debugging
-            ret.original = val.str() + "|" + val.type + "||str";
+            if (val.type === "NaN") {
+                return val;
+            }
+            ret.original = val.str();
         }
 
         if (!ret) {
@@ -439,7 +450,22 @@ This had(?) a subtle bug that if a function passed in undefined, it would be pro
                 }
                 type.pop();
             }
-            throw new Error("Unknown operation "+name+" in given types: "+orig);
+
+So nothing matched, erorr condition. This should be informative. Left should always be an instance of Num since that is how we got here. 
+
+            var ret = left.str() + " ", 
+                temp;
+            ret += name + " ";
+            for (i = 0; i < n; i += 1) {
+                temp = arguments[i];
+                if (temp instanceof Num )  {
+                    ret += temp.str() + " ";
+                } else if (temp) {
+                    ret += temp + " ";
+                }
+            }
+
+            return Num.nan(ret);
         };
 
     }
@@ -664,6 +690,21 @@ Our approach is to convert the integer power n into binary and then start squari
         }
     }
 
+
+## Nan
+
+We need to define a to string method for nan. Maybe some other stuff.
+
+    Num.NaN = Num.nan = Num.type("NaN");
+
+    Num.define("NaN", {
+        str : function () {
+            return "(!" + this.original + ")";
+        },
+        parse: function (val) {
+            return false;
+        }
+    });
 
 
 ## Float
@@ -1303,7 +1344,7 @@ It terminates because it is a finite list of positive integers descending. The l
             small = big.rem(small);
             big = temp;
             if (small.gt(big)) {
-                throw new Error ("descent not happening");
+                return Num.nan("descent not happening in gcd: " + a.str() + ", "+ b.str());
             }
 
         }

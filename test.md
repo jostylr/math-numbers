@@ -620,6 +620,10 @@ This is only suitable for synchronous testing. Hey, this is a math library, for 
 
     test("complex" , _"complex*test template");
 
+test("parsing", _"parsing");
+
+test("conversions", _"conversions");
+
     test("ad hoc" , _"adhoc");
 
 
@@ -648,3 +652,11 @@ This is a place to stick tests for problems that come up. This is opposed to the
 
         t.end();
     }
+
+## parsing
+
+This is mainly intended to make sure that all the parsing works. 
+
+## Conversions
+
+This is designed to ensure that we can convert from various types in various ways and types. It uses the .add operator. 

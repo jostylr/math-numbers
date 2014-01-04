@@ -12,6 +12,10 @@
         
             this.original = val;
         
+            if ((val instanceof Num) && (val.type === "NaN") ) {
+                return val;
+            }
+        
             if (type) {
                 this.type = type;
                 ret = this.parse();  // will convert original into appropriate val
@@ -33,7 +37,6 @@
             this.original = val;
         
             if (ret === false) {
-                console.log("NaN found", this, ret, val);
                 ret = this;
                 this.type = "NaN";
                 this.val = NaN;
@@ -41,7 +44,10 @@
         
             if (val instanceof Num) {
                 // to make original more viewable for debugging
-                ret.original = val.str() + "|" + val.type + "||str";
+                if (val.type === "NaN") {
+                    return val;
+                }
+                ret.original = val.str();
             }
         
             if (!ret) {
@@ -108,7 +114,20 @@
                     }
                     type.pop();
                 }
-                throw new Error("Unknown operation "+name+" in given types: "+orig);
+        
+                var ret = left.str() + " ", 
+                    temp;
+                ret += name + " ";
+                for (i = 0; i < n; i += 1) {
+                    temp = arguments[i];
+                    if (temp instanceof Num )  {
+                        ret += temp.str() + " ";
+                    } else if (temp) {
+                        ret += temp + " ";
+                    }
+                }
+        
+                return Num.nan(ret);
             };
         
         };
@@ -846,7 +865,7 @@
                     small = big.rem(small);
                     big = temp;
                     if (small.gt(big)) {
-                        throw new Error ("descent not happening");
+                        return Num.nan("descent not happening in gcd: " + a.str() + ", "+ b.str());
                     }
             
                 }
@@ -2151,6 +2170,18 @@
                 return result;
             };
         });
+    } ( Num ) );
+
+    (function ( Num ) {Num.NaN = Num.nan = Num.type("NaN");
+    
+    Num.define("NaN", {
+        str : function () {
+            return "(!" + this.original + ")";
+        },
+        parse: function (val) {
+            return false;
+        }
+    });
     } ( Num ) );
 
     var int = Num.int;
