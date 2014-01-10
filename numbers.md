@@ -2794,7 +2794,7 @@ Fairly simple; just use existing prints. But need to deal with 0 and 1 coeficien
         if (im === "1i") {
             im = 'i';
         }
-        if (im === "1i") {
+        if (im === "-1i") {
             im = '-i';
         }
         ret = re + plus + im;

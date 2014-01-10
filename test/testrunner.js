@@ -997,3 +997,21 @@ test("ad hoc" , function (t) {
     
         t.end();
     });
+
+test("parsing", function (t) {
+        var p = function (str) {
+            return Num(str).str();
+        };
+        t.equal(p("1/7"), "1/7", "fraction");
+        t.equal(p("-3_1/7"), "-3_1/7", "mixed fraction");
+        t.equal(Num("534/2").mix().str(), "267", "improper fraction");
+        t.equal(p("5.3_2"), "5_29/90", "repeating decimal");
+    
+        //complex
+        t.equal(p("1+i"), "1+i", "complex integral");
+        t.equal(p("1-i"), "1-i", "complex integral negative");
+        t.equal(p("-i"), "(!-i)", "failure to parse imag with no real");
+    
+        t.end();
+    
+    });

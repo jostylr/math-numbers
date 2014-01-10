@@ -1991,7 +1991,7 @@
                 if (im === "1i") {
                     im = 'i';
                 }
-                if (im === "1i") {
+                if (im === "-1i") {
                     im = '-i';
                 }
                 ret = re + plus + im;
