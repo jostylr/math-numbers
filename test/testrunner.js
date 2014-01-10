@@ -1002,10 +1002,22 @@ test("parsing", function (t) {
         var p = function (str) {
             return Num(str).str();
         };
+        // integer
+        t.equal(p("0"), "0", "zero");
+        t.equal(p("1"), "1", "one");
+        t.equal(p("123456789123456789123456789"), "123456789123456789123456789", "positive integer");
+        t.equal(p("-213"), "-213", "negative integer");
+    
+        // rational
         t.equal(p("1/7"), "1/7", "fraction");
         t.equal(p("-3_1/7"), "-3_1/7", "mixed fraction");
         t.equal(Num("534/2").mix().str(), "267", "improper fraction");
         t.equal(p("5.3_2"), "5_29/90", "repeating decimal");
+    
+        // sci
+        t.equal(p("1.34E5"), "1.34E5", "scientific");
+        t.equal(p("1.346E5:2"), "1.35E5", "scientific precision");
+        t.equal(p("-1.346E5:2"), "-1.35E5", "negative scientific precision");
     
         //complex
         t.equal(p("1+i"), "1+i", "complex integral");

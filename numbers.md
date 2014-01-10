@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.0.9| jostylr")
+# [math-numbers](# "version: 0.1.0| jostylr")
 
 Math-numbers is a project dedicated to exploring math with as little concern about floating point approximations as possible. The idea is that we can use integers and rational numbers of perfect precision while we can still drop into the scientific numbers with an arbitrary precision level whenever we want to. 
 
@@ -249,7 +249,7 @@ Anyway, given a sucessful match, it then goes through the function to get an obj
 
 Complex form:  a+ib  where a and b are numbers matching one of the other forms. 3+4i. For pure imaginary, use 0+bi
 
-    ["com", /^(-?[0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)(\+|\-)([0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)?i$/, function (m) {
+    ["com", /^(-?[0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)(\+|\-)([0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)?i/, function (m) {
         var a = new Num(m[1]), 
             b = m[3] || "1";
         if (m[2] === "+") {
@@ -270,7 +270,7 @@ Complex form:  a+ib  where a and b are numbers matching one of the other forms. 
 
 Rational mixed form: (-)w n/d
 
-    ["rat", /^(-)?(\d+)[ _](\d+)\/(\d+)$/, function (m) {
+    ["rat", /^(-)?(\d+)[ _](\d+)\/(\d+)/, function (m) {
          return { 
             neg: !!m[1], 
             w: int(m[2]),
@@ -281,7 +281,7 @@ Rational mixed form: (-)w n/d
 
 Rational fraction only (-)n/d
 
-    ["rat", /^(-)?(\d+)\/(\d+)$/, function (m) {
+    ["rat", /^(-)?(\d+)\/(\d+)/, function (m) {
          return { 
             neg: !!m[1], 
             w: int.zero,
@@ -292,19 +292,19 @@ Rational fraction only (-)n/d
 
 Rational in decimal form  (-)#.# #E#  1.2 3 E34
 
-    ["rat", /^(-)?(\d+)?\.(\d+)?[ _](\d+)\s?(E-?(\d+))?$/, function (m) {
+    ["rat", /^(-)?(\d+)?\.(\d+)?[ _](\d+)\s?(E-?(\d+))?/, function (m) {
          _"parsing rational dec"
     }],
 
 Scientific number  (-)#.#E(-)#:#  1.2 E34 :3  Using non-naming grouping for E and : since we can tell a match by existence of the number after the flag. 
 
-    ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E(-?\d+))? ?(?:\:(\d+))?$/, function (m) {
+    ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E(-?\d+))? ?(?:\:(\d+))?/, function (m) {
         _"sci parsing"
     }],
 
 Integers are real simple
 
-    ["int", /^(-)?(\d+)$/, function (m) {
+    ["int", /^(-)?(\d+)/, function (m) {
         _"int parsing"
     }]
 

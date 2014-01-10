@@ -2186,7 +2186,7 @@
 
     var int = Num.int;
 
-    Num.types = [["com", /^(-?[0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)(\+|\-)([0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)?i$/, function (m) {
+    Num.types = [["com", /^(-?[0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)(\+|\-)([0-9_.\/]+(?:E-?\d+)?(?:\:\d+)?)?i/, function (m) {
             var a = new Num(m[1]), 
                 b = m[3] || "1";
             if (m[2] === "+") {
@@ -2204,7 +2204,7 @@
             }
         }],
         
-        ["rat", /^(-)?(\d+)[ _](\d+)\/(\d+)$/, function (m) {
+        ["rat", /^(-)?(\d+)[ _](\d+)\/(\d+)/, function (m) {
              return { 
                 neg: !!m[1], 
                 w: int(m[2]),
@@ -2213,7 +2213,7 @@
             };
         }],
         
-        ["rat", /^(-)?(\d+)\/(\d+)$/, function (m) {
+        ["rat", /^(-)?(\d+)\/(\d+)/, function (m) {
              return { 
                 neg: !!m[1], 
                 w: int.zero,
@@ -2222,7 +2222,7 @@
             };
         }],
         
-        ["rat", /^(-)?(\d+)?\.(\d+)?[ _](\d+)\s?(E-?(\d+))?$/, function (m) {
+        ["rat", /^(-)?(\d+)?\.(\d+)?[ _](\d+)\s?(E-?(\d+))?/, function (m) {
              var lead = m[2],
                  nonrep = m[3] || "",
                  rep = m[4],
@@ -2246,7 +2246,7 @@
              return ret.val;
         }],
         
-        ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E(-?\d+))? ?(?:\:(\d+))?$/, function (m) {
+        ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E(-?\d+))? ?(?:\:(\d+))?/, function (m) {
             var neg = !!m[1],
                 whole = m[2],
                 frac = m[3] || '',
@@ -2285,7 +2285,7 @@
             };              
         }],
         
-        ["int", /^(-)?(\d+)$/, function (m) {
+        ["int", /^(-)?(\d+)/, function (m) {
             var ret = [],
                 dstr = m[2],
                 dl = Num.int.digits.length;
