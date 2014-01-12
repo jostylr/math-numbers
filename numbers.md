@@ -1,4 +1,4 @@
-# [math-numbers](# "version: 0.1.0| jostylr")
+# [math-numbers](# "version: 0.1.1| jostylr")
 
 Math-numbers is a project dedicated to exploring math with as little concern about floating point approximations as possible. The idea is that we can use integers and rational numbers of perfect precision while we can still drop into the scientific numbers with an arbitrary precision level whenever we want to. 
 
