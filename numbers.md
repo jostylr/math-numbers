@@ -268,7 +268,7 @@ Complex form:  a+ib  where a and b are numbers matching one of the other forms. 
 
 Rational mixed form: (-)w n/d
 
-    ["rat", /^(-)?(\d+)[ _](\d+)\/(\d+)/, function (m) {
+    ["rat", /^(-)?(\d+)_(\d+)\/(\d+)/, function (m) {
          return { 
             neg: !!m[1], 
             w: int(m[2]),
@@ -288,15 +288,15 @@ Rational fraction only (-)n/d
         };
     }],
 
-Rational in decimal form  (-)#.# #E#  1.2 3 E34
+Rational in decimal form  (-)#.# #E#  1.2_3E34
 
-    ["rat", /^(-)?(\d+)?\.(\d+)?[ _](\d+)\s?(E-?(\d+))?/, function (m) {
+    ["rat", /^(-)?(\d+)?\.(\d+)?_(\d+)\s?(E-?(\d+))?/, function (m) {
          _"parsing rational dec"
     }],
 
-Scientific number  (-)#.#E(-)#:#  1.2 E34 :3  Using non-naming grouping for E and : since we can tell a match by existence of the number after the flag. 
+Scientific number  (-)#.#E(-)#:# 1.2E34:3  Using non-naming grouping for E and : since we can tell a match by existence of the number after the flag. 
 
-    ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E(-?\d+))? ?(?:\:(\d+))?/, function (m) {
+    ["sci", /^(-)?(\d+)\.(\d+)?(?:E(-?\d+))?(?:\:(\d+))?/, function (m) {
         _"sci parsing"
     }],
 

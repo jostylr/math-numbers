@@ -489,8 +489,8 @@ test("rationals" , function (t) {
         var rat = Num.rat;
         actual.push("zero: " + rat.zero.str() +  ", one: " + rat.unit.str());
         var samples = [ 
-            [new Num("-23 4/5", "rat"), Num.rat("2 1/4")],
-            [Num.rat("-34233112312312 423452345234523/52323412412341234123412424"), new Num("5 2/3", "rat")]
+            [new Num("-23_4/5", "rat"), Num.rat("2_1/4")],
+            [Num.rat("-34233112312312_423452345234523/52323412412341234123412424"), new Num("5_2/3", "rat")]
         ];
         
         var ops = ['add', 'sub', 'mul', 'div', 'max', 'mmax', 'min', 'mmin'];
@@ -983,7 +983,7 @@ test("ad hoc" , function (t) {
     
         t.equal( Num.rat("1/7").str("dec:3"), "0.142", "purely repeating fraction, not enough digits to display");
     
-        t.equal( Num.rat("1 1/7").str("dec"), "1._142857", "purely repeating fraction with integer");
+        t.equal( Num.rat("1_1/7").str("dec"), "1._142857", "purely repeating fraction with integer");
     
         t.equal(Num("2").rat().add(Num("3").rat()).str(), "5", "2+3 = 5, rationally");
     

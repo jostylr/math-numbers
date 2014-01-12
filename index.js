@@ -2202,7 +2202,7 @@
             }
         }],
         
-        ["rat", /^(-)?(\d+)[ _](\d+)\/(\d+)/, function (m) {
+        ["rat", /^(-)?(\d+)_(\d+)\/(\d+)/, function (m) {
              return { 
                 neg: !!m[1], 
                 w: int(m[2]),
@@ -2220,7 +2220,7 @@
             };
         }],
         
-        ["rat", /^(-)?(\d+)?\.(\d+)?[ _](\d+)\s?(E-?(\d+))?/, function (m) {
+        ["rat", /^(-)?(\d+)?\.(\d+)?_(\d+)\s?(E-?(\d+))?/, function (m) {
              var lead = m[2],
                  nonrep = m[3] || "",
                  rep = m[4],
@@ -2244,7 +2244,7 @@
              return ret.val;
         }],
         
-        ["sci", /^(-)?(\d+)\.(\d+)? ?(?:E(-?\d+))? ?(?:\:(\d+))?/, function (m) {
+        ["sci", /^(-)?(\d+)\.(\d+)?(?:E(-?\d+))?(?:\:(\d+))?/, function (m) {
             var neg = !!m[1],
                 whole = m[2],
                 frac = m[3] || '',
