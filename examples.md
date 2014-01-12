@@ -5,6 +5,7 @@ Here is a set of runnable examples
 
 ## Files
 
+* [examples/convert.js](#conversion "save: |jshint")
 * [examples/numberparsing.js](#number-parsing "save: |jshint")
 * [examples/factorial.js](#factorial-broken-up "save: | jshint")
 * [examples/conversion.js](#conversions "save:|jshint")
@@ -20,24 +21,39 @@ We just want to try some number parsing and see if we can get some trouble.
 
     var Num = require('../index.js');
 
-    console.log("START");
+    console.log(Num("3+5"));
 
-    var a = ["1 3/4", "-1_3/4", "1._75", "1. 75", "5"];
 
-    a.forEach(function (el) {
-        var x = Num(el);
-        console.log(x.str());    
-    });
+### Old
 
-    console.log(Num("1 3/4").add("5 2/3").str());
+console.log("START");
 
-    console.log(Num("-1.45E34").str());
+var a = ["1 3/4", "-1_3/4", "1._75", "1. 75", "5"];
 
-    console.log(Num("1.3_0E7+2_3/4i").add("0-i").mul("2+3i").str() );
+a.forEach(function (el) {
+    var x = Num(el);
+    console.log(x.str());    
+});
 
-    console.log(Num("ab").add(3).mul("57").abs().div("cd").str());
+console.log(Num("1 3/4").add("5 2/3").str());
 
-    console.log((Num(3).mul(7)).add("ab").div("7").add(Num(57).sub(4)).str());
+console.log(Num("-1.45E34").str());
+
+console.log(Num("1.3_0E7+2_3/4i").add("0-i").mul("2+3i").str() );
+
+console.log(Num("ab").add(3).mul("57").abs().div("cd").str());
+
+console.log((Num(3).mul(7)).add("ab").div("7").add(Num(57).sub(4)).str());
+
+
+## Conversion
+
+    /*jshint node:true*/
+
+    var Num = require('../index.js');    
+
+    console.log(Num("0").add("1.1").str());
+    
 
 ## Factorial broken up
 

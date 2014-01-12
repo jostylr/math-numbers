@@ -156,7 +156,7 @@ Checks for whether this was a construct call or not. If not, calls the construct
             ret = false;
         } 
 
-        this.original = val;
+        //this.original = val;
 
         if (ret === false) {
             ret = this;
@@ -231,11 +231,9 @@ Anyway, given a sucessful match, it then goes through the function to get an obj
                 }
                 num.type = type;
                 num.parsed = ret;
-                if (num.type === "com") {
-                    ret = num.parse();
-                } else {
-                    ret = num.parse();
-                }
+                ret = num.parse();
+                ret.original = m[0];
+
                 return ret;
             }
             return false;
@@ -695,7 +693,7 @@ Our approach is to convert the integer power n into binary and then start squari
 
 We need to define a to string method for nan. Maybe some other stuff.
 
-    Num.NaN = Num.nan = Num.type("NaN");
+    Num.nan = Num.type("NaN");
 
     Num.define("NaN", {
         str : function () {
@@ -963,7 +961,6 @@ The string parsing should reverse the .str method. So first it checks for a minu
             return false; //ret[0] = NaN;
         }
 
-
         this.val = reduce(ret);
         // clean out zeros in the front
         while ( (ret.length > 1) && (ret[ret.length -1] === 0) ) {
@@ -1051,6 +1048,7 @@ For this, all entries should be positive.
     function (arr) {
         var i, n = arr.length, cur, big,
             lim = int.lim;
+
 
         for (i = 0; i < n; i += 1) {
             cur = arr[i];
@@ -2943,7 +2941,7 @@ What if we just use a raw number as string? Happens frequently so far. If left s
     function (op) {
         return function (r) {
             var result;
-            var right = this.make(Num(r));     // this.make(r);
+            var right = Num(r);     // this.make(r);
             result = this[op](right);
             return result;        
         };

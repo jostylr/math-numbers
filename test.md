@@ -625,7 +625,7 @@ This is only suitable for synchronous testing. Hey, this is a math library, for 
 
     test("parsing", _"parsing");
 
-test("conversions", _"conversions");
+    test("conversions", _"conversions");
 
 
 
@@ -687,6 +687,9 @@ This is mainly intended to make sure that all the parsing works.
         t.equal(p("1-i"), "1-i", "complex integral negative");
         t.equal(p("-i"), "(!-i)", "failure to parse imag with no real");
 
+        t.equal(Num("-213a").str(), "-213", "only parsable part gets used");
+        t.equal(Num("-213a").original, "-213", "only parsed part gets stored");
+
         t.end();
 
     }
@@ -694,3 +697,19 @@ This is mainly intended to make sure that all the parsing works.
 ## Conversions
 
 This is designed to ensure that we can convert from various types in various ways and types. It uses the .add operator. 
+
+    function (t) {
+        var p = function (left, right) {
+            var lr = Num(left).add(right).str();
+            var rl = Num(right).add(left).str();
+            return (lr === rl) ? lr :  lr+" != " + rl;
+        };
+
+        t.equal(p("0", "1.1"), "1.1", "zero+sci");
+        t.equal(p("123456789123456789123456789", "1.1"), "1.234567891234567891234567901E26", "int+sci");
+        t.equal(p("1.1_3", "2.234E-4"), "1.13355673", "rat+sci");
+
+        t.end();
+    }
+
+

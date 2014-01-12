@@ -34,7 +34,7 @@
                 ret = false;
             } 
         
-            this.original = val;
+            //this.original = val;
         
             if (ret === false) {
                 ret = this;
@@ -257,11 +257,9 @@
                     }
                     num.type = type;
                     num.parsed = ret;
-                    if (num.type === "com") {
-                        ret = num.parse();
-                    } else {
-                        ret = num.parse();
-                    }
+                    ret = num.parse();
+                    ret.original = m[0];
+        
                     return ret;
                 }
                 return false;
@@ -2157,7 +2155,7 @@
     converter(['int', 'rat', 'sci', 'float'], '', fullops, function (op) {
             return function (r) {
                 var result;
-                var right = this.make(Num(r));     // this.make(r);
+                var right = Num(r);     // this.make(r);
                 result = this[op](right);
                 return result;        
             };
@@ -2172,7 +2170,7 @@
         });
     } ( Num ) );
 
-    (function ( Num ) {Num.NaN = Num.nan = Num.type("NaN");
+    (function ( Num ) {Num.nan = Num.type("NaN");
     
     Num.define("NaN", {
         str : function () {
