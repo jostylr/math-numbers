@@ -5,13 +5,15 @@ Here is a set of runnable examples
 
 ## Files
 
-* [examples/convert.js](#conversion "save: |jshint")
-* [examples/numberparsing.js](#number-parsing "save: |jshint")
-* [examples/factorial.js](#factorial-broken-up "save: | jshint")
-* [examples/conversion.js](#conversions "save:|jshint")
-* [examples/division.js](#division "save:|jshint")
-* [examples/ratdecparse.js](#parsing-ratdec "save:|jshint")
-* [examples/squarerat.js](#repeating-squared "save:|jshint")
+* [../examples/](# "cd: save")
+* [convert.js](#conversion "save: |jshint")
+* [numberparsing.js](#number-parsing "save: |jshint")
+* [factorial.js](#factorial-broken-up "save: | jshint")
+* [conversion.js](#conversions "save:|jshint")
+* [division.js](#division "save:|jshint")
+* [ratdecparse.js](#parsing-ratdec "save:|jshint")
+* [squarerat.js](#repeating-squared "save:|jshint")
+* [](# "cd: save")
 
 ## Number parsing
 
@@ -47,6 +49,7 @@ console.log((Num(3).mul(7)).add("ab").div("7").add(Num(57).sub(4)).str());
 
 
 ## Conversion
+
 
     /*jshint node:true*/
 
@@ -239,3 +242,4 @@ If you want to do something long, you can try ratdec(42, 823, 1000). The third n
     var r = Num.rat("4.2 131282");
 
     console.log(r.str(), r.mul(r).str("simplify"), r.str("dec"), r.mul(r).str("dec:100") );
+

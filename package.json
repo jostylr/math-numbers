@@ -1,11 +1,10 @@
 {
   "name": "math-numbers",
   "description": "A systematic implementation of different kinds of numbers with a consistent interface",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "homepage": "https://github.com/jostylr/math-numbers",
   "author": {
-    "name": "James Taylor",
-    "email": "jostylr@gmail.com"
+    "name": "James Taylor", "email": "jostylr@gmail.com"
   },
   "repository": {
     "type": "git",
@@ -14,36 +13,28 @@
   "bugs": {
     "url": "https://github.com/jostylr/math-numbers/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jostylr/math-numbers/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
   "main": "index.js",
   "engines": {
-    "node": ">0.6"
-  },
-  "devDependencies" : {
-    "literate-programming" : "~0.7.5",
-    "tape" : "=2.3.0"
+    "node": ">=0.10"
   },
   "dependencies":{
+    
+  },
+  "devDependencies" : {
+    "litpro" : "^0.13.0",
+    "litpro-jshint" : "^0.3.1",
+    "tape" : "^4.6.3",
+    "cheerio" : "^0.22.0",
+    "markdown-it" : "^8.1.0",
+    "pug" : "^2.0.0-beta6",
+    "postcss" : "^5.2.6",
+    "autoprefixer" : "^6.5.3"
   },
   "scripts" : { 
-    "prepublish" : "node ./node_modules/literate-programming/bin/literate-programming.js numbers.md",
-    "compile" : "node ./node_modules/literate-programming/bin/literate-programming.js numbers.md",
-    "test" : "node ./test/testrunner.js",
-    "testq" : "node ./test/testrunner.js | grep -v -e ^ok"
+    "test" : "node test/testrunner.js"
   },
   "keywords": ["bigint", "bignum", "arithmetic", "arbitrary", "precision", "numbers"],
-  "testling": {
-        "files": "test/*.js",
-        "browsers": {
-          "ie": [ 9, 10 ],
-          "firefox": [ 25, "nightly" ],
-          "chrome": [ 31, "canary" ],
-          "safari": [ 5.1]
-        }
-    }
+  "private": true
+
 }

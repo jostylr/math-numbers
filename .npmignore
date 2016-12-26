@@ -1,4 +1,7 @@
 test
 examples
-ghpages
 *.md
+build
+src
+travis.yml
+lprc.js

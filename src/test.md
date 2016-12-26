@@ -15,7 +15,210 @@ Fix sci division
 
 Just one file: 
 
-* [test/testrunner.js](#testrunner "save: |jshint")
+* [../test/testrunner.js](#testrunner "save: |jshint")
+
+
+## Test Template
+
+This is the test template
+
+    function (t) {
+
+        // var key = '\_":key"';
+
+        var expected = \_":expected| arrayify",
+            actual = [];
+
+        \_":code"
+
+
+
+        _"core redundant code"
+
+        var i, n = actual.length;
+
+        for (i =0; i <n; i+=1 ) {
+            t.equal(actual[i], expected[i]);
+        }
+
+        t.end();
+    }
+
+
+
+
+## Testrunner
+
+This is a simple test runner. 
+
+
+    /*global require*/
+
+
+    var Num, test;
+
+    Num = require('../index.js');
+    test = require('tape');
+
+    _"testing code"
+
+
+## testing code
+        
+This is only suitable for synchronous testing. Hey, this is a math library, for crying out loud...
+
+
+    test("float tests" , _"test template | compile float tests");
+
+    test("integers",  _"test template | compile integers");
+
+    test("rationals" , _"test template | compile rationals");
+
+    test("scientific" , _"test template | compile scientific");
+
+    test("complex" , _"test template | compile complex");
+
+    test("ad hoc" , _"adhoc");
+
+
+    test("parsing", _"parsing");
+
+    test("conversions", _"conversions");
+
+
+## Arrayify
+
+We define a command that takes a list of items separated by returns and makes an array out of them. The strings are trimmed and empty lines are ignored. This should allow for some whitespace formatting. 
+
+    function (code) {
+        var lines = code.split("\n");
+        return '[\n"' + lines.filter(function (el) {
+            if (el.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }).map(function (el) {
+            return el; //.trim();
+        }).join('",\n"') + '"\n]';
+    }
+
+[arrayify](# "define: sync ")
+
+
+## Core redundant code
+
+This takes an array of samples and runs them through the arrays of operations, comparisons, and unitary operators. 
+
+    samples.forEach(function (bin) {
+        var a = bin[0], 
+            b = bin[1];
+
+        actual.push("a: " + a.str() + ", b: " + b.str());
+
+        actual.push("?: a ? b; b ? a, a ? a, b ? a");        
+        ops.forEach(function(op) {
+            //console.log(op);
+            actual.push( op+": " +
+                a[op](b).simplify().str(format) + "; " +
+                b[op](a).simplify().str(format) + "; " +
+                a[op](a).simplify().str(format) + "; " +
+                b[op](b).simplify().str(format) 
+            );
+        });
+
+        comps.forEach(function(comp) {
+            //console.log(comp);
+            actual.push(comp + ": " +
+                a[comp](b) + "; " +
+                b[comp](a) + "; " +
+                a[comp](a) + "; " +
+                b[comp](b) 
+            );
+        });
+
+        unitary.forEach( function(un) {
+            actual.push(un+": " + a[un]().simplify().str() + "; " + b[un]().simplify().str());
+        });
+
+        others.forEach( function (other) {
+            var result, 
+                str = "", 
+                argstr = [],
+                args = other.slice(1),
+                op = other[0];
+
+            //console.log(op);
+
+            args.forEach(function (el) {
+                if (el instanceof Num) {
+                    argstr.push(el.str());
+                } else {
+                    argstr.push(el+"");
+                }
+            });
+
+            argstr = argstr.join(" , ");
+
+            result = a[op].apply(a, args);
+            str = "a " + op + " " + argstr +": ";
+            if (result instanceof Num) {
+                actual.push(str + result.simplify().str());
+            } else {
+                actual.push(str + result);
+            }
+            str = "b " + op + " " + argstr +": ";
+            result = b[op].apply(b, args);
+            if (result instanceof Num) {
+                actual.push(str+ result.simplify().str());
+            } else {
+                actual.push(str+ result);
+            }
+
+        });
+
+        nosim.forEach( function (other) {
+            var result, 
+                str = "", 
+                argstr = [],
+                args = other.slice(1),
+                op = other[0];
+
+            //console.log(op);
+
+            args.forEach(function (el) {
+                if (el instanceof Num) {
+                    argstr.push(el.str());
+                } else {
+                    argstr.push(el+"");
+                }
+            });
+
+            argstr = argstr.join(" , ");
+
+            result = a[op].apply(a, args);
+            str = "a " + op + " " + argstr +": ";
+            if (result instanceof Num) {
+                actual.push(str + result.str());
+            } else {
+                actual.push(str + result);
+            }
+            str = "b " + op + " " + argstr +": ";
+            result = b[op].apply(b, args);
+            if (result instanceof Num) {
+                actual.push(str+ result.str());
+            } else {
+                actual.push(str+ result);
+            }
+
+        });
+
+
+    });
+
+
+
+
 
 ## Float tests
 
@@ -430,203 +633,6 @@ These are the operations, comparisons (yielding true/false), and unitary operato
     var format = "";
 
 
-## Core redundant code
-
-This takes an array of samples and runs them through the arrays of opeartions, comparisons, and unitary operators. 
-
-    samples.forEach(function (bin) {
-        var a = bin[0], 
-            b = bin[1];
-
-        actual.push("a: " + a.str() + ", b: " + b.str());
-
-        actual.push("?: a ? b; b ? a, a ? a, b ? a");        
-        ops.forEach(function(op) {
-            //console.log(op);
-            actual.push( op+": " +
-                a[op](b).simplify().str(format) + "; " +
-                b[op](a).simplify().str(format) + "; " +
-                a[op](a).simplify().str(format) + "; " +
-                b[op](b).simplify().str(format) 
-            );
-        });
-
-        comps.forEach(function(comp) {
-            //console.log(comp);
-            actual.push(comp + ": " +
-                a[comp](b) + "; " +
-                b[comp](a) + "; " +
-                a[comp](a) + "; " +
-                b[comp](b) 
-            );
-        });
-
-        unitary.forEach( function(un) {
-            actual.push(un+": " + a[un]().simplify().str() + "; " + b[un]().simplify().str());
-        });
-
-        others.forEach( function (other) {
-            var result, 
-                str = "", 
-                argstr = [],
-                args = other.slice(1),
-                op = other[0];
-
-            //console.log(op);
-
-            args.forEach(function (el) {
-                if (el instanceof Num) {
-                    argstr.push(el.str());
-                } else {
-                    argstr.push(el+"");
-                }
-            });
-
-            argstr = argstr.join(" , ");
-
-            result = a[op].apply(a, args);
-            str = "a " + op + " " + argstr +": ";
-            if (result instanceof Num) {
-                actual.push(str + result.simplify().str());
-            } else {
-                actual.push(str + result);
-            }
-            str = "b " + op + " " + argstr +": ";
-            result = b[op].apply(b, args);
-            if (result instanceof Num) {
-                actual.push(str+ result.simplify().str());
-            } else {
-                actual.push(str+ result);
-            }
-
-        });
-
-        nosim.forEach( function (other) {
-            var result, 
-                str = "", 
-                argstr = [],
-                args = other.slice(1),
-                op = other[0];
-
-            //console.log(op);
-
-            args.forEach(function (el) {
-                if (el instanceof Num) {
-                    argstr.push(el.str());
-                } else {
-                    argstr.push(el+"");
-                }
-            });
-
-            argstr = argstr.join(" , ");
-
-            result = a[op].apply(a, args);
-            str = "a " + op + " " + argstr +": ";
-            if (result instanceof Num) {
-                actual.push(str + result.str());
-            } else {
-                actual.push(str + result);
-            }
-            str = "b " + op + " " + argstr +": ";
-            result = b[op].apply(b, args);
-            if (result instanceof Num) {
-                actual.push(str+ result.str());
-            } else {
-                actual.push(str+ result);
-            }
-
-        });
-
-
-    });
-
-
-## Test Template
-
-This is the test template
-
-    function (t) {
-
-        // var key = '_"*:key"';
-
-        var expected = _"*:expected| arrayify",
-            actual = [];
-
-        _"*:code"
-
-
-
-        _"core redundant code"
-
-        var i, n = actual.length;
-
-        for (i =0; i <n; i+=1 ) {
-            t.equal(actual[i], expected[i]);
-        }
-
-        t.end();
-    }
-
-## Arrayify
-
-We define a command that takes a list of items separated by returns and makes an array out of them. The strings are trimmed and empty lines are ignored. This should allow for some whitespace formatting. 
-
-    function (code) {
-        var lines = code.split("\n");
-        return '[\n"' + lines.filter(function (el) {
-            if (el.length > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        }).map(function (el) {
-            return el; //.trim();
-        }).join('",\n"') + '"\n]';
-    }
-
-[arrayify](#arrayify "define: command | | now")
-
-
-
-## Testrunner
-
-This is a simple test runner. 
-
-
-    /*global require*/
-
-
-    var Num, test;
-
-    Num = require('../index.js');
-    test = require('tape');
-
-    _"testing code"
-
-
-
-## testing code
-        
-This is only suitable for synchronous testing. Hey, this is a math library, for crying out loud...
-
-
-    test("float tests" , _"float tests*test template");
-
-    test("integers",  _"integers*test template");
-
-    test("rationals" , _"rationals*test template");
-
-    test("scientific" , _"scientific*test template");
-
-    test("complex" , _"complex*test template");
-
-    test("ad hoc" , _"adhoc");
-
-
-    test("parsing", _"parsing");
-
-    test("conversions", _"conversions");
-
 
 
 ## adhoc
@@ -711,5 +717,4 @@ This is designed to ensure that we can convert from various types in various way
 
         t.end();
     }
-
 

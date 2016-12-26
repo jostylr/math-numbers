@@ -5,7 +5,7 @@ Time for live examples in a browser. This will put the pages into ghpages direct
 
 ## Files
 
-* [ghpages/index.html](#index "save: *boiler")
+* [index.html](#boiler "save: | compile index")
 
 ## Index
 
@@ -37,6 +37,8 @@ This is the main page
     })
     </script>
 
+[css]()
+
 
 ## Factorial
 
@@ -50,7 +52,7 @@ The idea is to have a factorial computer -- n is the main parameter. There can b
 
     <h1>Factorial Exploration</h1>
 
-    _":questions |marked"
+    _":questions |md"
 
     _":inputs"
 
@@ -69,7 +71,11 @@ The idea is to have a factorial computer -- n is the main parameter. There can b
     <form>
 
 
+[output]()
+
 [scripts]()
+
+[css]()
 
 
 
@@ -80,12 +86,13 @@ The idea is to have a factorial computer -- n is the main parameter. There can b
     <html lang="en">
         <head>
             <meta charset="utf-8">
-            <title>_"*:title"</title>
-            _"*:css? "
+            <title>\_":title"</title>
+            \_":css "
         </head>
         <body>
-        _"*:body"
+        \_":body"
         <script type="text/javascript" src="index.js"></script>
-        _"*:scripts? "
+        \_":scripts "
         </body>
     </html>
+
