@@ -8,7 +8,7 @@ This sets up the literate programming environment and other tools.
 * [LICENSE](#license "save:")
 * [.gitignore](#gitignore "save:")
 * [.npmignore](#npmignore "save:")
-* [travis.yml](#travis "save:")
+* [.travis.yml](#travis "save:")
 * [](# "cd: save")
 
 
