@@ -22,7 +22,8 @@
     
   },
   "devDependencies" : {
-    "literate-programming" : "^1.0.0"
+    "literate-programming" : "^1.0.0",
+    "tape" : "^4.7.0"
   },
   "scripts" : { 
     "test" : "node test/testrunner.js"

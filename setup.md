@@ -251,5 +251,5 @@ Need very little for npm install; just index and the readme, license.
 
 by [James Taylor](https://github.com/jostylr "npminfo: jostylr@gmail.com ; 
     deps: ; 
-    dev: literate-programming 1.0.0")
+    dev: literate-programming 1.0.0, tape 4.7.0")
 
