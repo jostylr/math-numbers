@@ -21,7 +21,8 @@ This is the main page
 
     <p>Welcome to the Math-Numbers page!</p>
 
-    <p>Here is 300! <span id="300"></span></p>
+    <p>Here is 300!: </p>
+    <p id="300"></p>
 
 [scripts]()
     
@@ -33,12 +34,29 @@ This is the main page
             fact = fact.mul(Num.int(i));
         }
 
-        document.getElementById("300").innerHTML = fact.str();
+        document.getElementById("300").innerHTML = _"factorial string";
+        
     })
     </script>
 
 [css]()
 
+## factorial string
+
+This gets and formats the factorial string.
+
+        fact.str().
+            split('').
+            reverse().
+            map( function (el, ind) {
+                if ( (ind % 30) === 0)  {
+                    return el + '<br/>';
+                } else {
+                    return el;
+                }
+            }).
+            reverse().
+            join('');
 
 ## Factorial
 

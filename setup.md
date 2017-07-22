@@ -3,7 +3,7 @@
 This sets up the literate programming environment and other tools. 
 
 * [../](# "cd: save")
-* [lprc.js](#lprc.js "save:")
+* `[lprc.js](#lprc.js "save:")`
 * [package.json](#npm-package "save:")
 * [LICENSE](#license "save:")
 * [.gitignore](#gitignore "save:")
@@ -251,7 +251,5 @@ Need very little for npm install; just index and the readme, license.
 
 by [James Taylor](https://github.com/jostylr "npminfo: jostylr@gmail.com ; 
     deps: ; 
-    dev: litpro 0.13.0, litpro-jshint 0.3.1, tape 4.6.3, 
-        cheerio 0.22.0, markdown-it 8.1.0, 
-        pug 2.0.0-beta6, postcss 5.2.6, autoprefixer 6.5.3")
+    dev: literate-programming 1.0.0")
 

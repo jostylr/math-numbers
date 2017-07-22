@@ -10,7 +10,8 @@
     
     <p>Welcome to the Math-Numbers page!</p>
     
-    <p>Here is 300! <span id="300"></span></p>
+    <p>Here is 300!: </p>
+    <p id="300"></p>
     <script type="text/javascript" src="index.js"></script>
     <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function () {
@@ -20,7 +21,19 @@
             fact = fact.mul(Num.int(i));
         }
     
-        document.getElementById("300").innerHTML = fact.str();
+        document.getElementById("300").innerHTML =     fact.str().
+                split('').
+                reverse().
+                map( function (el, ind) {
+                    if ( (ind % 30) === 0)  {
+                        return el + '<br/>';
+                    } else {
+                        return el;
+                    }
+                }).
+                reverse().
+                join('');;
+        
     })
     </script>
     </body>

@@ -22,14 +22,7 @@
     
   },
   "devDependencies" : {
-    "litpro" : "^0.13.0",
-    "litpro-jshint" : "^0.3.1",
-    "tape" : "^4.6.3",
-    "cheerio" : "^0.22.0",
-    "markdown-it" : "^8.1.0",
-    "pug" : "^2.0.0-beta6",
-    "postcss" : "^5.2.6",
-    "autoprefixer" : "^6.5.3"
+    "literate-programming" : "^1.0.0"
   },
   "scripts" : { 
     "test" : "node test/testrunner.js"
